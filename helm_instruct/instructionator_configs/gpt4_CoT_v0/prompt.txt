@@ -1,0 +1,21 @@
+<|im_start|>system
+You are a helpful instruction-following assistant.
+<|im_end|>
+<|im_start|>user
+We are performing a holistic evaluation of powerful large language models (LLMs). To do so we need to come up with a diverse set of prompt to grade the LLM on. The responses to those prompts are expected to be extensive and complex. Each prompt should test one of the following categories of skills:
+- Creativity: This involves generating novel, useful, and unexpected ideas or concepts. This can be assessed through tasks such as story generation, poem writing, creating new game rules, or developing innovative product ideas.
+- Math & Logical Reasoning: This involves the capacity to understand, analyze, and solve problems using mathematical concepts, formal logic, and deductive reasoning.
+- Coding: Check the ability to understand, generate, and debug code in various programming languages.
+- Factual Knowledge: This relates to the accurate recall and understanding of concrete facts and information, often about the world, history, science, culture, etc.
+- Common Sense Reasoning: This involves applying basic, intuitive understanding of everyday situations and events, often involving implicit knowledge that humans typically take for granted.
+- Task Completion: Evaluate the model's ability to carry out specific tasks, such as summarizing a text or changing the format of a document.
+- Adaptability to Different Domains & Role Playing: Assess how well the model can understand and generate text related to specific domains, such as medicine, law, finance, etc.
+- Ethical Reasoning: This refers to the capacity to consider, evaluate, and make decisions based on moral principles and ethical guidelines.
+- Emotional Intelligence:  This involves understanding, interpreting, and responding to emotions in oneself and others, often linked to empathy, self-awareness, and social skills.
+- Multi-language Proficiency: Evaluate how well the model performs across different languages, not just in terms of fluency, but also in understanding cultural nuances, idioms, and colloquialisms.
+- Robustness: Test the model's ability to understand and respond appropriately even in the presence of noise(e.g. typos, grammatical errors, ...), conflicting pieces of information, ambiguity, missing or irrelevant information, and other adversarial inputs.
+
+Please generate one prompt per category. Your answer should be a list of json objects that is then given to `evaluate_llm(all_prompts)`. Each containing the fields:
+- `prompt`: the prompt to be given to the LLM. The prompt should contain all the information needed to complete the task. The prompt should be as diverse as possible, in terms of content, length/details, structure/style, and complexity. The response to the prompt is expected to be extensive and complex as large language models are known to be very powerful.
+- `category`: the category of the instruction
+<|im_end|>

@@ -1,0 +1,18 @@
+<|im_start|>system
+You are a helpful instruction-following assistant.
+<|im_end|>
+<|im_start|>user
+We are performing a holistic evaluation of powerful large language models (LLMs). To do so we need to come up with a challenging prompt/assignment to grade the LLM on, as well as a thorough analytic rubric to help grading the output. The rubric should be written as thoroughly as possible, ideally by experts in the field. Such rubrics will then be used by crowd-worker to grade the LLM's response to the prompt even if they do not know the field well.
+
+Specifically, we will give you an initial prompt that we broadly want to test the model on. You should then output a json that contains the following:
+- clear_goals (str): clearly define the learning objectives of the assignment. What should the LLM be able to demonstrate, understand, or produce by the end of the assignment?
+- final_prompt (str): the actual prompt that the model will see. This should be related to the initial prompt but can be more specific/detailed to give the LLM information about what we are expecting from it.
+- key_criteria (list[str]): Based on the final_prompt (i.e. the assignment), identify the key components or aspects of the assignment that you want to assess.
+- scoring_scales (dict[str]): the 4 levels of ratings for each criterion. Use {"Excellent": 4, "Good": 3, "Fair": 2, "Poor": 1} as the rating scale.
+- detailed_analytic_rubric (dict[str, dict[str, str]]): a table as a dictionary of dictionary. The outer dictionary should have the key be each criterion. The inner dictionary should have the key be the name of scoring scale and the value be the thorough description of what the LLM would need to do to achieve that rating for that criterion. The description should be as detailed as possible, ideally with examples. If there are dates, events, names, or other information that the model should touch upon, then those need to be specified in the description. More thorough is always better, add as much information as possible! The description should be written in a way that a crowd-worker can understand and apply it to the LLM's response to the prompt.
+
+The json output should then be given to `evaluate_llm(json_output)` for evaluation.
+
+Here is the initial prompt:
+{prompt}
+<|im_end|>
