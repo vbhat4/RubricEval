@@ -1,0 +1,3 @@
+- `pip install -r requirements.txt`
+- create a `.env` file with all API keys. I think you only need `OPENAI_API_KEY=...`
+- go through `initial.ipynb`
