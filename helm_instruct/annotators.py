@@ -5,7 +5,7 @@ from alpaca_eval import utils as ae_utils
 import ast
 import pandas as pd
 
-from . import base
+from alpaca_eval.annotators import base
 
 __all__ = ["Instructionator", "Rubricator", "Completor", "Evaluator"]
 
@@ -113,7 +113,7 @@ class Evaluator(base.BaseAnnotatorJSON):
         "Auto evaluator of the output using the rubric.",
     )
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
-    DEFAULT_ANNOTATION_TYPE = str
+    DEFAULT_ANNOTATION_TYPE = "object"  # use object to have dict output
     DEFAULT_BASE_DIR = Path(__file__).parent / "evaluator_configs"
 
     def __init__(
