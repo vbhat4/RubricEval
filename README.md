@@ -1,3 +1,3 @@
 - `pip install -r requirements.txt`
-- create a `.env` file with all API keys. I think you only need `OPENAI_API_KEY=...`
-- go through `initial.ipynb`
+- create a `.env` file with all API keys. I think you only need `OPENAI_API_KEY=...` (at least if you only evaluate the OpenAI models)
+- go through `initial_auto.ipynb` (for automatic instructions) and `initial_manual.ipynb` (for manual instructions) to get the initial data.
