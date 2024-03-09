@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Sequence
+from typing import Sequence, Dict
 
 from alpaca_eval import utils as ae_utils
 import ast
@@ -19,34 +19,48 @@ class Instructionator(base.BaseAnnotatorJSON):
     DEFAULT_ANNOTATION_TYPE = str
     DEFAULT_BASE_DIR = Path(__file__).parent / "instructionator_configs"
 
+    CATEGORIES: Dict[str, str] = {
+        "Creativity": "This involves generating novel, useful, and unexpected ideas or concepts. This can be assessed through tasks such as story generation, poem writing, creating new game rules, or developing innovative product ideas.",
+        "Math & Logical Reasoning": "This involves the capacity to understand, analyze, and solve problems using mathematical concepts, formal logic, and deductive reasoning.",
+        "Coding": "Check the ability to understand, generate, and debug code in various programming languages.",
+        "Factual Knowledge": "This relates to the accurate recall and understanding of concrete facts and information, often about the world, history, science, culture, etc.",
+        "Common Sense Reasoning": "This involves applying basic, intuitive understanding of everyday situations and events, often involving implicit knowledge that humans typically take for granted.",
+        "Task Completion": "Evaluate the model's ability to carry out specific tasks, such as summarizing a text or changing the format of a document.",
+        "Adaptability to Different Domains & Role Playing": "Assess how well the model can understand and generate text related to specific domains, such as medicine, law, finance, etc.",
+        "Ethical Reasoning": "This refers to the capacity to consider, evaluate, and make decisions based on moral principles and ethical guidelines.",
+        "Emotional Intelligence": "This involves understanding, interpreting, and responding to emotions in oneself and others, often linked to empathy, self-awareness, and social skills.",
+        "Multi-language Proficiency": "Evaluate how well the model performs across different languages, not just in terms of fluency, but also in understanding cultural nuances, idioms, and colloquialisms.",
+        "Robustness": "Test the model's ability to understand and respond appropriately even in the presence of noise(e.g. typos, grammatical errors, ...), conflicting pieces of information, ambiguity, missing or irrelevant information, and other adversarial inputs.",
+    }
+
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("batch_idx",),
-        annotators_config="gpt4_CoT_v0",
+        primary_keys: Sequence[str] = ("n", "category", "categories"),
+        annotators_config: str = "gpt4_CoT_v0",
         **kwargs,
     ):
-        super().__init__(*args, annotators_config=annotators_config, primary_keys=primary_keys, **kwargs)
+        super().__init__(
+            *args,
+            annotators_config=annotators_config,
+            primary_keys=primary_keys,
+            **kwargs,
+        )
 
     @property
     def annotation_key(self) -> str:
         return "categories_and_instructions"
 
-    def generate_n_instructions_per_categories(self, n: int) -> Sequence[dict]:
-        """Generate n instructions per categories."""
-        df_input = pd.Series(range(n), name="batch_idx").astype(str).to_frame()
-        instructions = self(df_input)
-        df_instructions = ae_utils.convert_to_dataframe(instructions)
-        df_instructions[self.annotation_key] = df_instructions[self.annotation_key].apply(ast.literal_eval)
-        df_instructions = df_instructions.explode(column=[self.annotation_key]).reset_index(drop=True)
-        df_instructions = pd.concat(
-            [
-                df_instructions.drop([self.annotation_key], axis=1),
-                pd.json_normalize(df_instructions[self.annotation_key]),
-            ],
-            axis=1,
+    def _generate_list(self) -> str:
+        return "\n".join(
+            [f" - {key}: {value}" for key, value in self.CATEGORIES.items()]
         )
-        return df_instructions.to_dict(orient="records")
+
+    def generate_n_instruction_for_a_category(
+        self, n: int, category: str
+    ) -> Sequence[dict]:
+        input = [{"n": n, "category": category, "categories": self._generate_list()}]
+        return self(input)
 
 
 class Rubricator(base.BaseAnnotatorJSON):
@@ -65,18 +79,25 @@ class Rubricator(base.BaseAnnotatorJSON):
         annotators_config="gpt4_CoT_v0",
         **kwargs,
     ):
-        super().__init__(*args, annotators_config=annotators_config, primary_keys=primary_keys, **kwargs)
+        super().__init__(
+            *args,
+            annotators_config=annotators_config,
+            primary_keys=primary_keys,
+            **kwargs,
+        )
 
     @property
     def annotation_key(self) -> str:
         return "assignment_and_rubric"
 
-    def make_df_rubrics(self, annotated : Sequence[dict]) -> pd.DataFrame:
+    def make_df_rubrics(self, annotated: Sequence[dict]) -> pd.DataFrame:
         df_rubrics = ae_utils.convert_to_dataframe(annotated)
         df_rubrics = pd.concat(
             [
                 df_rubrics.drop([self.annotation_key], axis=1),
-                pd.json_normalize(df_rubrics[self.annotation_key].apply(ast.literal_eval), max_level=0),
+                pd.json_normalize(
+                    df_rubrics[self.annotation_key].apply(ast.literal_eval), max_level=0
+                ),
             ],
             axis=1,
         )
@@ -100,7 +121,12 @@ class Completor(base.BaseAnnotatorJSON):
         annotators_config="claude-2",
         **kwargs,
     ):
-        super().__init__(*args, annotators_config=annotators_config, primary_keys=primary_keys, **kwargs)
+        super().__init__(
+            *args,
+            annotators_config=annotators_config,
+            primary_keys=primary_keys,
+            **kwargs,
+        )
 
     @property
     def annotation_key(self) -> str:
@@ -119,11 +145,22 @@ class Evaluator(base.BaseAnnotatorJSON):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("final_prompt", "detailed_analytic_rubric", "output", "key_criteria", "scoring_scales"),
+        primary_keys: Sequence[str] = (
+            "final_prompt",
+            "detailed_analytic_rubric",
+            "output",
+            "key_criteria",
+            "scoring_scales",
+        ),
         annotators_config="gpt4_CoT_v0",
         **kwargs,
     ):
-        super().__init__(*args, annotators_config=annotators_config, primary_keys=primary_keys, **kwargs)
+        super().__init__(
+            *args,
+            annotators_config=annotators_config,
+            primary_keys=primary_keys,
+            **kwargs,
+        )
 
     @property
     def annotation_key(self) -> str:
