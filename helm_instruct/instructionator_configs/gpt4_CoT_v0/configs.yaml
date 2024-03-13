@@ -13,7 +13,7 @@ gpt4_CoT_v0:
         parameters:
           type: "object"
           properties:
-            all_prompts:
+            prompts:
               type: "array"
               description: "A list of prompts, one per category."
               items:
@@ -25,8 +25,8 @@ gpt4_CoT_v0:
                   category:
                     type: "string"
                     description: "The category of the instruction."
-        "required": ["all_prompts"]
+        "required": ["prompts"]
   batch_size: 1
   fn_completion_parser: "json_parser"
   completion_parser_kwargs:
-    annotation_key: "all_prompts"
+    annotation_key: "prompts"

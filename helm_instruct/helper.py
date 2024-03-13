@@ -1,4 +1,6 @@
 from helm_instruct import Instructionator, Rubricator, Completor, Evaluator
+from typing import List, Dict, Any
+
 from alpaca_eval import utils as ae_utils
 from alpaca_eval import constants as ae_const
 import ast
@@ -30,8 +32,11 @@ def dict_reverser(d):
 
 
 def get_instructions(
-    n_max_examples, category, is_use_alpacaeval_instructions=False, n_to_print=0
-):
+    n_max_examples: int,
+    category: str,
+    is_use_alpacaeval_instructions: bool = False,
+    n_to_print: int = 0,
+) -> List[Dict[str, Any]]:
     if is_use_alpacaeval_instructions:
         instructions = ae_const.ALPACAEVAL_REFERENCE_OUTPUTS_2()
         instructions = instructions.to_pandas().sample(n_max_examples, random_state=123)
@@ -55,7 +60,6 @@ def get_instructions(
 
 
 def get_rubrics(instructions, n_to_print: int = 0) -> pd.DataFrame:
-    print(type(instructions[0]))
     df_instructions = ae_utils.convert_to_dataframe(instructions)
     rubricator = Rubricator()
     rubrics = rubricator(df_instructions)

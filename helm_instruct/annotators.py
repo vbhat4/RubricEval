@@ -20,17 +20,19 @@ class Instructionator(base.BaseAnnotatorJSON):
     DEFAULT_BASE_DIR = Path(__file__).parent / "instructionator_configs"
 
     CATEGORIES: Dict[str, str] = {
-        "Creativity": "This involves generating novel, useful, and unexpected ideas or concepts. This can be assessed through tasks such as story generation, poem writing, creating new game rules, or developing innovative product ideas.",
-        "Math & Logical Reasoning": "This involves the capacity to understand, analyze, and solve problems using mathematical concepts, formal logic, and deductive reasoning.",
-        "Coding": "Check the ability to understand, generate, and debug code in various programming languages.",
-        "Factual Knowledge": "This relates to the accurate recall and understanding of concrete facts and information, often about the world, history, science, culture, etc.",
-        "Common Sense Reasoning": "This involves applying basic, intuitive understanding of everyday situations and events, often involving implicit knowledge that humans typically take for granted.",
-        "Task Completion": "Evaluate the model's ability to carry out specific tasks, such as summarizing a text or changing the format of a document.",
-        "Adaptability to Different Domains & Role Playing": "Assess how well the model can understand and generate text related to specific domains, such as medicine, law, finance, etc.",
-        "Ethical Reasoning": "This refers to the capacity to consider, evaluate, and make decisions based on moral principles and ethical guidelines.",
-        "Emotional Intelligence": "This involves understanding, interpreting, and responding to emotions in oneself and others, often linked to empathy, self-awareness, and social skills.",
-        "Multi-language Proficiency": "Evaluate how well the model performs across different languages, not just in terms of fluency, but also in understanding cultural nuances, idioms, and colloquialisms.",
+        "Creativity": "This involves generating novel, useful, and unexpected ideas or concepts. This can be assessed through tasks such as story generation, poem writing, creating new game rules, developing innovative product ideas, etc.",
+        "Math & Logical Reasoning": "This involves the capacity to understand, analyze, and solve problems using mathematical concepts, formal logic, and deductive reasoning. This can be assessed through tasks such as solving math problems, logical puzzles, proofs, etc.",
+        "Coding": "Check the ability to understand, generate, design and debug code in various programming languages. This can include tasks such as writing algorithms, debugging code, refactoring software, manually executing code. writing unit tests, etc.",
+        "Factual Knowledge": "This relates to the accurate recall and understanding of concrete facts and information, often about the world, history, geography, science, culture, art, etc. This should be agnostic to parameters that might change in the future (date, current position such as president, etc.).",
+        "Common Sense Reasoning": "This involves applying basic, intuitive understanding of everyday situations and events, often involving implicit knowledge that humans typically take for granted. This can be assessed through tasks such as solving riddles, answering common sense questions, predicting the outcome of everyday events or making a plan of actions to perform a task.",
+        "Task Completion": "Evaluate the model's ability to carry out specific tasks, such as summarizing a text, changing the format of a document, classifying data, etc.",
+        "Adaptability to Different Domains & Role Playing": "Assess how well the model can understand and generate text related to specific domains, such as medicine, law, finance, science, etc.",
+        "Ethical Reasoning": "This refers to the capacity to consider, evaluate, and make decisions based on moral principles and ethical guidelines. This can be assessed through tasks such as ethical dilemmas, moral reasoning, and ethical decision-making. This should not be biased, i.e. depend on cultural or religious beliefs.",
+        "Emotional Intelligence": "This involves understanding, interpreting, and responding to emotions in oneself and others, often linked to empathy, self-awareness, and social skills. This can be assessed through tasks such as analyzing the emotion of the writer, generating empathetic responses, understanding the emotional state of a character, etc.",
+        "Multi-language Proficiency": "Evaluate how well the model performs across different languages, not just in terms of fluency, but also in understanding cultural nuances, idioms, and colloquialisms. This can be assessed through tasks such as translation, understanding of cultural references, idiomatic expressions, etc.",
         "Robustness": "Test the model's ability to understand and respond appropriately even in the presence of noise(e.g. typos, grammatical errors, ...), conflicting pieces of information, ambiguity, missing or irrelevant information, and other adversarial inputs.",
+        "Argumentation": "This involves the capacity to construct and evaluate arguments, often based on evidence and reasoning. This can be assessed through tasks such as writing persuasive essays, debating, evaluating the strength of an argument, etc.",
+        "Analyzing & Interpreting Data": "This involves the capacity to understand, analyze, and interpret data, often using statistical methods and tools. This can be assessed by generating data, articles or reports and asking the model to analyze and interpret the data in various ways.",
     }
 
     def __init__(
