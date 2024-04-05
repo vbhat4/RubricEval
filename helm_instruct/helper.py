@@ -1,6 +1,7 @@
-from helm_instruct import Instructionator, Rubricator, Completor, Evaluator, InstructionDifficultyEstimator
+from helm_instruct import Instructionator, Rubricator, Completor, Evaluator, RubricBrainstormer, RubricGenerator
 from typing import List, Dict, Any
 
+import datasets
 from alpaca_eval import utils as ae_utils
 from alpaca_eval import constants as ae_const
 import ast
@@ -8,8 +9,7 @@ import pandas as pd
 import numpy as np
 import yaml
 from alpaca_eval.decoders import openai
-from IPython.display import Markdown, display
-from toolbox.printing import debug
+from IPython.display import Markdown, display,HTML
 
 
 def printmd(*args, is_replace_newline=False):
@@ -33,30 +33,101 @@ def dict_reverser(d):
 
 def get_instructions(
     n_max_examples: int,
-    category: str,
-    is_use_alpacaeval_instructions: bool = False,
+    category: str | None = None,
+    instruction_set: str = "auto",
+    sample_by_category: bool = False,
+    with_additional_info: bool = False,
     n_to_print: int = 0,
 ) -> List[Dict[str, Any]]:
-    if is_use_alpacaeval_instructions:
+    if instruction_set == "auto":
+        instructionator = Instructionator()
+        assert category is not None, "category must be provided if instruction_set is None"
+        output = instructionator.generate_n_instruction_for_a_category(
+            n=n_max_examples, category=category
+        )
+        instructions = ast.literal_eval(output[0]["categories_and_instructions"])
+    elif instruction_set == "alpaca_eval_2":
         instructions = ae_const.ALPACAEVAL_REFERENCE_OUTPUTS_2()
         instructions = instructions.to_pandas().sample(n_max_examples, random_state=123)
         instructions["prompt"] = instructions["instruction"]
         instructions["category"] = instructions["dataset"]
         instructions = instructions.to_dict(orient="records")
-    else:
-        instructionator = Instructionator()
-        output = instructionator.generate_n_instruction_for_a_category(
-            n=n_max_examples, category=category
-        )
-        instructions = ast.literal_eval(output[0]["categories_and_instructions"])
+    elif instruction_set == "wildbench":
+        instructions = datasets.load_dataset("allenai/WildBench")["test"]
+        instructions = instructions.to_pandas()
+        instructions = instructions[instructions.apply(lambda x: len(x["conversation_input"]) == 1, axis=1)]  # maintain single-turn instructions for now
+        instructions["prompt"] = instructions["conversation_input"].apply(lambda x: x[0]["content"])
+        instructions["category"] = instructions["primary_tag"]
+        if sample_by_category:
+            num_per_category = n_max_examples // len(instructions["category"].unique())
+            instructions = instructions.groupby("category").apply(lambda x: x.sample(num_per_category, random_state=22)).reset_index(drop=True)
+        else:
+            instructions = instructions.sample(n_max_examples, random_state=123)
+        if with_additional_info:
+            # merge the intent and checklist into the additional_information
+            def _get_additional_information(x):
+                info = ""
+                info += f"User intent: {x['intent']}\n"
+                checklist = '- ' + '\n- '.join(x['checklist'].tolist())
+                info += f"Reference checklist:\n{checklist}\n"
+
+                return info
+            instructions["additional_information"] = instructions.apply(_get_additional_information, axis=1)
+        else:
+            instructions["additional_information"] = "N/A"
+        instructions = instructions.to_dict(orient="records")
+
 
     if n_to_print:
-        for instruction in instructions[:n_to_print]:
-            printmd("**Category**: ", instruction["category"])
-            printmd("**Prompt**: ", instruction["prompt"])
-            printmd("---------------------\n\n\n")
+        print_instructions(instructions[:n_to_print])
 
     return instructions
+
+def print_instructions(instructions, chunk_prompt_limit=1000):
+    for idx, instruction in enumerate(instructions):
+        printmd("**Example**: ", idx)
+        printmd("**Category**: ", instruction["category"])
+        print_prompt(instruction["prompt"], chunk_limit=chunk_prompt_limit)
+        if "intent" in instruction:   # wildbench
+            printmd("**User intent**: ", instruction["intent"])
+        if "additional_information" in instruction and instruction["additional_information"] != "N/A":
+            printmd("**Additional information**: ", instruction["additional_information"])
+        printmd("---------------------\n\n\n")
+
+
+def print_prompt(prompt, chunk_limit=1000):
+    half = chunk_limit // 2
+
+    if len(prompt) > chunk_limit:
+        printmd("**Prompt**: ", prompt[:half] + "\n\n***[... Omitted ...]***\n\n" + prompt[-half:])
+    else:
+        printmd("**Prompt**: ", prompt)
+
+
+
+def get_criteria(instructions, n_to_print: int = 0, **annot_kwargs) -> pd.DataFrame:
+    df_instructions = ae_utils.convert_to_dataframe(instructions)
+    rubric_brainstormer = RubricBrainstormer(**annot_kwargs)
+    criteria = rubric_brainstormer(df_instructions)
+    df_criteria = rubric_brainstormer.make_df_rubrics(criteria)
+
+    # TODO: this should probably be included in the post-processing of the rubric_brainstormer
+    # copy "prompt" column to "final_prompt" column
+    df_criteria["final_prompt"] = df_instructions["prompt"]
+
+    print_rubrics(df_criteria, n_to_print)
+
+    return df_criteria
+
+def get_detailed_rubrics(criteria, n_to_print: int = 0, **annot_kwargs) -> pd.DataFrame:
+    df_criteria = ae_utils.convert_to_dataframe(criteria)
+    rubric_generator = RubricGenerator(**annot_kwargs)
+    detailed_rubrics = rubric_generator(df_criteria)
+    df_detailed_rubrics = rubric_generator.make_df_rubrics(detailed_rubrics)
+
+    print_rubrics(df_detailed_rubrics, n_to_print)
+
+    return df_detailed_rubrics
 
 
 def get_rubrics(instructions, n_to_print: int = 0) -> pd.DataFrame:
@@ -65,16 +136,40 @@ def get_rubrics(instructions, n_to_print: int = 0) -> pd.DataFrame:
     rubrics = rubricator(df_instructions)
     df_rubrics = rubricator.make_df_rubrics(rubrics)
 
-    if n_to_print:
-        for i in range(min(len(df_rubrics), n_to_print)):
-
-            printmd("**Example:** ", i)
-            printmd("**Category:** ", df_rubrics.loc[i, "category"])
-            printmd("\n**Prompt:** ", df_rubrics.loc[i, "final_prompt"])
-            display(pd.DataFrame(df_rubrics.loc[i, "detailed_analytic_rubric"]).T)
-            printmd("---------------------\n\n\n")
+    print_rubrics(df_rubrics, n_to_print)
 
     return df_rubrics
+
+
+def print_rubrics(df_rubrics, n_to_print: int = 0, chunk_prompt_limit: int = 1000):
+    if n_to_print:
+        for i in range(min(len(df_rubrics), n_to_print)):
+            printmd("**Example:** ", i)
+            printmd("**Category:** ", df_rubrics.loc[i, "category"])
+            print_prompt(df_rubrics.loc[i, "final_prompt"], chunk_limit=chunk_prompt_limit)
+            if "clear_goals" in df_rubrics.columns:
+                printmd("\n**Clear Goals:** ", df_rubrics.loc[i, "clear_goals"])
+            if "criteria" in df_rubrics.columns:
+                print_criteria(df_rubrics.loc[i, "criteria"])
+            if "checklist" in df_rubrics.columns:  # wildbench
+                printmd("\n**Checklist (Human)**:")
+                display(pd.DataFrame(df_rubrics.loc[i, "checklist"], columns=['Checklist']))
+            if "detailed_analytic_rubric" in df_rubrics.columns:
+                printmd("\n**Detailed rubric**:")
+                display(pd.DataFrame(df_rubrics.loc[i, "detailed_analytic_rubric"]).T)
+            printmd("---------------------\n\n\n")
+
+
+def print_criteria(criteria):
+    df_criteria = pd.DataFrame(criteria)
+    # checkist is a list, convert it to a string
+    df_criteria["checklist"] = df_criteria["checklist"].apply(lambda x: "<br>".join(x))
+    # df_criteria = df_criteria.map(lambda x: x.replace("\n", "<br>").replace("\t", "&emsp;"))
+    html_criteria = df_criteria.to_html(escape=False)
+
+    printmd("\n**Rubric**:")
+    display(HTML(html_criteria))
+    # display(df_criteria)
 
 
 def get_completions(rubrics, model_name: str, n_to_print: int = 0):
@@ -138,14 +233,14 @@ def color_df(df, to_color):
     return styled_df
 
 
-def visualize_correct_rubric(df_scores, n_to_print=5, is_sort_by_score=True):
+def visualize_correct_rubric(df_scores, n_to_print=5, is_sort_by_score=True, chunk_prompt_limit=1000):
     df_all = ae_utils.convert_to_dataframe(df_scores)
     if is_sort_by_score:
         df_all = df_all.sort_values("avg_score").reset_index(drop=True)
     for i in range(min(len(df_all), n_to_print)):
         printmd("**Example**: ", i)
         printmd("**Category**: ", df_all.loc[i, "category"])
-        printmd("\n**Prompt**: ", df_all.loc[i, "final_prompt"])
+        print_prompt(df_all.loc[i, "final_prompt"], chunk_limit=chunk_prompt_limit)
         printmd("\n**Output**: ", df_all.loc[i, "output"])
         printmd(
             "\n**Feedback**: ",
