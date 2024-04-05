@@ -106,14 +106,14 @@ class Rubricator(base.BaseAnnotatorJSON):
         return df_rubrics
 
 
-class Estimator(base.BaseAnnotatorJSON):
+class InstructionDifficultyEstimator(base.BaseAnnotatorJSON):
     __doc__ = base.BaseAnnotatorJSON.__doc__.replace(
         "Base class for a pool of estimators.",
         "Auto annotator for estimating how hard an instruction is.",
     )
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
     DEFAULT_ANNOTATION_TYPE = str
-    DEFAULT_BASE_DIR = Path(__file__).parent / "estimator_configs"
+    DEFAULT_BASE_DIR = Path(__file__).parent / "instruction_difficulty_estimator_configs"
 
     def __init__(
         self,
