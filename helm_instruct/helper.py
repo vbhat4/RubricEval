@@ -1,4 +1,4 @@
-from helm_instruct import Instructionator, Rubricator, Completor, Evaluator
+from helm_instruct import Instructionator, Rubricator, Completor, Evaluator, Estimator
 from typing import List, Dict, Any
 
 from alpaca_eval import utils as ae_utils
