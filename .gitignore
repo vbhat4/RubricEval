@@ -7,6 +7,7 @@ example/
 src/**/*.json
 results
 ./*.json
+helm_instruct/**/*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
