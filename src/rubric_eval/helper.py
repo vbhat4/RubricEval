@@ -1,4 +1,4 @@
-from src.rubric_eval import Instructionator, Rubricator, Completor, Evaluator, RubricBrainstormer, RubricGenerator
+from rubric_eval import Instructionator, Rubricator, Completor, Evaluator, RubricBrainstormer, RubricGenerator
 from typing import List, Dict, Any
 
 import datasets
@@ -79,7 +79,7 @@ def get_instructions(
         instructions = instructions.to_dict(orient="records")
     elif instruction_set == "wildbench":
         assert not (category is not None and sample_by_category)
-        ds = datasets.load_dataset("allenai/WildBench")["test"]
+        ds = datasets.load_dataset("allenai/WildBench", 'v1-legacy')["test"]  # TODO(stella): should we switch to v2? why or why not?
         ds = ds.to_pandas()
         ds = ds[ds.apply(lambda x: len(x["conversation_input"]) == 1, axis=1)]  # maintain single-turn instructions for now
         instructions = pd.DataFrame()

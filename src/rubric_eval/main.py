@@ -170,7 +170,9 @@ def run_evals(
     """
     
     print(f"Calling run_evals!")
-    for input_path in list_files_with_prefix(input_path_prefix, suffix=".json"):
+    input_paths = list_files_with_prefix(input_path_prefix, suffix=".json")
+    assert len(input_paths) > 0, f"No completion files found with prefix {input_path_prefix}!"
+    for input_path in input_paths:
         print(f"Processing {input_path}...")
         model_name = input_path.replace(os.path.abspath(input_path_prefix), "").replace(".json", "")
         eval_result = {}
