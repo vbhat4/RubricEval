@@ -1,8 +1,8 @@
 """
 How to run:
 
-1. Check out this repo locally
-2. pip install -e .
+1. git clone https://github.com/stella-z3g/RubricEval -b public_release
+2. cd RubricEval/ && pip install -e .
 3. python scripts/convert_dataset_to_rubriceval_input_format.py  # This will generate an example instructions.json
 4. rubric_eval get_rubrics --input_path=instructions.json --output_path=instructions_with_rubrics.json
 5. rubric_eval get_completions --model_configs="['gpt-4o-2024-05-13']" --input_path=instructions_with_rubrics.json --output_path_prefix=output_
