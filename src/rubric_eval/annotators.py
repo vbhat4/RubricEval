@@ -84,12 +84,18 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         )
 
     def make_df_rubrics(self, annotated: Sequence[dict]) -> pd.DataFrame:
+        def safe_eval(value):
+            if pd.isnull(value) or value is None:
+                return {}  # Return an empty dictionary for None or NaN values
+            else:
+                return ast.literal_eval(value)
+        
         df_rubrics = ae_utils.convert_to_dataframe(annotated)
         df_rubrics = pd.concat(
             [
                 df_rubrics.drop([self.annotation_key], axis=1),
                 pd.json_normalize(
-                    df_rubrics[self.annotation_key].apply(ast.literal_eval), max_level=0
+                    df_rubrics[self.annotation_key].apply(safe_eval), max_level=0
                 ),
             ],
             axis=1,

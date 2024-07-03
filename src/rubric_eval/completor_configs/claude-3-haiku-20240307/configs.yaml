@@ -1,0 +1,9 @@
+claude-3-haiku-20240307:
+  prompt_template: "claude-3-haiku-20240307/prompt.txt"
+  fn_completions: "anthropic_completions"
+  completions_kwargs:
+    model_name: "claude-3-haiku-20240307"
+    max_tokens_to_sample: 4096
+    num_procs: 2
+  batch_size: 1
+  fn_completion_parser: null
