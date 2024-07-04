@@ -12,9 +12,5 @@ instructions = get_instructions(
 )
 df = ae_utils.convert_to_dataframe(instructions)
 
-# Only keep the necessary columns
-columns_to_keep = ["prompt", "category", "additional_information"]
-df.drop(columns=[col for col in df.columns if col not in columns_to_keep], inplace=True)
-
 # Save dataset to JSON file
 df.to_json(f"instructions.json", orient='records', indent=4)
