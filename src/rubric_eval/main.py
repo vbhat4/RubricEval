@@ -34,6 +34,19 @@ logger = logging.getLogger(__name__)
 
 
 def check_df_fields(df, required_fields):
+    """
+    Check if a DataFrame contains all the required fields.
+
+    This function compares the columns of the input DataFrame with the set of required fields
+    and raises a RuntimeError if any required field is missing.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame to check.
+        required_fields (Set[str]): Set of required field names.
+
+    Raises:
+        RuntimeError: If any required field is missing in the DataFrame.
+    """
     actual_fields = set(df.columns)
     
     # Check if all required fields are present
@@ -42,7 +55,43 @@ def check_df_fields(df, required_fields):
         raise RuntimeError(f"Missing required fields: {missing}")
     
 
+def preprocess_df_instructions(df):
+    """
+    Preprocess the instructions DataFrame.
+
+    This function checks if the input DataFrame contains the required fields and fills
+    in missing fields with empty strings.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing instructions.
+
+    Returns:
+        pd.DataFrame: Preprocessed DataFrame with missing fields filled in.
+
+    Raises:
+        RuntimeError: If any required fields is missing in the DataFrame.
+    """
+    check_df_fields(
+        df,
+        required_fields={"prompt"},
+    )
+    # Fill in missing fields
+    for col in ["additional_information"]:
+        if col not in df.columns:
+            df[col] = ""
+    return df
+
+
 def postprocess_df_rubrics(df_rubrics):
+    """
+    Postprocess the rubrics DataFrame by dropping invalid rows.
+
+    Args:
+        df_rubrics (pd.DataFrame): Input DataFrame containing rubrics.
+
+    Returns:
+        pd.DataFrame: Postprocessed DataFrame with invalid rows dropped.
+    """
     orig_num_rows = len(df_rubrics)
     # Drop rows where the "scoring_scales" column is not a dict (because sometimes rubric generator will refuse to generate rubric)
     mask = df_rubrics["scoring_scales"].apply(lambda x: isinstance(x, dict))
@@ -59,25 +108,33 @@ def get_rubrics(
     output_path: Union[AnyPath, None] = None,
 ) -> Union[pd.DataFrame, None]:
     """
-    input_path: str, path to input file (JSON)
-    The JSON file should contain a list of instructions, each instruction is a dictionary containing the following fields:
-    - prompt
-    - additional_information (optional, free-form text)
+    Generate detailed rubrics for given instructions.
+
+    This function takes a DataFrame or JSON file containing instructions and generates 
+    detailed rubrics for evaluating completions based on those instructions.
+
+    Args:
+        input_df (Union[pd.DataFrame, None], optional): Input DataFrame containing instructions. 
+            If provided, the function will use this DataFrame instead of loading from a file. 
+            Defaults to None.
+        rubric_generator (str, optional): Configuration for the rubric generator. 
+            Defaults to "gpt4_CoT_v0".
+        input_path (AnyPath, optional): Path to the input JSON file containing instructions. 
+            Defaults to "instructions.json".
+        output_path (Union[AnyPath, None], optional): Path to save the output JSON file 
+            containing instructions with generated rubrics. If None, the output will not be 
+            saved to a file. Defaults to None.
+
+    Returns:
+        Union[pd.DataFrame, None]: DataFrame containing instructions with generated rubrics. 
+        If output_path is provided, the function will save the output to a file and return None.
     """
     assert input_path.endswith(".json"), "only JSON format is supported"
     if input_df is not None:
         df = input_df
     else:
         df = ae_utils.load_or_convert_to_dataframe(input_path)
-    check_df_fields(
-        df, 
-        required_fields={"prompt"},
-    )
-    # Fill in missing fields
-    for col in ["additional_information"]:
-        if col not in df.columns:
-            df[col] = ""
-
+    df = preprocess_df_instructions(df)
     rubric_brainstormer = RubricBrainstormer(annotators_config=rubric_generator)
     criteria = rubric_brainstormer(df)
     df_criteria = rubric_brainstormer.make_df_rubrics(criteria)
@@ -101,7 +158,25 @@ def get_completions(
     output_path: Union[AnyPath, None] = None,
 ):
     """
-    For each model, we will save the completion to {output_path} JSON file.
+    Generate model completions for given instructions and rubrics.
+
+    This function takes a DataFrame or JSON file containing instructions with rubrics and
+    generates model completions based on the provided model configuration.
+
+    Args:
+        model_config (str): Configuration for the model to generate completions.
+        input_df (Union[pd.DataFrame, None], optional): Input DataFrame containing instructions
+            with rubrics. If provided, the function will use this DataFrame instead of loading 
+            from a file. Defaults to None.
+        input_path (AnyPath, optional): Path to the input JSON file containing instructions
+            with rubrics. Defaults to "instructions_with_rubrics.json".
+        output_path (Union[AnyPath, None], optional): Path to save the output JSON file 
+            containing generated completions. If None, the output will not be saved to a file.
+            Defaults to None.
+
+    Returns:
+        Union[pd.DataFrame, None]: DataFrame containing generated completions. If output_path 
+        is provided, the function will save the output to a file and return None.
     """
     assert input_path.endswith(".json"), "only JSON format is supported"
     if input_df is not None:
@@ -132,10 +207,26 @@ def evaluate(
     output_path: Union[AnyPath, None] = None,
 ):
     """
-    For each model, we will:
-    - Load the completions from {input_path} JSON file
-    - Save the detailed evaluation results to {output_path} JSON file
-    - Save the model card to model_card.json file in the same directory as {output_path}
+    Evaluate model completions using generated rubrics.
+
+    This function takes a DataFrame or JSON file containing model completions and rubrics,
+    evaluates the completions using the specified evaluator, and produces evaluation results.
+
+    Args:
+        model_config (str): Configuration of the model being evaluated.
+        input_df (Union[pd.DataFrame, None], optional): Input DataFrame containing completions 
+            and rubrics. If provided, the function will use this DataFrame instead of loading
+            from a file. Defaults to None.
+        evaluator (str, optional): Configuration for the evaluator. Defaults to "gpt4_CoT_v0".
+        input_path (AnyPath, optional): Path to the input JSON file containing completions and
+            rubrics. Defaults to "completions.json".
+        output_path (Union[AnyPath, None], optional): Path to save the output JSON files 
+            containing evaluation results and model card. If None, the output will not be saved 
+            to files. Defaults to None.
+
+    Returns:
+        Union[pd.DataFrame, None]: DataFrame containing evaluation results. If output_path is
+        provided, the function will save the output to files and return None.
     """
     
     eval_result = {}
