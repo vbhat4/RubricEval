@@ -162,10 +162,6 @@ def get_criteria(instructions, n_to_print: int = 0, **annot_kwargs) -> pd.DataFr
     criteria = rubric_brainstormer(df_instructions)
     df_criteria = rubric_brainstormer.make_df_rubrics(criteria)
 
-    # TODO: this should probably be included in the post-processing of the rubric_brainstormer
-    # copy "prompt" column to "final_prompt" column
-    df_criteria["final_prompt"] = df_instructions["prompt"]
-
     print_rubrics(df_criteria, n_to_print)
 
     return df_criteria
