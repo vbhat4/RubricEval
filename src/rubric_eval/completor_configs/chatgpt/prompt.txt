@@ -2,5 +2,5 @@
 You are a helpful assistant.
 <|im_end|>
 <|im_start|>user
-{final_prompt}
+{prompt}
 <|im_end|>

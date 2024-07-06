@@ -11,7 +11,7 @@ Specifically, we will give you an prompt that we want to test the model on, the 
 The json output should then be given to `evaluate_llm(json_output)` for evaluation.
 
 ## Prompt
-{final_prompt}
+{prompt}
 
 ## Goals
 {clear_goals}

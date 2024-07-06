@@ -11,7 +11,7 @@ Specifically, you should output a JSON with the following fields:
 The JSON should then be given to `final_evaluation_metric(scoring_json)`.
 
 # Assignment
-{final_prompt}
+{prompt}
 
 # Rubric
 ## Key Criteria

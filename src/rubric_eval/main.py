@@ -110,8 +110,7 @@ def get_completions(
         df_rubrics = ae_utils.load_or_convert_to_dataframe(input_path)
     check_df_fields(
         df_rubrics,
-        # TODO: can we dedup "prompt" and "final_prompt"?
-        required_fields={"prompt", "final_prompt", "additional_information", "raw_completion", "scoring_scales", "criteria", "detailed_analytic_rubric"},
+        required_fields={"prompt", "additional_information", "raw_completion", "scoring_scales", "criteria", "detailed_analytic_rubric"},
     )
     completions = get_model_completions(df_rubrics, model_config)
     df_completions = ae_utils.convert_to_dataframe(completions)
@@ -146,8 +145,7 @@ def evaluate(
         df_completions = ae_utils.load_or_convert_to_dataframe(input_path)
     check_df_fields(
         df_completions,
-        # TODO: can we dedup "prompt" and "final_prompt"?
-        required_fields={"prompt", "final_prompt", "additional_information", "raw_completion", "scoring_scales", "criteria", "detailed_analytic_rubric"},
+        required_fields={"prompt", "additional_information", "raw_completion", "scoring_scales", "criteria", "detailed_analytic_rubric"},
     )
     df_evaluations = get_evaluations(df_completions, annotators_config=evaluator)
     eval_result["model_name"] = model_config

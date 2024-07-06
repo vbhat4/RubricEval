@@ -124,12 +124,6 @@ class RubricBrainstormer(BaseRubricator):
             **kwargs,
         )
 
-    def make_df_rubrics(self, annotated: Sequence[dict]) -> pd.DataFrame:
-        df = super().make_df_rubrics(annotated)
-        # copy "prompt" column to "final_prompt" column
-        df["final_prompt"] = df["prompt"]
-        return df
-
     @property
     def annotation_key(self) -> str:
         return "criteria"
@@ -145,7 +139,7 @@ class RubricGenerator(BaseRubricator):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("final_prompt", "clear_goals", "criteria"),
+        primary_keys: Sequence[str] = ("prompt", "clear_goals", "criteria"),
         annotators_config="gpt4_CoT_v0",
         **kwargs,
     ):
@@ -222,7 +216,7 @@ class Completor(base.BaseAnnotatorJSON):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("final_prompt",),
+        primary_keys: Sequence[str] = ("prompt",),
         annotators_config="claude-2",
         **kwargs,
     ):
@@ -251,7 +245,7 @@ class Evaluator(base.BaseAnnotatorJSON):
         self,
         *args,
         primary_keys: Sequence[str] = (
-            "final_prompt",
+            "prompt",
             "detailed_analytic_rubric",
             "output",
             "criteria",

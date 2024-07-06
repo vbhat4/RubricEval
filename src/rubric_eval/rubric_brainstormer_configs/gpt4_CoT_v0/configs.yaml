@@ -16,7 +16,7 @@ gpt4_CoT_v0:
             clear_goals:
               type: "string"
               description: "The learning objectives of the assignment."
-            # final_prompt:
+            # prompt:
             #   type: "string"
             #   description: "The prompt that defins the assignment for the model."
             criteria:

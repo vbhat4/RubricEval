@@ -161,11 +161,6 @@ def get_criteria(instructions, n_to_print: int = 0, **annot_kwargs) -> pd.DataFr
     rubric_brainstormer = RubricBrainstormer(**annot_kwargs)
     criteria = rubric_brainstormer(df_instructions)
     df_criteria = rubric_brainstormer.make_df_rubrics(criteria)
-
-    # TODO: this should probably be included in the post-processing of the rubric_brainstormer
-    # copy "prompt" column to "final_prompt" column
-    df_criteria["final_prompt"] = df_instructions["prompt"]
-
     print_rubrics(df_criteria, n_to_print)
 
     return df_criteria
@@ -175,6 +170,8 @@ def get_detailed_rubrics(criteria, n_to_print: int = 0, **annot_kwargs) -> pd.Da
     rubric_generator = RubricGenerator(**annot_kwargs)
     detailed_rubrics = rubric_generator(df_criteria)
     df_detailed_rubrics = rubric_generator.make_df_rubrics(detailed_rubrics)
+    print(f"df_detailed_rubrics.columns: {df_detailed_rubrics.columns}")
+    print(f"df_detailed_rubrics.head(): \n {df_detailed_rubrics.head()}")
 
     print_rubrics(df_detailed_rubrics, n_to_print)
 
@@ -197,7 +194,7 @@ def print_rubrics(df_rubrics, n_to_print: int = 0, chunk_prompt_limit: int = 100
         for i in range(min(len(df_rubrics), n_to_print)):
             printmd("**Example:** ", i)
             printmd("**Category:** ", df_rubrics.loc[i, "category"])
-            print_prompt(df_rubrics.loc[i, "final_prompt"], chunk_limit=chunk_prompt_limit)
+            print_prompt(df_rubrics.loc[i, "prompt"], chunk_limit=chunk_prompt_limit)
             if "clear_goals" in df_rubrics.columns:
                 printmd("\n**Clear Goals:** ", df_rubrics.loc[i, "clear_goals"])
             if "criteria" in df_rubrics.columns:
@@ -233,7 +230,7 @@ def get_model_completions(rubrics, model_name: str, n_to_print: int = 0):
 
     for completion in completions[:n_to_print]:
         printmd("**Category:** ", completion["category"])
-        printmd("\n**Prompt:**\n", completion["final_prompt"])
+        printmd("\n**Prompt:**\n", completion["prompt"])
         printmd("\n**Output:**\n", completion["output"])
         printmd("---------------------\n\n\n")
 
@@ -313,7 +310,7 @@ def visualize_correct_rubric(df_scores, n_to_print=5, is_sort_by_score=True, chu
     for i in range(min(len(df_all), n_to_print)):
         printmd("**Example**: ", i)
         printmd("**Category**: ", df_all.loc[i, "category"])
-        print_prompt(df_all.loc[i, "final_prompt"], chunk_limit=chunk_prompt_limit)
+        print_prompt(df_all.loc[i, "prompt"], chunk_limit=chunk_prompt_limit)
         printmd("\n**Output**: ", df_all.loc[i, "output"])
         printmd(
             "\n**Feedback**: ",
@@ -343,7 +340,7 @@ def summarize_results(df_scores):
 {r['category']}
 
 ## Prompt
-{r['final_prompt']}
+{r['prompt']}
 
 ## Score per rubric
 {yaml.dump({k: r['criteria_annotations'][k] + ". " + r['detailed_analytic_rubric'][k][v] for k, v in r['criteria_annotations'].items()},

@@ -49,21 +49,21 @@ def load_evals_and_clean_data(category, completor_model_name, *, run_idx=0):
     evals_NoRubric = evals_NoRubric[evals_NoRubric['session_id'].isin(allowed_session_ids)]
     evals_HELMIns = evals_HELMIns[evals_HELMIns['session_id'].isin(allowed_session_ids)]
 
-    common_final_prompts = defaultdict(int)
+    common_prompts = defaultdict(int)
 
-    for prompt in evals_RubricEval['final_prompt']:
-        common_final_prompts[prompt] += 1
-    for prompt in evals_NoRubric['final_prompt']:
-        common_final_prompts[prompt] += 1
-    for prompt in evals_HELMIns['final_prompt']:
-        common_final_prompts[prompt] += 1
+    for prompt in evals_RubricEval['prompt']:
+        common_prompts[prompt] += 1
+    for prompt in evals_NoRubric['prompt']:
+        common_prompts[prompt] += 1
+    for prompt in evals_HELMIns['prompt']:
+        common_prompts[prompt] += 1
 
     # Only keep the common prompts
-    common_final_prompts = {key: value for key, value in common_final_prompts.items() if value == 3}
+    common_prompts = {key: value for key, value in common_prompts.items() if value == 3}
 
-    evals_RubricEval = evals_RubricEval[evals_RubricEval['final_prompt'].isin(common_final_prompts.keys())].sort_values(by='final_prompt')
-    evals_NoRubric = evals_NoRubric[evals_NoRubric['final_prompt'].isin(common_final_prompts.keys())].sort_values(by='final_prompt')
-    evals_HELMIns = evals_HELMIns[evals_HELMIns['final_prompt'].isin(common_final_prompts.keys())].sort_values(by='final_prompt')
+    evals_RubricEval = evals_RubricEval[evals_RubricEval['prompt'].isin(common_prompts.keys())].sort_values(by='prompt')
+    evals_NoRubric = evals_NoRubric[evals_NoRubric['prompt'].isin(common_prompts.keys())].sort_values(by='prompt')
+    evals_HELMIns = evals_HELMIns[evals_HELMIns['prompt'].isin(common_prompts.keys())].sort_values(by='prompt')
 
     return evals_RubricEval, evals_NoRubric, evals_HELMIns
 
