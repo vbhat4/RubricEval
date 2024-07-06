@@ -81,10 +81,6 @@ def get_rubrics(
     rubric_brainstormer = RubricBrainstormer(annotators_config=rubric_generator)
     criteria = rubric_brainstormer(df)
     df_criteria = rubric_brainstormer.make_df_rubrics(criteria)
-
-    # TODO: this should probably be included in the post-processing of the rubric_brainstormer
-    # copy "prompt" column to "final_prompt" column
-    df_criteria["final_prompt"] = df_criteria["prompt"]
     
     df_rubrics = get_detailed_rubrics(df_criteria, is_store_missing_annotations=True, annotators_config=rubric_generator)
     df_rubrics = postprocess_df_rubrics(df_rubrics)

@@ -124,6 +124,12 @@ class RubricBrainstormer(BaseRubricator):
             **kwargs,
         )
 
+    def make_df_rubrics(self, annotated: Sequence[dict]) -> pd.DataFrame:
+        df = super().make_df_rubrics(annotated)
+        # copy "prompt" column to "final_prompt" column
+        df["final_prompt"] = df["prompt"]
+        return df
+
     @property
     def annotation_key(self) -> str:
         return "criteria"
