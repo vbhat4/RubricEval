@@ -23,8 +23,8 @@ import logging
 
 import fire
 
-from .helper import get_detailed_rubrics, get_model_completions, get_evaluations
-from .annotators import RubricBrainstormer
+from rubric_eval.helper import get_detailed_rubrics, get_model_completions, get_evaluations
+from rubric_eval.annotators import RubricBrainstormer
 
 CUR_DIR = Path(__file__).parent
 
@@ -102,7 +102,7 @@ def postprocess_df_rubrics(df_rubrics):
 
 def get_rubrics(
     input_df: Union[pd.DataFrame, None] = None,
-    rubric_generator = "gpt4_CoT_v0",  # TODO: is "gpt4_CoT_v0" the best default generator?
+    rubric_generator = "gpt4_CoT_v0",  # TODO: is "gpt4_CoT_v0" the best default generator? or maybe use gpt4o?
     *,
     input_path: AnyPath = "instructions.json",
     output_path: Union[AnyPath, None] = None,
@@ -128,6 +128,25 @@ def get_rubrics(
     Returns:
         Union[pd.DataFrame, None]: DataFrame containing instructions with generated rubrics. 
         If output_path is provided, the function will save the output to a file and return None.
+
+    >>> # Test with DataFrame input and output
+    >>> import pandas as pd
+    >>> input_df = pd.DataFrame({'prompt': ['Write a short story about a cat.']})
+    >>> result = get_rubrics(input_df)   # TODO(stella): we need to mock the query to OpenAI API
+    >>> isinstance(result, pd.DataFrame)
+    True
+    >>> 'scoring_scales' in result.columns
+    True
+
+    >>> # Test with file input and output
+    >>> with tempfile.TemporaryDirectory() as tmpdir:
+    ...     input_file = os.path.join(tmpdir, 'input.json')
+    ...     with open(input_file, 'w') as f:
+    ...         json.dump([{'prompt': 'Write a short story about a cat.'}], f)
+    ...     output_file = os.path.join(tmpdir, 'output.json')
+    ...     result = get_rubrics(input_path=input_file, output_path=output_file)   # TODO(stella): we need to mock the query to OpenAI API
+    ...     result is None and os.path.exists(output_file) and False
+    True
     """
     assert input_path.endswith(".json"), "only JSON format is supported"
     if input_df is not None:
@@ -185,7 +204,7 @@ def get_completions(
         df_rubrics = ae_utils.load_or_convert_to_dataframe(input_path)
     check_df_fields(
         df_rubrics,
-        required_fields={"prompt", "additional_information", "raw_completion", "scoring_scales", "criteria", "detailed_analytic_rubric"},
+        required_fields={"prompt", "additional_information", "output", "scoring_scales", "criteria", "detailed_analytic_rubric"},
     )
     completions = get_model_completions(df_rubrics, model_config)
     df_completions = ae_utils.convert_to_dataframe(completions)
@@ -236,7 +255,7 @@ def evaluate(
         df_completions = ae_utils.load_or_convert_to_dataframe(input_path)
     check_df_fields(
         df_completions,
-        required_fields={"prompt", "additional_information", "raw_completion", "scoring_scales", "criteria", "detailed_analytic_rubric"},
+        required_fields={"prompt", "additional_information", "output", "scoring_scales", "criteria", "detailed_analytic_rubric"},
     )
     df_evaluations = get_evaluations(df_completions, annotators_config=evaluator)
     eval_result["model_name"] = model_config
@@ -259,6 +278,12 @@ def evaluate(
         logger.info(f"Model card file is written to: {model_card_path}")
 
 
+def run_doctests():
+    import doctest
+    test_results = doctest.testmod(verbose=True)
+    assert test_results.attempted > 0, "No doc tests were run!"
+
+
 ALL_FUNCTIONS = {
     "get_rubrics": get_rubrics,
     "get_completions": get_completions,
@@ -278,4 +303,7 @@ def main():
 
 
 if __name__ == "__main__":
-    fire.Fire(ALL_FUNCTIONS)
+    if len(sys.argv) > 1 and sys.argv[1] == "run_doctests":
+        run_doctests()
+    else:
+        fire.Fire(ALL_FUNCTIONS)
