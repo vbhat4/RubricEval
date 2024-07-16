@@ -1,0 +1,92 @@
+[
+    {
+        "prompt":"Write a short story about a cat.",
+        "additional_information":"",
+        "criteria":[
+            {
+                "aspect":"Narrative Structure",
+                "checklist":[
+                    "Does the story have a clear beginning, middle, and end?",
+                    "Is the plot coherent and logically structured?",
+                    "Are there any plot holes or unresolved storylines?"
+                ]
+            },
+            {
+                "aspect":"Character Development",
+                "checklist":[
+                    "Is the cat's personality clearly defined?",
+                    "Does the cat undergo any development or change throughout the story?",
+                    "Are the cat's motivations and actions believable and consistent?"
+                ]
+            },
+            {
+                "aspect":"Creativity and Originality",
+                "checklist":[
+                    "Does the story offer a unique and engaging plot?",
+                    "Are there creative elements that add depth to the story, such as magical elements or unexpected twists?",
+                    "Is the story predictable, or does it surprise the reader?"
+                ]
+            },
+            {
+                "aspect":"Descriptive Language and Setting",
+                "checklist":[
+                    "Are the settings vividly described to enhance the reader's immersion?",
+                    "Does the language used effectively convey the mood and tone of the story?",
+                    "Are sensory details used to bring scenes to life?"
+                ]
+            },
+            {
+                "aspect":"General Quality",
+                "checklist":[
+                    "Is the response clear, concise, and well-organized?",
+                    "Does the story maintain the reader's interest throughout?",
+                    "Is the writing free of grammatical and spelling errors?",
+                    "Is the story safe and appropriate for all audiences?"
+                ]
+            }
+        ],
+        "scoring_scales":{
+            "Excellent":4,
+            "Good":3,
+            "Fair":2,
+            "Poor":1
+        },
+        "detailed_analytic_rubric":{
+            "Narrative Structure":{
+                "Excellent":"The story exhibits a clear and compelling beginning, middle, and end, with a coherent plot that flows logically from start to finish. There are no plot holes or unresolved storylines, and the transitions between sections are smooth, enhancing the narrative flow. For example, the beginning should introduce the cat and its world in a way that captures interest; the middle develops the cat's journey or challenge with rising action; the end provides a satisfying resolution that shows growth or change.",
+                "Good":"The story has a recognizable beginning, middle, and end, but may have minor issues with plot coherence or logical structure. Minor plot holes or unresolved storylines are present but do not significantly detract from the overall narrative. Transitions between sections might be less smooth, but the story remains understandable and engaging.",
+                "Fair":"The story has a basic structure but struggles with coherence and logical progression. Significant plot holes or unresolved storylines may confuse the reader. Transitions between sections are rough, making the narrative feel disjointed.",
+                "Poor":"The story lacks a clear or coherent structure, with significant plot holes and unresolved storylines that leave the reader confused. The narrative feels random or disjointed, with no clear beginning, middle, or end."
+            },
+            "Character Development":{
+                "Excellent":"The cat's personality is richly and clearly defined, showing significant development or change throughout the story. The cat's motivations and actions are believable and consistent, contributing to a well-rounded character. For example, the cat might start off as timid but becomes courageous by the end, with motivations and actions that support this arc.",
+                "Good":"The cat's personality is defined, and there is some development or change evident throughout the story. The cat's motivations and actions are generally believable and consistent, though there may be minor inconsistencies.",
+                "Fair":"The cat's personality is somewhat defined, but the development or change is minimal or not well executed. The cat's motivations and actions may lack believability or consistency, making the character feel less engaging.",
+                "Poor":"The cat's personality is poorly defined or not evident, with no development or change throughout the story. The cat's motivations and actions are not believable or consistent, resulting in a flat or unengaging character."
+            },
+            "Creativity and Originality":{
+                "Excellent":"The story is highly original and creative, featuring a unique and engaging plot with elements that surprise and delight the reader, such as magical elements or unexpected twists. The narrative avoids predictability, offering fresh perspectives or developments that captivate the reader's imagination. For example, the story could introduce a magical ability the cat discovers, leading to unforeseen adventures.",
+                "Good":"The story is somewhat original and creative, with some unique elements that add depth to the narrative. While there may be some predictable moments, the story includes enough surprises or creative twists to keep the reader engaged.",
+                "Fair":"The story shows limited originality and creativity, with a plot that feels somewhat familiar or predictable. Creative elements are minimal or not effectively integrated, resulting in a story that lacks depth and fails to fully engage the reader's imagination.",
+                "Poor":"The story lacks originality and creativity, with a predictable plot and no unique elements or twists. It fails to surprise or engage the reader, feeling derivative and uninspired."
+            },
+            "Descriptive Language and Setting":{
+                "Excellent":"The settings are vividly described, significantly enhancing the reader's immersion. The language used effectively conveys the mood and tone of the story, with sensory details that bring scenes to life. For example, descriptions of the cat's home or adventures should allow the reader to visualize the scene clearly, feeling the textures, smells, and sounds.",
+                "Good":"The settings are described well enough to aid the reader's immersion, and the language conveys the mood and tone of the story. Sensory details are used, but may not be as vivid or as effectively integrated as in the highest quality responses.",
+                "Fair":"The descriptions of settings are basic, providing some sense of place but lacking vivid detail. The language used is functional but fails to fully convey the mood or tone of the story. Sensory details are sparse, making scenes feel flat.",
+                "Poor":"The settings are poorly described or not described at all, offering little to no immersion for the reader. The language used is ineffective at conveying mood or tone, and sensory details are absent, leaving scenes feeling lifeless and unengaging."
+            },
+            "General Quality":{
+                "Excellent":"The response is clear, concise, and well-organized, maintaining the reader's interest throughout. The writing is free of grammatical and spelling errors, and the story is safe and appropriate for all audiences. For example, the narrative should flow smoothly, with each sentence contributing to the development of the story, and the language should be polished and precise.",
+                "Good":"The response is mostly clear and organized, but may have minor issues with clarity or organization that slightly detract from the reader's interest. There are few grammatical or spelling errors, and the story is safe and appropriate for all audiences.",
+                "Fair":"The response has issues with clarity, conciseness, or organization, affecting the reader's interest. There are noticeable grammatical or spelling errors, but the story remains safe and appropriate for all audiences.",
+                "Poor":"The response is unclear, disorganized, and difficult to follow, with numerous grammatical and spelling errors. The story may not be safe or appropriate for all audiences, detracting significantly from the overall quality."
+            }
+        },
+        "annotator":"gpt-4o-2024-05-13",
+        "output":"Once upon a time in a quaint village nestled between rolling hills and whispering forests, there lived a curious and adventurous cat named Whiskers. Whiskers was not like any other cat in the village; he had a unique coat of silvery fur that shimmered under the sunlight and glowed softly in the moonlight.\n\nWhiskers belonged to an elderly woman named Mrs. Willow, who had been his companion ever since he was a tiny kitten. Mrs. Willow's cottage was a treasure trove of secrets, with ancient books, peculiar artifacts, and jars filled with mysterious concoctions. Whiskers loved to explore every nook and cranny of the cottage, but his true passion lay beyond its walls.\n\nEvery morning, as the first rays of dawn kissed the horizon, Whiskers would slip through the slightly ajar window and embark on his daily adventure. He would traverse the cobbled streets of the village, greet the milkman who always had a special treat for him, and then head towards the edge of the forest.\n\nOne day, as Whiskers ventured deeper into the forest than ever before, he stumbled upon an enchanting scene. In a small clearing bathed in golden sunlight, there was an ancient oak tree with a door carved into its trunk. Intrigued, Whiskers approached the door, which seemed to beckon him with an invisible force. With a slight nudge of his paw, the door creaked open, revealing a spiral staircase leading down into the earth.\n\nWhiskers' heart raced with excitement as he descended the staircase. At the bottom, he found himself in a vast underground chamber filled with glittering crystals and glowing fungi. In the center of the chamber stood a pedestal with a beautifully ornate collar resting on it. The collar was adorned with a single, radiant gemstone that pulsed with a gentle light.\n\nDrawn to the collar, Whiskers approached it cautiously. As he touched it with his paw, a warm and soothing energy enveloped him. The collar floated up and gently wrapped itself around his neck. Instantly, Whiskers felt a surge of strength and agility coursing through him. The collar had bestowed upon him the ancient powers of the forest guardians.\n\nWith his newfound abilities, Whiskers realized that he had a duty to protect the forest and its inhabitants. He returned to the village, but his adventures took on a new purpose. By day, he was the beloved village cat who brought joy to everyone he met. By night, he patrolled the forest, ensuring that harmony was maintained and that no harm befell the magical creatures that resided there.\n\nWord of the mysterious guardian of the forest spread throughout the village, but no one suspected that their very own Whiskers was the hero. Mrs. Willow, though, always seemed to know more than she let on. She would often smile knowingly as Whiskers returned from his nightly patrols, his silvery fur glistening with an otherworldly glow.\n\nAnd so, the legend of Whiskers, the guardian cat, grew, and he became a symbol of hope and protection for both the village and the enchanted forest. Whiskers had found his true calling, and he embraced it with all his heart, forever bound to the magic and wonder of the world he had discovered.",
+        "price_per_example":0.02085,
+        "time_per_example":11.377789259,
+        "raw_completion":"Once upon a time in a quaint village nestled between rolling hills and whispering forests, there lived a curious and adventurous cat named Whiskers. Whiskers was not like any other cat in the village; he had a unique coat of silvery fur that shimmered under the sunlight and glowed softly in the moonlight.\n\nWhiskers belonged to an elderly woman named Mrs. Willow, who had been his companion ever since he was a tiny kitten. Mrs. Willow's cottage was a treasure trove of secrets, with ancient books, peculiar artifacts, and jars filled with mysterious concoctions. Whiskers loved to explore every nook and cranny of the cottage, but his true passion lay beyond its walls.\n\nEvery morning, as the first rays of dawn kissed the horizon, Whiskers would slip through the slightly ajar window and embark on his daily adventure. He would traverse the cobbled streets of the village, greet the milkman who always had a special treat for him, and then head towards the edge of the forest.\n\nOne day, as Whiskers ventured deeper into the forest than ever before, he stumbled upon an enchanting scene. In a small clearing bathed in golden sunlight, there was an ancient oak tree with a door carved into its trunk. Intrigued, Whiskers approached the door, which seemed to beckon him with an invisible force. With a slight nudge of his paw, the door creaked open, revealing a spiral staircase leading down into the earth.\n\nWhiskers' heart raced with excitement as he descended the staircase. At the bottom, he found himself in a vast underground chamber filled with glittering crystals and glowing fungi. In the center of the chamber stood a pedestal with a beautifully ornate collar resting on it. The collar was adorned with a single, radiant gemstone that pulsed with a gentle light.\n\nDrawn to the collar, Whiskers approached it cautiously. As he touched it with his paw, a warm and soothing energy enveloped him. The collar floated up and gently wrapped itself around his neck. Instantly, Whiskers felt a surge of strength and agility coursing through him. The collar had bestowed upon him the ancient powers of the forest guardians.\n\nWith his newfound abilities, Whiskers realized that he had a duty to protect the forest and its inhabitants. He returned to the village, but his adventures took on a new purpose. By day, he was the beloved village cat who brought joy to everyone he met. By night, he patrolled the forest, ensuring that harmony was maintained and that no harm befell the magical creatures that resided there.\n\nWord of the mysterious guardian of the forest spread throughout the village, but no one suspected that their very own Whiskers was the hero. Mrs. Willow, though, always seemed to know more than she let on. She would often smile knowingly as Whiskers returned from his nightly patrols, his silvery fur glistening with an otherworldly glow.\n\nAnd so, the legend of Whiskers, the guardian cat, grew, and he became a symbol of hope and protection for both the village and the enchanted forest. Whiskers had found his true calling, and he embraced it with all his heart, forever bound to the magic and wonder of the world he had discovered."
+    }
+]

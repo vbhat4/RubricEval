@@ -7,6 +7,7 @@ How to run:
 4. rubric_eval get_rubrics --input_path=instructions.json
 5. rubric_eval get_completions --model_config=gpt-4o-2024-05-13 --input_path=instructions_with_rubrics.json
 6. rubric_eval --model_config=gpt-4o-2024-05-13 --input_path=completions.json
+7. To run doctest: `python src/rubric_eval/main.py run_doctests`
 """
 
 
@@ -132,23 +133,26 @@ def get_rubrics(
     >>> # Test with DataFrame input and output
     >>> import pandas as pd
     >>> input_df = pd.DataFrame({'prompt': ['Write a short story about a cat.']})
-    >>> result = get_rubrics(input_df)   # TODO(stella): we need to mock the query to OpenAI API
-    >>> isinstance(result, pd.DataFrame)
+    >>> output_df = get_rubrics(input_df)
+    >>> isinstance(output_df, pd.DataFrame)
     True
-    >>> 'scoring_scales' in result.columns
+    >>> 'scoring_scales' in output_df.columns
     True
 
     >>> # Test with file input and output
+    >>> import tempfile, os, json
+    >>> from pathlib import Path
     >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     input_file = os.path.join(tmpdir, 'input.json')
-    ...     with open(input_file, 'w') as f:
+    ...     input_path = Path(tmpdir) / 'input.json'
+    ...     with open(input_path, 'w') as f:
     ...         json.dump([{'prompt': 'Write a short story about a cat.'}], f)
-    ...     output_file = os.path.join(tmpdir, 'output.json')
-    ...     result = get_rubrics(input_path=input_file, output_path=output_file)   # TODO(stella): we need to mock the query to OpenAI API
-    ...     result is None and os.path.exists(output_file) and False
+    ...     output_path = Path(tmpdir) / 'output.json'
+    ...     get_rubrics(input_path=input_path, output_path=output_path)
+    ...     output_df = pd.read_json(output_path)
+    ...     'scoring_scales' in output_df.columns
     True
     """
-    assert input_path.endswith(".json"), "only JSON format is supported"
+    assert str(input_path).endswith(".json"), "only JSON format is supported"
     if input_df is not None:
         df = input_df
     else:
@@ -196,15 +200,37 @@ def get_completions(
     Returns:
         Union[pd.DataFrame, None]: DataFrame containing generated completions. If output_path 
         is provided, the function will save the output to a file and return None.
+
+    >>> # Test with DataFrame input and output
+    >>> import pandas as pd
+    >>> from pathlib import Path
+    >>> input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'instructions_with_rubrics.json'
+    >>> input_df = pd.read_json(input_path)
+    >>> output_df = get_completions("gpt-4o-2024-05-13", input_df)
+    >>> isinstance(output_df, pd.DataFrame)
+    True
+    >>> 'output' in output_df.columns
+    True
+
+    >>> # Test with file input and output
+    >>> import tempfile, os, json
+    >>> from pathlib import Path
+    >>> with tempfile.TemporaryDirectory() as tmpdir:
+    ...     input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'instructions_with_rubrics.json'
+    ...     output_path = Path(tmpdir) / 'output.json'
+    ...     get_completions("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
+    ...     output_df = pd.read_json(output_path)
+    ...     'output' in output_df.columns
+    True
     """
-    assert input_path.endswith(".json"), "only JSON format is supported"
+    assert str(input_path).endswith(".json"), "only JSON format is supported"
     if input_df is not None:
         df_rubrics = input_df
     else:
         df_rubrics = ae_utils.load_or_convert_to_dataframe(input_path)
     check_df_fields(
         df_rubrics,
-        required_fields={"prompt", "additional_information", "output", "scoring_scales", "criteria", "detailed_analytic_rubric"},
+        required_fields={"prompt", "additional_information", "scoring_scales", "criteria", "detailed_analytic_rubric"},
     )
     completions = get_model_completions(df_rubrics, model_config)
     df_completions = ae_utils.convert_to_dataframe(completions)
@@ -246,6 +272,28 @@ def evaluate(
     Returns:
         Union[pd.DataFrame, None]: DataFrame containing evaluation results. If output_path is
         provided, the function will save the output to files and return None.
+    
+    >>> # Test with DataFrame input and output
+    >>> import pandas as pd
+    >>> from pathlib import Path
+    >>> input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'completions.json'
+    >>> input_df = pd.read_json(input_path)
+    >>> output_df = evaluate("gpt-4o-2024-05-13", input_df)
+    >>> isinstance(output_df, pd.DataFrame)
+    True
+    >>> 'criteria_scores' in output_df.columns
+    True
+
+    # >>> # Test with file input and output
+    # >>> import tempfile, os, json
+    # >>> from pathlib import Path
+    # >>> with tempfile.TemporaryDirectory() as tmpdir:
+    # ...     input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'completions.json'
+    # ...     output_path = Path(tmpdir) / 'output.json'
+    # ...     evaluate("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
+    # ...     output_df = pd.read_json(output_path)
+    # ...     'criteria_scores' in output_df.columns
+    # True
     """
     
     eval_result = {}
@@ -281,7 +329,7 @@ def evaluate(
 def run_doctests():
     import doctest
     test_results = doctest.testmod(verbose=True)
-    assert test_results.attempted > 0, "No doc tests were run!"
+    assert test_results.attempted > 0, "No doctests were run!"
 
 
 ALL_FUNCTIONS = {

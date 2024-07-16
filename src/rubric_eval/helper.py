@@ -170,8 +170,6 @@ def get_detailed_rubrics(criteria, n_to_print: int = 0, **annot_kwargs) -> pd.Da
     rubric_generator = RubricGenerator(**annot_kwargs)
     detailed_rubrics = rubric_generator(df_criteria)
     df_detailed_rubrics = rubric_generator.make_df_rubrics(detailed_rubrics)
-    print(f"df_detailed_rubrics.columns: {df_detailed_rubrics.columns}")
-    print(f"df_detailed_rubrics.head(): \n {df_detailed_rubrics.head()}")
 
     print_rubrics(df_detailed_rubrics, n_to_print)
 
@@ -245,13 +243,7 @@ def get_evaluations(completions, **kwargs):
     df_scores = ae_utils.convert_to_dataframe(scores).query(
         "not output.isin(['', ' '])"
     )
-    if len(completions) != len(df_scores):
-        printmd(
-            f"Warning: {len(completions) - len(df_scores)} completions had to be dropped due to empty output."
-        )
     df_scores = df_scores.dropna(subset=['criteria_scores'])
-
-    print(f"criteria_scores str type: \n{df_scores[df_scores['criteria_scores'].apply(lambda x: isinstance(x, str))]}")
 
     def calc_mean_with_exception_handling(x):
         x_value_set = set(x.values())
@@ -266,7 +258,6 @@ def get_evaluations(completions, **kwargs):
 
     df_scores["avg_score"] = df_scores["criteria_scores"].apply(calc_mean_with_exception_handling)
     df_scores = df_scores[df_scores['avg_score'].notnull()]
-    printmd(completions.iloc[0]["annotator"], df_scores["avg_score"].mean())
 
     def get_criteria_annotation(s):
         ret = {}
