@@ -204,7 +204,8 @@ def get_completions(
     >>> # Test with DataFrame input and output
     >>> import pandas as pd
     >>> from pathlib import Path
-    >>> input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'instructions_with_rubrics.json'
+    >>> from os.path import dirname, abspath
+    >>> input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'instructions_with_rubrics.json'
     >>> input_df = pd.read_json(input_path)
     >>> output_df = get_completions("gpt-4o-2024-05-13", input_df)
     >>> isinstance(output_df, pd.DataFrame)
@@ -215,8 +216,9 @@ def get_completions(
     >>> # Test with file input and output
     >>> import tempfile, os, json
     >>> from pathlib import Path
+    >>> from os.path import dirname, abspath
     >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'instructions_with_rubrics.json'
+    ...     input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'instructions_with_rubrics.json'
     ...     output_path = Path(tmpdir) / 'output.json'
     ...     get_completions("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
     ...     output_df = pd.read_json(output_path)
@@ -276,7 +278,8 @@ def evaluate(
     >>> # Test with DataFrame input and output
     >>> import pandas as pd
     >>> from pathlib import Path
-    >>> input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'completions.json'
+    >>> from os.path import dirname, abspath
+    >>> input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'completions.json'
     >>> input_df = pd.read_json(input_path)
     >>> output_df = evaluate("gpt-4o-2024-05-13", input_df)
     >>> isinstance(output_df, pd.DataFrame)
@@ -284,16 +287,17 @@ def evaluate(
     >>> 'criteria_scores' in output_df.columns
     True
 
-    # >>> # Test with file input and output
-    # >>> import tempfile, os, json
-    # >>> from pathlib import Path
-    # >>> with tempfile.TemporaryDirectory() as tmpdir:
-    # ...     input_path = Path(os.path.dirname(os.path.abspath(__file__))) / 'test_data' / 'completions.json'
-    # ...     output_path = Path(tmpdir) / 'output.json'
-    # ...     evaluate("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
-    # ...     output_df = pd.read_json(output_path)
-    # ...     'criteria_scores' in output_df.columns
-    # True
+    >>> # Test with file input and output
+    >>> import tempfile, os, json
+    >>> from pathlib import Path
+    >>> from os.path import dirname, abspath
+    >>> with tempfile.TemporaryDirectory() as tmpdir:
+    ...     input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'completions.json'
+    ...     output_path = Path(tmpdir) / 'output.json'
+    ...     evaluate("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
+    ...     output_df = pd.read_json(output_path)
+    ...     'criteria_scores' in output_df.columns
+    True
     """
     
     eval_result = {}
