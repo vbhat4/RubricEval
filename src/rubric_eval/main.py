@@ -107,6 +107,7 @@ def get_rubrics(
     *,
     input_path: AnyPath = "instructions.json",
     output_path: Union[AnyPath, None] = None,
+    cache_dir: Union[AnyPath, None] = "auto",
 ) -> Union[pd.DataFrame, None]:
     """
     Generate detailed rubrics for given instructions.
@@ -125,6 +126,9 @@ def get_rubrics(
         output_path (Union[AnyPath, None], optional): Path to save the output JSON file 
             containing instructions with generated rubrics. If None, the output will not be 
             saved to a file. Defaults to None.
+        cache_dir (Union[AnyPath, None], optional): Path to cache the annotations to.
+            If None, will not save the annotations. If the path already exists it will
+            load annotations from there. Defaults to "auto".
 
     Returns:
         Union[pd.DataFrame, None]: DataFrame containing instructions with generated rubrics. 
@@ -158,11 +162,14 @@ def get_rubrics(
     else:
         df = ae_utils.load_or_convert_to_dataframe(input_path)
     df = preprocess_df_instructions(df)
-    rubric_brainstormer = RubricBrainstormer(annotators_config=rubric_generator)
+    caching_path = cache_dir
+    if cache_dir is not None and cache_dir != "auto":
+        caching_path = Path(cache_dir) / "rubric_brainstormer_configs.json"
+    rubric_brainstormer = RubricBrainstormer(annotators_config=rubric_generator, caching_path=caching_path)
     criteria = rubric_brainstormer(df)
     df_criteria = rubric_brainstormer.make_df_rubrics(criteria)
     
-    df_rubrics = get_detailed_rubrics(df_criteria, is_store_missing_annotations=True, annotators_config=rubric_generator)
+    df_rubrics = get_detailed_rubrics(df_criteria, is_store_missing_annotations=True, annotators_config=rubric_generator, cache_dir=cache_dir)
     df_rubrics = postprocess_df_rubrics(df_rubrics)
     if input_df is not None:
         return df_rubrics
@@ -179,6 +186,7 @@ def get_completions(
     *,
     input_path: AnyPath = "instructions_with_rubrics.json",
     output_path: Union[AnyPath, None] = None,
+    cache_dir: Union[AnyPath, None] = "auto",
 ):
     """
     Generate model completions for given instructions and rubrics.
@@ -196,6 +204,9 @@ def get_completions(
         output_path (Union[AnyPath, None], optional): Path to save the output JSON file 
             containing generated completions. If None, the output will not be saved to a file.
             Defaults to None.
+        cache_dir (Union[AnyPath, None], optional): Path to cache the annotations to.
+            If None, will not save the annotations. If the path already exists it will
+            load annotations from there. Defaults to "auto".
 
     Returns:
         Union[pd.DataFrame, None]: DataFrame containing generated completions. If output_path 
@@ -234,7 +245,7 @@ def get_completions(
         df_rubrics,
         required_fields={"prompt", "additional_information", "scoring_scales", "criteria", "detailed_analytic_rubric"},
     )
-    completions = get_model_completions(df_rubrics, model_config)
+    completions = get_model_completions(df_rubrics, model_config, cache_dir=cache_dir)
     df_completions = ae_utils.convert_to_dataframe(completions)
     if input_df is not None:
         return df_completions
@@ -252,6 +263,7 @@ def evaluate(
     *,
     input_path: AnyPath = "completions.json",
     output_path: Union[AnyPath, None] = None,
+    cache_dir: Union[AnyPath, None] = "auto",
 ):
     """
     Evaluate model completions using generated rubrics.
@@ -270,6 +282,9 @@ def evaluate(
         output_path (Union[AnyPath, None], optional): Path to save the output JSON files 
             containing evaluation results and model card. If None, the output will not be saved 
             to files. Defaults to None.
+        cache_dir (Union[AnyPath, None], optional): Path to cache the annotations to.
+            If None, will not save the annotations. If the path already exists it will
+            load annotations from there. Defaults to "auto".
 
     Returns:
         Union[pd.DataFrame, None]: DataFrame containing evaluation results. If output_path is
@@ -309,7 +324,7 @@ def evaluate(
         df_completions,
         required_fields={"prompt", "additional_information", "output", "scoring_scales", "criteria", "detailed_analytic_rubric"},
     )
-    df_evaluations = get_evaluations(df_completions, annotators_config=evaluator)
+    df_evaluations = get_evaluations(df_completions, annotators_config=evaluator, cache_dir=cache_dir)
     eval_result["model_name"] = model_config
     eval_result["evaluator"] = evaluator
     eval_result["num_evaluations"] = len(df_evaluations)

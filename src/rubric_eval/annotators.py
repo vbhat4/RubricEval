@@ -7,7 +7,7 @@ import pandas as pd
 
 from alpaca_eval.annotators import base
 
-__all__ = ["Instructionator", "RubricBrainstormer", "RubricGenerator", "Rubricator", "Completor", "Evaluator"]
+__all__ = ["Instructionator", "RubricBrainstormer", "RubricGenerator", "Completor", "Evaluator"]
 
 
 class Instructionator(base.BaseAnnotatorJSON):
@@ -153,18 +153,6 @@ class RubricGenerator(BaseRubricator):
     @property
     def annotation_key(self) -> str:
         return "detailed_rubric"
-
-
-class Rubricator(BaseRubricator):
-    __doc__ = base.BaseAnnotatorJSON.__doc__.replace(
-        "Base class for a pool of annotators.",
-        "Auto annotator for writing the rubric.",
-    )
-    DEFAULT_BASE_DIR = Path(__file__).parent / "rubricator_configs"
-
-    @property
-    def annotation_key(self) -> str:
-        return "assignment_and_rubric"
 
 
 class InstructionDifficultyEstimator(base.BaseAnnotatorJSON):
