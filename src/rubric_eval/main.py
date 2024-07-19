@@ -104,7 +104,7 @@ def postprocess_df_rubrics(df_rubrics):
 
 def get_rubrics(
     input_df: Union[pd.DataFrame, None] = None,
-    rubric_generator = "gpt4_CoT_v0",  # TODO: is "gpt4_CoT_v0" the best default generator? or maybe use gpt4o?
+    rubric_generator = "gpt-4o-2024-05-13_CoT_v0",
     *,
     input_path: AnyPath = "instructions.json",
     output_path: Union[AnyPath, None] = None,
@@ -121,7 +121,7 @@ def get_rubrics(
             If provided, the function will use this DataFrame instead of loading from a file. 
             Defaults to None.
         rubric_generator (str, optional): Configuration for the rubric generator. 
-            Defaults to "gpt4_CoT_v0".
+            Defaults to "gpt-4o-2024-05-13_CoT_v0".
         input_path (AnyPath, optional): Path to the input JSON file containing instructions. 
             Defaults to "instructions.json".
         output_path (Union[AnyPath, None], optional): Path to save the output JSON file 
@@ -256,7 +256,7 @@ def get_completions(
 def evaluate(
     model_config: str,
     input_df: Union[pd.DataFrame, None] = None,
-    evaluator: str = "gpt4_CoT_v0",
+    evaluator: str = "gpt-4o-2024-05-13_CoT_v0",
     *,
     input_path: AnyPath = "completions.json",
     output_path: Union[AnyPath, None] = None,
@@ -273,7 +273,7 @@ def evaluate(
         input_df (Union[pd.DataFrame, None], optional): Input DataFrame containing completions 
             and rubrics. If provided, the function will use this DataFrame instead of loading
             from a file. Defaults to None.
-        evaluator (str, optional): Configuration for the evaluator. Defaults to "gpt4_CoT_v0".
+        evaluator (str, optional): Configuration for the evaluator. Defaults to "gpt-4o-2024-05-13_CoT_v0".
         input_path (AnyPath, optional): Path to the input JSON file containing completions and
             rubrics. Defaults to "completions.json".
         output_path (Union[AnyPath, None], optional): Path to save the output JSON files 

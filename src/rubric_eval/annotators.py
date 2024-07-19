@@ -39,7 +39,7 @@ class Instructionator(base.BaseAnnotatorJSON):
         self,
         *args,
         primary_keys: Sequence[str] = ("n", "category", "categories"),
-        annotators_config: str = "gpt4_CoT_v0",
+        annotators_config: str = "gpt-4o-2024-05-13_CoT_v0",
         **kwargs,
     ):
         super().__init__(
@@ -73,7 +73,7 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         self,
         *args,
         primary_keys: Sequence[str] = ("prompt",),
-        annotators_config="gpt4_CoT_v0",
+        annotators_config="gpt-4o-2024-05-13_CoT_v0",
         **kwargs,
     ):
         super().__init__(
@@ -114,7 +114,7 @@ class RubricBrainstormer(BaseRubricator):
         self,
         *args,
         primary_keys: Sequence[str] = ("prompt", "additional_information"),
-        annotators_config="gpt4_CoT_v0",
+        annotators_config="gpt-4o-2024-05-13_CoT_v0",
         **kwargs,
     ):
         super().__init__(
@@ -140,7 +140,7 @@ class RubricGenerator(BaseRubricator):
         self,
         *args,
         primary_keys: Sequence[str] = ("prompt", "clear_goals", "criteria"),
-        annotators_config="gpt4_CoT_v0",
+        annotators_config="gpt-4o-2024-05-13_CoT_v0",
         **kwargs,
     ):
         super().__init__(
@@ -168,7 +168,7 @@ class InstructionDifficultyEstimator(base.BaseAnnotatorJSON):
         self,
         *args,
         primary_keys: Sequence[str] = ("promptA", "promptB"),
-        annotators_config="gpt4_CoT_v0",
+        annotators_config="gpt-4o-2024-05-13_CoT_v0",
         **kwargs,
     ):
         super().__init__(
@@ -239,7 +239,7 @@ class Evaluator(base.BaseAnnotatorJSON):
             "criteria",
             "scoring_scales",
         ),
-        annotators_config="gpt4_CoT_v0",
+        annotators_config="gpt-4o-2024-05-13_CoT_v0",
         **kwargs,
     ):
         super().__init__(

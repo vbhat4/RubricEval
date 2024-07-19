@@ -5,7 +5,7 @@ from alpaca_eval.types import AnyPath
 
 
 def create_example_instructions(output_path: Optional[AnyPath] = None):
-    n_max_examples = 2
+    n_max_examples = 5
     category = "Planning"
     instruction_set = "wildbench-v1"
     df_instructions = get_instructions(

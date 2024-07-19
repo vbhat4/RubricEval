@@ -1,3 +1,0 @@
-# time TOGETHER_API_KEY=58637769cd56c8e39adbbafeb3f2dffaaf471247cc072d7444032de2b9b109aa python scripts/run_all_HELMInstruct_rerun5.py >output1_HELMInstruct_rerun5.txt 2>&1
-
-time TOGETHER_API_KEY=58637769cd56c8e39adbbafeb3f2dffaaf471247cc072d7444032de2b9b109aa python scripts/run_all.py  >output2.txt 2>&1 
