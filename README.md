@@ -20,13 +20,29 @@ Then you can use it as follows:
 
 ```bash
 export OPENAI_API_KEY=<your_api_key> # for more complex configs, e.g. using Azure or switching clients see https://github.com/tatsu-lab/alpaca_eval/tree/main/client_configs/README.md 
-python scripts/create_example_instructions.py instructions.json  # This will generate an example instructions.json
-rubric_eval get_rubrics --input_path=instructions.json --output_path=instructions_with_rubrics.json
-rubric_eval get_completions --model_config=gpt-4o-2024-05-13 --input_path=instructions_with_rubrics.json --output_path=completions.json
-rubric_eval --model_config=gpt-4o-2024-05-13 --input_path=completions.json --output_path=evaluations.json
+
+# This will generate an example instructions.json
+python scripts/create_example_instructions.py instructions.json
+
+# Generate rubrics based on provided instructions
+rubric_eval get_rubrics \
+--input_path=instructions.json \
+--output_path=instructions_with_rubrics.json
+
+# Generate completions based on provided instructions
+rubric_eval get_completions \
+--model_config=gpt-4o-2024-05-13 \
+--input_path=instructions_with_rubrics.json \
+--output_path=completions.json
+
+# Generate evaluations based on provided completions
+rubric_eval \
+--model_config=gpt-4o-2024-05-13 \
+--input_path=completions.json \
+--output_path=evaluations.json
 ```
 
-It should create a `model_card.json` file at your current working directory (along with other files such as `evaluations.json`).
+It should create a `model_card.json` file at your current working directory.
 The content of `model_card.json` should look like:
 ```bash
 $ cat model_card.json
@@ -51,6 +67,7 @@ The pipeline for the project is as follows:
      - (1) models can't evaluate on their own (but can apply the rubric)
      - (2) experts are expensive and can thus not do all the evaluations on their own
      - (3) the final use case is high-stakes and thus require highly trusted benchmark and interpretability in the results. E.g. of domains that are well suited: law, medical, finance, etc. 
+   - **Benchmark** One convenient dataset is [WildBench](https://huggingface.co/datasets/allenai/WildBench), which has the benefit of having a per-instance "checklist" column. We filtered those down (using `scripts/filter_wildbench.py`) to only include a subset of 391 challenging instructions.  The desired filtered data is in `data/benchmark/wildbench_checklist/filtered_prompts.json`.
 2. **Brainstorming the rubrics** given the instruction and additional information, an LLM or an expert could write some high-level rubric as seen below.
 ![rubric_brainstorming.png](figures%2Frubric_brainstorming.png)
     - **Real-world** in the real-world the additional cost of having experts write the high-level rubrics is minimal compared to adding a checklist (the only difference is that it has to be structured by different axes. Our belief is that having expert-written high-level rubrics would give much more realistic final rubrics and thus be worth the cost.
