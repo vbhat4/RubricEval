@@ -75,10 +75,3 @@ gpt-4o-2024-05-13_CoT_v0: # should be the name of the directory
     # ...
   fn_completion_parser: "json_parser" # how to parse the completions. typically json parser.
 ```
-- `notebooks`
-  - `initial_wildbench.ipynb` some initial experiments with WildBench data. This should show you all the steps to run the pipeline. It may not be fully up to date, and can have some minor issues.
-  - `old_alpacaeval` older notebook that used AlpacaEval instructions
-  - `old_auto` older notebook that used auto-generated instructions
-- `data` some potentially preprocessed data
-  - `wildbench_checklist/filtered_prompts.json` data filtered from WildBench
-  - `wildbench_no_checklist/*.json` filtered data, and generated rubrics for the case where we don't use the checklist. This could be used for understanding how useful a checklist is (and how much the results change when in both cases). I don't think it's high priority though.
