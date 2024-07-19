@@ -7,7 +7,6 @@ How to run:
 4. rubric_eval get_rubrics --input_path=instructions.json
 5. rubric_eval get_completions --model_config=gpt-4o-2024-05-13 --input_path=instructions_with_rubrics.json
 6. rubric_eval --model_config=gpt-4o-2024-05-13 --input_path=completions.json
-7. To run doctest: `python src/rubric_eval/main.py run_doctests`
 """
 
 
@@ -138,21 +137,21 @@ def get_rubrics(
 
     >>> # Test with DataFrame input and output
     >>> import pandas as pd
-    >>> input_df = pd.DataFrame({'prompt': ['Write a short story about a cat.']})
-    >>> output_df = get_rubrics(input_df)
-    >>> 'scoring_scales' in output_df.columns
+    >>> df_instructions = pd.DataFrame({'prompt': ['Write a short story about a cat.']})
+    >>> df_rubrics = get_rubrics(df_instructions)
+    >>> 'scoring_scales' in df_rubrics.columns
     True
 
     >>> # Test with file input and output
     >>> import tempfile, os, json
     >>> from pathlib import Path
     >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     input_path = Path(tmpdir) / 'input.json'
-    ...     with open(input_path, 'w') as f:
+    ...     instructions_path = Path(tmpdir) / 'instructions.json'
+    ...     with open(instructions_path, 'w') as f:
     ...         json.dump([{'prompt': 'Write a short story about a cat.'}], f)
-    ...     output_path = Path(tmpdir) / 'output.json'
-    ...     get_rubrics(input_path=input_path, output_path=output_path)
-    ...     output_df = pd.read_json(output_path)
+    ...     instructions_with_rubrics_path = Path(tmpdir) / 'instructions_with_rubrics.json'
+    ...     get_rubrics(input_path=instructions_path, output_path=instructions_with_rubrics_path)
+    ...     output_df = pd.read_json(instructions_with_rubrics_path)
     ...     'scoring_scales' in output_df.columns
     True
     """
@@ -216,10 +215,10 @@ def get_completions(
     >>> import pandas as pd
     >>> from pathlib import Path
     >>> from os.path import dirname, abspath
-    >>> input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'instructions_with_rubrics.json'
-    >>> input_df = pd.read_json(input_path)
-    >>> output_df = get_completions("gpt-4o-2024-05-13", input_df)
-    >>> 'output' in output_df.columns
+    >>> instructions_with_rubrics_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'instructions_with_rubrics.json'
+    >>> df_rubrics = pd.read_json(instructions_with_rubrics_path)
+    >>> df_completions = get_completions("gpt-4o-2024-05-13", df_rubrics)
+    >>> 'output' in df_completions.columns
     True
 
     >>> # Test with file input and output
@@ -227,11 +226,11 @@ def get_completions(
     >>> from pathlib import Path
     >>> from os.path import dirname, abspath
     >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'instructions_with_rubrics.json'
-    ...     output_path = Path(tmpdir) / 'output.json'
-    ...     get_completions("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
-    ...     output_df = pd.read_json(output_path)
-    ...     'output' in output_df.columns
+    ...     instructions_with_rubrics_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'instructions_with_rubrics.json'
+    ...     completions_path = Path(tmpdir) / 'completions.json'
+    ...     get_completions("gpt-4o-2024-05-13", input_path=instructions_with_rubrics_path, output_path=completions_path)
+    ...     df_completions = pd.read_json(completions_path)
+    ...     'output' in df_completions.columns
     True
     """
     assert str(input_path).endswith(".json"), "only JSON format is supported"
@@ -292,12 +291,12 @@ def evaluate(
     >>> import pandas as pd
     >>> from pathlib import Path
     >>> from os.path import dirname, abspath
-    >>> input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'completions.json'
-    >>> input_df = pd.read_json(input_path)
-    >>> output_df, model_card_df = evaluate("gpt-4o-2024-05-13", input_df)
-    >>> 'criteria_scores' in output_df.columns
+    >>> completions_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'completions.json'
+    >>> df_completions = pd.read_json(completions_path)
+    >>> df_evaluations, df_model_card = evaluate("gpt-4o-2024-05-13", df_completions)
+    >>> 'criteria_scores' in df_evaluations.columns
     True
-    >>> 'mean_of_avg_score' in model_card_df.columns
+    >>> 'mean_of_avg_score' in df_model_card.columns
     True
 
     >>> # Test with file input and output
@@ -305,15 +304,15 @@ def evaluate(
     >>> from pathlib import Path
     >>> from os.path import dirname, abspath
     >>> with tempfile.TemporaryDirectory() as tmpdir:
-    ...     input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'completions.json'
-    ...     output_path = Path(tmpdir) / 'output.json'
-    ...     evaluate("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
-    ...     output_df = pd.read_json(output_path)
-    ...     'criteria_scores' in output_df.columns
+    ...     completions_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'completions.json'
+    ...     evaluations_path = Path(tmpdir) / 'evaluations.json'
+    ...     evaluate("gpt-4o-2024-05-13", input_path=completions_path, output_path=evaluations_path)
+    ...     df_evaluations = pd.read_json(evaluations_path)
+    ...     'criteria_scores' in df_evaluations.columns
     True
     ...     model_card_path = Path(tmpdir) / 'model_card.json'
-    ...     model_card_df = pd.read_json(model_card_path)
-    ...     'mean_of_avg_score' in model_card_df.columns
+    ...     df_model_card = pd.read_json(model_card_path)
+    ...     'mean_of_avg_score' in df_model_card.columns
     True
     """
     
