@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 from rubric_eval.main import get_rubrics, get_completions, evaluate
-from scripts.create_example_instructions import create_example_instructions
+from rubric_eval.helper import get_instructions
 
 
 def check_evaluate_outputs(evaluations, model_card):
@@ -26,7 +26,16 @@ def check_evaluate_outputs(evaluations, model_card):
 
 class TestIntegration(unittest.TestCase):
     def test_integration(self):
-        df_instructions = create_example_instructions()
+        n_max_examples = 5
+        category = "Planning"
+        instruction_set = "wildbench-v1"
+        df_instructions = get_instructions(
+            n_max_examples,
+            category=category,
+            instruction_set=instruction_set,
+            with_additional_info=True,
+            random_seed=123,
+        )
         self.assertTrue('prompt' in df_instructions.columns)
         
         df_rubrics = get_rubrics(df_instructions)

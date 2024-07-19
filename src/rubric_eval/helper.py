@@ -7,6 +7,8 @@ from alpaca_eval import constants as ae_const
 import ast
 import pandas as pd
 from pathlib import Path
+from alpaca_eval.types import AnyPath
+from typing import Optional
 
 
 def dict_reverser(d):
@@ -19,8 +21,9 @@ def get_instructions(
     instruction_set: str = "auto",
     with_additional_info: bool = False,
     random_seed: int = 123,
-    cache_dir: str = "auto", 
-) -> List[Dict[str, Any]]:
+    output_path: Optional[AnyPath] = None,
+    cache_dir: str = "auto",
+) -> Optional[pd.DataFrame]:
     assert instruction_set in ["auto", "alpaca_eval_2", "wildbench-v1"]
     if instruction_set == "auto":
         caching_path = cache_dir
@@ -32,25 +35,25 @@ def get_instructions(
             n=n_max_examples, category=category
         )
         instructions = ast.literal_eval(output[0]["categories_and_instructions"])
-        instructions = ae_utils.convert_to_dataframe(instructions)
+        df_instructions = ae_utils.convert_to_dataframe(instructions)
     elif instruction_set == "alpaca_eval_2":
         # TODO(stella): this branch doesn't seem to work: `BuilderConfig 'v1-legacy' not found. Available: ['alpaca_eval', 'alpaca_eval_gpt4_baseline', 'alpaca_eval_all_outputs', 'alpaca_farm_human_annotations', 'alpaca_farm_human_crossannotations', 'alpaca_eval_annotations_alpaca_eval_gpt4', 'alpaca_eval_annotations_claude']`
         instructions = ae_const.ALPACAEVAL_REFERENCE_OUTPUTS_2()
-        instructions = instructions.to_pandas().sample(n_max_examples, random_state=random_seed)
-        instructions["prompt"] = instructions["instruction"]
-        instructions["category"] = instructions["dataset"]
+        df_instructions = instructions.to_pandas().sample(n_max_examples, random_state=random_seed)
+        df_instructions["prompt"] = df_instructions["instruction"]
+        df_instructions["category"] = df_instructions["dataset"]
     elif instruction_set == "wildbench-v1":
         ds = datasets.load_dataset("allenai/WildBench", 'v1-legacy')["test"]
         ds = ds.to_pandas()
         ds = ds[ds.apply(lambda x: len(x["conversation_input"]) == 1, axis=1)]  # maintain single-turn instructions for now
-        instructions = pd.DataFrame()
-        instructions["prompt"] = ds["conversation_input"].apply(lambda x: x[0]["content"])
-        instructions["category"] = ds["primary_tag"]
+        df_instructions = pd.DataFrame()
+        df_instructions["prompt"] = ds["conversation_input"].apply(lambda x: x[0]["content"])
+        df_instructions["category"] = ds["primary_tag"]
         if category:
-            n_max_examples = min(n_max_examples, len(instructions[instructions["category"] == category]))
-            instructions = instructions[instructions["category"] == category].sample(n_max_examples, random_state=random_seed)
+            n_max_examples = min(n_max_examples, len(df_instructions[df_instructions["category"] == category]))
+            df_instructions = df_instructions[df_instructions["category"] == category].sample(n_max_examples, random_state=random_seed)
         else:
-            instructions = instructions.sample(n_max_examples, random_state=random_seed)
+            df_instructions = df_instructions.sample(n_max_examples, random_state=random_seed)
         if with_additional_info:
             # merge the intent and checklist into the additional_information
             def _get_additional_information(x):
@@ -60,10 +63,13 @@ def get_instructions(
                 info += f"Reference checklist:\n{checklist}\n"
 
                 return info
-            instructions["additional_information"] = ds.apply(_get_additional_information, axis=1)
+            df_instructions["additional_information"] = ds.apply(_get_additional_information, axis=1)
         else:
-            instructions["additional_information"] = "N/A"
-    return instructions
+            df_instructions["additional_information"] = "N/A"
+    if output_path is not None:
+        df_instructions.to_json(output_path, orient='records', indent=4)
+    else:
+        return df_instructions
 
 
 def get_detailed_rubrics(criteria, cache_dir: str = "auto", **annot_kwargs) -> pd.DataFrame:
