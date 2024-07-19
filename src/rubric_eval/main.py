@@ -97,7 +97,9 @@ def postprocess_df_rubrics(df_rubrics):
     # Drop rows where the "scoring_scales" column is not a dict (because sometimes rubric generator will refuse to generate rubric)
     mask = df_rubrics["scoring_scales"].apply(lambda x: isinstance(x, dict))
     df_rubrics = df_rubrics[mask]
-    logger.warn(f"Dropped {orig_num_rows - len(df_rubrics)} rows where 'scoring_scales' is not a dict")
+    num_dropped_rows = orig_num_rows - len(df_rubrics)
+    if num_dropped_rows > 0:
+        logger.warn(f"Dropped {num_dropped_rows} rows where 'scoring_scales' is not a dict")
     return df_rubrics
 
 
@@ -138,8 +140,6 @@ def get_rubrics(
     >>> import pandas as pd
     >>> input_df = pd.DataFrame({'prompt': ['Write a short story about a cat.']})
     >>> output_df = get_rubrics(input_df)
-    >>> isinstance(output_df, pd.DataFrame)
-    True
     >>> 'scoring_scales' in output_df.columns
     True
 
@@ -219,8 +219,6 @@ def get_completions(
     >>> input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'instructions_with_rubrics.json'
     >>> input_df = pd.read_json(input_path)
     >>> output_df = get_completions("gpt-4o-2024-05-13", input_df)
-    >>> isinstance(output_df, pd.DataFrame)
-    True
     >>> 'output' in output_df.columns
     True
 
@@ -296,10 +294,10 @@ def evaluate(
     >>> from os.path import dirname, abspath
     >>> input_path = Path(__file__).resolve().parent.parent.parent / 'tests' / 'test_data' / 'completions.json'
     >>> input_df = pd.read_json(input_path)
-    >>> output_df = evaluate("gpt-4o-2024-05-13", input_df)
-    >>> isinstance(output_df, pd.DataFrame)
-    True
+    >>> output_df, model_card_df = evaluate("gpt-4o-2024-05-13", input_df)
     >>> 'criteria_scores' in output_df.columns
+    True
+    >>> 'mean_of_avg_score' in model_card_df.columns
     True
 
     >>> # Test with file input and output
@@ -312,6 +310,10 @@ def evaluate(
     ...     evaluate("gpt-4o-2024-05-13", input_path=input_path, output_path=output_path)
     ...     output_df = pd.read_json(output_path)
     ...     'criteria_scores' in output_df.columns
+    True
+    ...     model_card_path = Path(tmpdir) / 'model_card.json'
+    ...     model_card_df = pd.read_json(model_card_path)
+    ...     'mean_of_avg_score' in model_card_df.columns
     True
     """
     
@@ -334,7 +336,7 @@ def evaluate(
     logger.info("\n" + df_eval_result.to_string(formatters={'mean_of_avg_score': '{:.2f}'.format, 'std_of_avg_score': '{:.2f}'.format}))
 
     if input_df is not None:
-        return df_evaluations
+        return df_evaluations, df_eval_result
     else:
         if output_path is None:
             output_path = Path(input_path).parent / "evaluations.json"

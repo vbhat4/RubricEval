@@ -1,7 +1,30 @@
-## Installation
-- `pip install -r requirements.txt` (make sure to be in a Python 3.10 or newer environment)
-- create a `.env` file with `OPENAI_API_KEY=...` and `ANTHROPIC_API_KEY=...` 
-  - If you want to evaluate more models and have more flexibility over the API, I would suggest setting up a [AlpacaEval client config](https://github.com/tatsu-lab/alpaca_eval/tree/main/client_configs). With this you should be able to evaluate most of the important models on AlpacaEval using only APIs (google, anthropic, openai, and togetherai for major open source models).
+# RubricEval
+
+---
+
+# Quick Start
+
+To install the stable release, run
+
+```bash
+pip install rubric-eval
+```
+
+To install the nightly version, run
+
+```bash
+pip install git+https://github.com/tatsu-lab/rubric_eval
+```
+
+Then you can use it as follows:
+
+```bash
+export OPENAI_API_KEY=<your_api_key> # for more complex configs, e.g. using Azure or switching clients see https://github.com/tatsu-lab/alpaca_eval/tree/main/client_configs/README.md 
+python scripts/create_example_instructions.py  # This will generate an example instructions.json
+rubric_eval get_rubrics --input_path=instructions.json --output_path=instructions_with_rubrics.json
+rubric_eval get_completions --model_config=gpt-4o-2024-05-13 --input_path=instructions_with_rubrics.json --output_path=completions.json
+rubric_eval --model_config=gpt-4o-2024-05-13 --input_path=completions.json --output_path=evaluations.json
+```
 
 
 
