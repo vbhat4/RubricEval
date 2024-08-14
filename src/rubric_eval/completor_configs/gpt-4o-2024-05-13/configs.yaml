@@ -1,0 +1,9 @@
+gpt-4o-2024-05-13:
+  prompt_template: "gpt-4o-2024-05-13/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "gpt-4o-2024-05-13"
+    max_tokens: 4096
+    requires_chatml: True
+  batch_size: 1
+  fn_completion_parser: null

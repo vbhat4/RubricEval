@@ -1,3 +1,7 @@
+"""
+python scripts/filter_wildbench.py >wildbench_filtered.txt 2>&1
+"""
+
 from datasets import load_dataset
 from tqdm import tqdm
 from typing import List, Dict, Tuple

@@ -1,0 +1,32 @@
+gpt-4o-2024-05-13_CoT_v0:
+  prompt_template: "gpt-4o-2024-05-13_CoT_v0/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "gpt-4o-2024-05-13"
+    max_tokens: 4096
+    temperature: 0.7
+    function_call:
+      name: "evaluate_llm"
+    functions:
+      - name: "evaluate_llm"
+        description: "Evaluate the llm based on one prompt per category."
+        parameters:
+          type: "object"
+          properties:
+            prompts:
+              type: "array"
+              description: "A list of prompts, one per category."
+              items:
+                type: "object"
+                parameters:
+                  prompt:
+                    type: "string"
+                    description: "The prompt to evaluate the model on."
+                  category:
+                    type: "string"
+                    description: "The category of the instruction."
+        "required": ["prompts"]
+  batch_size: 1
+  fn_completion_parser: "json_parser"
+  completion_parser_kwargs:
+    annotation_key: "prompts"

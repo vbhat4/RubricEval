@@ -1,5 +1,0 @@
-
-
-Human: {final_prompt}
-
-Assistant:

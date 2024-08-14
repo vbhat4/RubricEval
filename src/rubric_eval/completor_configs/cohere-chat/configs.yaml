@@ -1,0 +1,8 @@
+cohere-chat:
+  prompt_template: "cohere-chat/prompt.txt"
+  fn_completions: "cohere_completions"
+  completions_kwargs:
+    model_name: "command-nightly"
+    max_tokens: 2048
+  batch_size: 1
+  fn_completion_parser: null

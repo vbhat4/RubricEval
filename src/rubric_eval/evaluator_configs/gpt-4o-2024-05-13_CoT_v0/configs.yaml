@@ -1,0 +1,32 @@
+gpt-4o-2024-05-13_CoT_v0:
+  prompt_template: "gpt-4o-2024-05-13_CoT_v0/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "gpt-4o-2024-05-13"
+    max_tokens: 2048
+    temperature: 0
+    function_call:
+      name: "final_evaluation_metric"
+    functions:
+      - name: "final_evaluation_metric"
+        description: "Aggregates all the scores per criteria and returns the final score."
+        parameters:
+          type: "object"
+          properties:
+            feedback:
+              type: "object"
+              description: "A dictionary mapping each criteria to a string explaining what the LLM did well and what it did poorly on that criteria."
+            explanation:
+              type: "object"
+              description: "A dictionary mapping each criteria to a string explaining why you chose the score you did for that criteria."
+            score_per_criteria:
+              type: "object"
+              description: "A dictionary mapping each criteria to an integer score. Typically range from 1 to 4."
+        "required": ["feedback", "explanation", "score_per_criteria"]
+  batch_size: 1
+  fn_completion_parser: "json_parser"
+  completion_parser_kwargs:
+    annotation_key: "score_per_criteria"
+  processors_to_kwargs:
+    JsonKeysToColumnProcessor:
+      json_keys_to_keep: ["feedback"]

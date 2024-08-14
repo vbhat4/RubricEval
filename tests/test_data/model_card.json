@@ -1,0 +1,9 @@
+[
+    {
+        "model_name":"gpt-4o-2024-05-13",
+        "evaluator":"gpt-4o-2024-05-13_CoT_v0",
+        "num_evaluations":5,
+        "mean_of_avg_score":3.0,
+        "std_of_avg_score":0.3741657387
+    }
+]
