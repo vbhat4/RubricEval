@@ -148,87 +148,185 @@ Note that the quality, diversity and complexity of instructions is more importan
    ]
    ```
    Such instruction-specific rubrics can be written directly by experts but this can be time consuming for (human) experts. 
-   For more efficient rubric creation, we suggest and provide the code for the following LLM and expert collaborative pipeline for each instruction:
-   1. **Checklist** experts write a high-level unstructured checklist of things that should be considered when evaluating as seen below.
+   For more efficient rubric creation, we suggest and provide the code for an LLM and expert collaborative three-step pipeline where at each step an LLM generates increasing levels of details for the rubric, which are then reviewed and modified by the expert. Of course, each step could also be done solely by an LLM or an expert. In particular, for each instruction, we suggest the following steps:
+
+   1. **Unstructured expert information** (optional) experts write a high-level unstructured dump of information that could be useful to generate the rubric. E.g. a checklist of things that should be considered for evaluation, the user intent, axes to consider, etc. E.g. below
    
       [add figure]
-   
-      In our codebase, this requires adding a column `additional_information` to the instructions file with the unstructured checklist. 
-      For the  
-   
-   2. **Rubric brainstorming** an LLM converts the checklist to a high-level structured rubric. Experts can then review and modify the brainstormed rubric. E.g. below
+
+      In our codebase, this can be done by adding a field `additional_information` to each instruction JSON.
+
+   2. **Rubric brainstorming** an LLM converts the unstructured information to a high-level structured rubric. Experts can then review and modify the brainstormed rubric. E.g. below
    
       ![rubric_brainstorming.png](figures%2Frubric_brainstorming.png)
 
-        In our codebase, this requires running the `RubricBrainstormer` annotator on the instructions file.
-      
+      In our codebase, this can be done using 
    
-   3. **Rubric generation** the LLM generates the detailed rubric. Experts can then review and modify the generated rubric.
+      ```bash
+      rubric_eval brainstorm_rubrics \
+        --input_path <instructions.json> \
+        --output_path <instructions_with_brainstorms.json>
+      ```
+      which adds a `brainstormed_rubric` column using [`RubricBrainstormer`]().
+
+   3. **Rubric generation** the LLM generates the detailed rubric given the brainstormed rubric. Experts can then review and modify the generated rubric. E.g. below
+   
+      ![rubric_generating.png](figures%2Frubric_generating.png)
+
+        In our codebase, this can be done using 
+      
+      ```bash
+      rubric_eval generate_rubrics \
+        --input_path <instructions_with_brainstorms.json> \
+        --output_path <instructions_with_rubrics.json>
+      ```
+         
+      which adds a `rubric` column using [`RubricGenerator`]().
+   
+3. **Model completion** to apply a previously created RubricEval benchmark, you first have to generate the models outputs/completions on the instructions. 
+
+   Our codebase assumes that the completions are added to the JSON file with the following format:
+
+   ```json
+   [
+      {"instruction":  "<instruction to evaluate on>", 
+       "category": ...,
+       "rubric": {...},
+       "completions": "<model outputs>",
+       ... 
+     },
+     ... 
+   ]
+   ```
+   The completions can be generated using you favorite decoding pipeline. For simplicity, we also provide a simple interface for generating completions based on [AlpacaEval](): 
+
+   ```bash
+   rubric_eval get_completions \
+    --input_path <instructions_with_rubrics.json> \
+    --output_path <completions.json> \
+    --model_config <model_to_evaluate>
+   ```
+
+4. **Evaluation** the next step is to have an LLM evaluate the model's outputs conditioned on the instruction-specific rubric. Evaluation by an LLM but conditioned on an expert-created rubric ensures that the evaluation is trustworthy and interpretable (thanks to the rubric), while being scalable (thanks to the LLM). The evaluation results in both a criteria-based score and interpretable feedback.
+
+   In our codebase, this can be done using 
+
+   ```bash
+   rubric_eval evaluate \
+    --input_path <completions.json> \
+    --output_path <evaluations.json> \
+    --summarize False
+   ```
+   
+   which will add a `score_per_criteria` and `feedback_per_criteria` column to the JSON file using [`Evaluator`]()resulting in the following format:
+
+   ```json
+    [
+        {"instruction": ..., 
+         "category": ...,
+         "rubric": {...},
+         "completions": ...,
+         "feedback_per_criteria": {
+           "<axes 1>": "<feedback>",
+           "<axes 2>": "<feedback>",
+           ...
+         },
+         "score_per_criteria": {
+            "<axes 1>": <score>,
+            "<axes 2>": <score>,
+            ...
+         },
+         ... 
+      },
+      ... 
+    ]
+    ```
+
+6. **Evaluation report**  One of the main benefits of the RubricEval pipeline is that the feedback and the rubric can provide finegrained interpretability as that what the model did well/wrong and why it was given a certain score.
+That said going through all the rubrics and feedback would be too time-consuming, so we use an LM to summarize the qualities and issues of the outputs from the model being evaluated. The final score and summary are then packaged into an evaluation report for the model.
+
+   In our codebase, this can be done using 
+
+   ```bash
+   rubric_eval generate_report \
+    --input_path <evaluations.json> \
+    --output_path <evaluation_report.md>
+   ```
+
+   which will generate a markdown file with the following format:
+
+   ```markdown
+   # Evaluation report for <model_name> on <benchmark> 
+   
+   ## Overview
+   
+   **Score**: <score> ± <sem>
+   
+   **Feedback**: 
+   
+   Pro:
+    - <feedback_1>
+    - <feedback_2>
+   Con:
+    - <feedback_1>
+    - <feedback_2> 
+   
+   
+   ## Details
+   
+   **Model**: <model_name>
+   **Date**: <date>
+   
+   **Dataset**: <dataset_name>
+   **Num. instructions**: <num_instructions>
+   
+   **Evaluator**: <evaluator_name>
+   **Summarizer**: <evaluator_name>
+   **RubricEval version**: <version>
+   
+   **Evaluation time**: <time>
+   **Evaluation cost**: <cost>
+   
+   ## Quantitative evaluation
+   
+   **Score**: <score> ± <sem>
+   
+   **Score per category**:
+   
+   |    Category  |   Score   |   SEM   |
+   |--------------|-----------|---------|
+   | <category_1> | <score_1> | <sem_1> |
+   
+   **Leaderboard**:
+   
+   |    Model    |   Score   |   SEM   |
+   |-------------|-----------|---------|
+   | <model_1>   | <score_1> | <sem_1> |
+   | <model_2>   | <score_2> | <sem_2> |
+    
+   
+   ## Qualitative evaluation
+   
+   **Feedback**:
+   
+   Pro:
+    - <feedback_1>
+    - <feedback_2>
+   Con:
+    - <feedback_1>
+    - <feedback_2>
+   
+   **Feedback per category**:
+   
+    |    Category  |   Feedback   |
+    |--------------|--------------|
+    | <category_1> | <feedback_1> |
+    | <category_2> | <feedback_2> |
+   
+   ```  
 
 
-    2. **Generating the rubrics** given the high-level rubric, we can generate the final rubric. This is done by the `RubricGenerator` which is a simple LLM that takes in the high-level rubric and the instruction and generates the final rubric. This step should be simple for LLMs but tedious for humans. I would thus suggest always having an LLM do this step, with optional human review & modification.
-3. 
-4. pipeline is creating the rubrics. This is done in two steps:
-    1. **Brainstorming the rubrics** given the instruction and additional information, an LLM or an expert could write some high-level rubric as seen below.
-    2. **Generating the rubrics** given the high-level rubric, we can generate the final rubric. This is done by the `RubricGenerator` which is a simple LLM that takes in the high-level rubric and the instruction and generates the final rubric. This step should be simple for LLMs but tedious for humans. I would thus suggest always having an LLM do this step, with optional human review & modification.
-
-
-3. given the instructions, an LLM or an expert could write some high-level rubric as seen below.
-
-2. **Brainstorming the rubrics** given the instruction and additional information, an LLM or an expert could write some high-level rubric as seen below.
-![rubric_brainstorming.png](figures%2Frubric_brainstorming.png)
-    - **Real-world** in the real-world the additional cost of having experts write the high-level rubrics is minimal compared to adding a checklist (the only difference is that it has to be structured by different axes. Our belief is that having expert-written high-level rubrics would give much more realistic final rubrics and thus be worth the cost.
-    - **Benchmark** for the benchmark, we provide a `RubricBrainstormer` that aims to convert the usntructured additional_information (e.g. checklist) to the high-level rubric. This is to allow converting any dataset to our format and should be used for example with WildBench.
-3. **Generating the rubrics** given the high-level rubric, we can generate the final rubric. This is done by the `RubricGenerator` which is a simple LLM that takes in the high-level rubric and the instruction and generates the final rubric. This step should be simple for LLMs but tedious for humans. I would thus suggest always having an LLM do this step, with optional human review & modification. 
-![rubric_generating.png](figures%2Frubric_generating.png)
-4. **Decoding/Inference of the models** there's nothing new here, we just need to predict what different models would say. This is done by the `Completor` and `alpaca_eval` essentially already provides the code to evaluate hundreds of models.
-5. **Evaluation** the `Evaluator` then takes in the predictions and the rubric and outputs some feedback, the selected category in the rubric, and the final score. This should be done only by LLM for scalability. This will likely be the hardest for the model in some domains (e.g. if it's bad at math it will be hard for it to evaluate math instructions). But for many valuable domains (healthcare, legal, ...)  I'm confident that current models can do a good job.
-6. **Summarizer**  One of the main benefits of RubricEval is that it can provide more finegrained interpretability into what the model does well/wrong and why it was given a certain score. THe problem is that no one will read N>=200 feedback and selected rubrics. We would thus need a summarizer that takes in the feedback and selected rubric and generates a summary / model card of what the model does well and badly. This is a bit different from the other steps in that the function is many-to-one (many feedbacks to one summary), which is why we don't have a minimal class that inherits from AlpacaEval to do that. A minimal version of the summarizer is `summarize_results` but this should really be rewritten. Note that providing all the outputs & instructions & feedback & rubrics will probably exceed the context length of the llm judge. So I would suggest having a two (or more) layer summarizier pipeline, which recursively applies summarizers to the output of the previous summarizer. Note that the summarizier will need to be prompt tuned to ensure that it provides detailed and actionable summaries of the model's performance that are self contained (i.e. the human shouldn't need to know about the instructions to understand the summary).
-
-----------
-
-Then you can use it as follows:
-
-```bash
-export OPENAI_API_KEY=<your_api_key> # for more complex configs, e.g. using Azure or switching clients see https://github.com/tatsu-lab/alpaca_eval/tree/main/client_configs/README.md 
-
-# This will generate an example instructions.json
-python scripts/create_example_instructions.py instructions.json
-
-# Generate rubrics based on provided instructions
-rubric_eval get_rubrics \
---input_path=instructions.json \
---output_path=instructions_with_rubrics.json
-
-# Generate completions based on provided instructions
-rubric_eval get_completions \
---model_config=gpt-4o-2024-05-13 \
---input_path=instructions_with_rubrics.json \
---output_path=completions.json
-
-# Generate evaluations based on provided completions
-rubric_eval \
---model_config=gpt-4o-2024-05-13 \
---input_path=completions.json \
---output_path=evaluations.json
-```
-
-It should create a `model_card.json` file at your current working directory.
-The content of `model_card.json` should look like:
-```bash
-$ cat model_card.json
-
-[
-    {
-        "model_name":"gpt-4o-2024-05-13",
-        "evaluator":"gpt-4o-2024-05-13_CoT_v0",
-        "num_evaluations":5,
-        "mean_of_avg_score":3.0,
-        "std_of_avg_score":0.3741657387
-    }
-]
-```
-`mean_of_avg_score` is the average score earned by the completor model, based on the rubrics in `instructions_with_rubrics.json`.
+----
 
 
 ## Code

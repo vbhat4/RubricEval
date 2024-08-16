@@ -16,9 +16,6 @@ gpt-4o-2024-05-13_CoT_v0:
             clear_goals:
               type: "string"
               description: "The learning objectives of the assignment."
-            # prompt:
-            #   type: "string"
-            #   description: "The prompt that defins the assignment for the model."
             criteria:
               type: "array"
               description: "A list of exactly 5 objects, each object contains one criteria for the assignment and the checklist questions for the criterion."
