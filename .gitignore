@@ -2,6 +2,7 @@ notebooks/
 cache/
 .idea
 example/
+data/human_eval
 .DS_Store
 .env
 results
