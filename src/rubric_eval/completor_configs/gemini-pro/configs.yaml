@@ -1,8 +1,0 @@
-gemini-pro:
-  prompt_template: "gemini-pro/prompt.txt"
-  fn_completions: "google_completions"
-  completions_kwargs:
-    model_name: "gemini-pro"
-    max_output_tokens: 4096
-  batch_size: 1
-  fn_completion_parser: null

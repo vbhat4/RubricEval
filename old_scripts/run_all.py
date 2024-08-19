@@ -25,7 +25,7 @@ model_names = [
     "Qwen2-72B-Instruct",
 ]
 
-evaluator_names = ["gpt-4o-2024-05-13_CoT_v0"]
+evaluator_names = ["gpt-4o-2024-08-06_CoT_v0"]
 categories = ["Advice seeking", "Reasoning", "Editing", "Planning", "Information seeking", "Creative Writing", "Coding & Debugging", "Brainstorming", "Math", "Role playing", "Data Analysis", "Others"]
 exp_suffixes = ["rerun_exp_v5", "no_rubrics_rerun_exp_v5", "HELMInstruct_generic_rubrics_rerun_exp_v5"]
 num_runs = 5

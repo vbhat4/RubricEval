@@ -55,22 +55,22 @@ pip install git+https://github.com/tatsu-lab/rubric_eval
 
 </details>
 
-To evaluate a completions on the RubricEval benchmark, run the following two steps:
+To evaluate model outputs on the RubricEval benchmark, run the following two steps:
 
-1. **Generate completions on the RubricEval instructions**: create a file `completions.json` that is a [JSON file of the RubricEval evaluation set](...) with an additional `completions` column containing the completions of the model to evaluate. You can use you favorite generation pipeline, or our pipeline based on [AlpacaEval](): 
+1. **Generate model outputs on the RubricEval instructions**: create a file `outputs.json` that is a [JSON file of the RubricEval evaluation set](...) with an additional `outputs` column containing the model outputs to evaluate. You can use you favorite generation pipeline, or our pipeline based on [AlpacaEval](): 
 
 ```bash
-rubric_eval get_completions \
---output_path=completions.json \
---model_config=<model_to_evaluate> # e.g. gpt-4o-2024-05-13
+rubric_eval generate_outputs \
+--output_path=outputs.json \
+--model_configs=<model_to_evaluate> # e.g. gpt-4o-2024-05-13
 ```
 
-2. **Evaluate the completions**: evaluate the previously generated completions using the RubricEval LLM-judge. 
+2. **Evaluate the model outputs**: evaluate the previously generated models outputs using the RubricEval LLM-judge. 
 
 
 ```bash
 export OPENAI_API_KEY=<your_api_key> # for more complex configs, e.g. using Azure or switching clients see https://github.com/tatsu-lab/alpaca_eval/tree/main/client_configs/README.md 
-rubric_eval --input_path=completions.json 
+rubric_eval --input_path=outputs.json 
 ```
 
 This will print the leaderboard in the terminal and generate an `evaluation_report.md` file at [...].
@@ -78,7 +78,7 @@ This will print the leaderboard in the terminal and generate an `evaluation_repo
 
 
 Both previous steps can be done in one step by running `
-rubric_eval --model_config=<model_to_evaluate>`
+rubric_eval --model_configs=<model_to_evaluate>`
 
 See the following for more details about:
 - [evaluating a model](#evaluating-a-model)
@@ -153,8 +153,10 @@ Note that the quality, diversity and complexity of instructions is more importan
    1. **Unstructured expert information** (optional) experts write a high-level unstructured dump of information that could be useful to generate the rubric. E.g. a checklist of things that should be considered for evaluation, the user intent, axes to consider, etc. E.g. below
    
       [add figure]
+   
+      In our codebase, we expect the unstructured information to be a string in the field `useful_info_to_eval_instruction` for each instruction. 
 
-      In our codebase, this can be done by adding a field `additional_information` to each instruction JSON.
+      In our experience, this is easier to write by looking at the answer of an LLM on that instruction. In our codebase, this can be done using ```rubric_eval generate_outputs --input_path <instructions.json> --output_path <instructions_with_ref.json>```.
 
    2. **Rubric brainstorming** an LLM converts the unstructured information to a high-level structured rubric. Experts can then review and modify the brainstormed rubric. E.g. below
    
@@ -183,28 +185,28 @@ Note that the quality, diversity and complexity of instructions is more importan
          
       which adds a `rubric` column using [`RubricGenerator`]().
    
-3. **Model completion** to apply a previously created RubricEval benchmark, you first have to generate the models outputs/completions on the instructions. 
+3. **Model outputs** to apply a previously created RubricEval benchmark, you first have to generate the models outputs on the instructions. 
 
-   Our codebase assumes that the completions are added to the JSON file with the following format:
+   Our codebase assumes that the outputs are added to the JSON file with the following format:
 
    ```json
    [
       {"instruction":  "<instruction to evaluate on>", 
        "category": ...,
        "rubric": {...},
-       "completions": "<model outputs>",
+       "outputs": "<model outputs>",
        ... 
      },
      ... 
    ]
    ```
-   The completions can be generated using you favorite decoding pipeline. For simplicity, we also provide a simple interface for generating completions based on [AlpacaEval](): 
+   The outputs can be generated using you favorite decoding pipeline. For simplicity, we also provide a simple interface for generating outputs based on [AlpacaEval](): 
 
    ```bash
-   rubric_eval get_completions \
+   rubric_eval generate_outputs \
     --input_path <instructions_with_rubrics.json> \
-    --output_path <completions.json> \
-    --model_config <model_to_evaluate>
+    --output_path <outputs.json> \
+    --model_configs <model_to_evaluate>
    ```
 
 4. **Evaluation** the next step is to have an LLM evaluate the model's outputs conditioned on the instruction-specific rubric. Evaluation by an LLM but conditioned on an expert-created rubric ensures that the evaluation is trustworthy and interpretable (thanks to the rubric), while being scalable (thanks to the LLM). The evaluation results in both a criteria-based score and interpretable feedback.
@@ -213,7 +215,7 @@ Note that the quality, diversity and complexity of instructions is more importan
 
    ```bash
    rubric_eval evaluate \
-    --input_path <completions.json> \
+    --input_path <outputs.json> \
     --output_path <evaluations.json> \
     --summarize False
    ```
@@ -225,7 +227,7 @@ Note that the quality, diversity and complexity of instructions is more importan
         {"instruction": ..., 
          "category": ...,
          "rubric": {...},
-         "completions": ...,
+         "outputs": ...,
          "feedback_per_criteria": {
            "<axes 1>": "<feedback>",
            "<axes 2>": "<feedback>",
@@ -332,10 +334,10 @@ That said going through all the rubrics and feedback would be too time-consuming
 ## Code
 - `src/rubric_eval` contains the main code.
   - `annotators.py` contains the code for all annotators that inherit from AlpacaEval (all the steps besides summarizer). AlpacaEval annotators are classes that take a dataframe as input (with columns of potential fields that should be inputed in the prompt to the LLM) and outputs a dataframe with the same columns + the outputs of the LLM. The annotators are the main classes that used in the pipeline.
-  - `*_configs` specifies all the hyperparameters and prompt for different potential anntoators (i.e. instances of classes in `annotators.py`). As an example, `rubric_brainstormer_configs/gpt-4o-2024-05-13_CoT_v0/configs.yaml` specifies all the hyperparameters for the rubric_brainstomer we use. Note: I would highly suggest understanding the different hyperparameters, read the [docstrings](https://github.com/tatsu-lab/alpaca_eval/blob/e3993450e2c6d5b5fadd74e0c79fa261c0e98112/src/alpaca_eval/annotators/base.py#L535) and open an issue if something is unclear. The most important are:
+  - `*_configs` specifies all the hyperparameters and prompt for different potential anntoators (i.e. instances of classes in `annotators.py`). As an example, `rubric_brainstormer_configs/gpt-4o-2024-08-06_CoT_v0/configs.yaml` specifies all the hyperparameters for the rubric_brainstomer we use. Note: I would highly suggest understanding the different hyperparameters, read the [docstrings](https://github.com/tatsu-lab/alpaca_eval/blob/e3993450e2c6d5b5fadd74e0c79fa261c0e98112/src/alpaca_eval/annotators/base.py#L535) and open an issue if something is unclear. The most important are:
 ```yaml
-gpt-4o-2024-05-13_CoT_v0: # should be the name of the directory
-  prompt_template: "gpt-4o-2024-05-13_CoT_v0/prompt.txt" # prompt template. Curly braces {column} will be replaced by values of the corresponding column in the dataframe
+gpt-4o-2024-08-06_CoT_v0: # should be the name of the directory
+  prompt_template: "gpt-4o-2024-08-06_CoT_v0/prompt.txt" # prompt template. Curly braces {column} will be replaced by values of the corresponding column in the dataframe
   fn_completions: "openai_completions" # functions to use to get completions. see https://github.com/tatsu-lab/alpaca_eval/blob/main/src/alpaca_eval/decoders/__init__.py
   completions_kwargs: # kwargs to the completions functions. E.g. for openai it's all the openai decoding kwargs
     model_name: "gpt-4o-2024-05-13"

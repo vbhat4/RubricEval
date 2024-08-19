@@ -10,7 +10,7 @@ model_names = [
     "gpt-4o-2024-05-13",
 ]
 
-evaluator_names = ["gpt-4o-2024-05-13_CoT_v0"]
+evaluator_names = ["gpt-4o-2024-08-06_CoT_v0"]
 categories = ["Planning"]
 exp_suffixes = ["rerun_exp_v5"]
 num_runs = 1

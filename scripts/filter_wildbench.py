@@ -64,7 +64,7 @@ def update_elo_scores(
             a: List[Dict[str, str]] = prompts_batch[:batch_size]
             b: List[Dict[str, str]] = prompts_batch[batch_size:]
             results = is_a_harder_than_b_batch(
-                [p["prompt"] for p in a], [p["prompt"] for p in b]
+                [p["instruction"] for p in a], [p["instruction"] for p in b]
             )
             results = [1 if r else 0 for r in results]
             for i, result in enumerate(results):
@@ -73,7 +73,7 @@ def update_elo_scores(
                 b[i]["elo"] = new_Rb
         else:
             a, b = random.sample(prompts, 2)
-            if is_a_harder_than_b(a["prompt"], b["prompt"]):
+            if is_a_harder_than_b(a["instruction"], b["instruction"]):
                 result = 1
             else:
                 result = 0
@@ -100,7 +100,7 @@ def get_prompts(num_per_category: int = 20) -> List[Dict[str, str]]:
         if len(conversation) > 1 or conversation[0]["role"] != "user":
             continue
         prompt = conversation[0]["content"]
-        category = row["primary_tag"]
+        category = row["category"]
         categories[category] = categories.get(category, []) + [prompt]
 
     prompts: List[Dict[str, str]] = []
@@ -109,7 +109,7 @@ def get_prompts(num_per_category: int = 20) -> List[Dict[str, str]]:
         samples_size = min(num_per_category, len(category_prompts))
         selection: List[str] = random.sample(category_prompts, samples_size)
         prompts.extend(
-            [{"prompt": prompt, "category": category} for prompt in selection]
+            [{"instruction": prompt, "category": category} for prompt in selection]
         )
         print(f" - {category}: {len(selection)}")
 

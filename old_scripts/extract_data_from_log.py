@@ -29,7 +29,7 @@ def save_data_to_csv(exp_to_category_to_model_to_score_tuple, filename):
 """
 Category: Advice seeking
 Model name: Meta-Llama-3-8B-Instruct
-Evaluator name: gpt-4o-2024-05-13_CoT_v0
+Evaluator name: gpt-4o-2024-08-06_CoT_v0
 # evaluations: 13
 mean of avg_score: 2.902564102564102
 STD of avg_score: 0.8646837934632884

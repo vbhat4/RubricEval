@@ -12,8 +12,8 @@ python -c "from tests.test_integration import check_evaluate_outputs"
 rm -rf tmp_dir && mkdir tmp_dir/
 python scripts/create_example_instructions.py tmp_dir/instructions.json  # This will generate an example instructions.json
 rubric_eval get_rubrics --input_path=tmp_dir/instructions.json --output_path=tmp_dir/instructions_with_rubrics.json --cache_dir=None
-rubric_eval get_completions --model_config=gpt-4o-2024-05-13 --input_path=tmp_dir/instructions_with_rubrics.json --output_path=tmp_dir/completions.json --cache_dir=None
-rubric_eval --model_config=gpt-4o-2024-05-13 --input_path=tmp_dir/completions.json --output_path=tmp_dir/evaluations.json --cache_dir=None
+rubric_eval generate_outputs --model_configs=gpt-4o-2024-05-13 --input_path=tmp_dir/instructions_with_rubrics.json --output_path=tmp_dir/completions.json --cache_dir=None
+rubric_eval --model_configs=gpt-4o-2024-05-13 --input_path=tmp_dir/completions.json --output_path=tmp_dir/evaluations.json --cache_dir=None
 python -c "from tests.test_integration import check_evaluate_outputs; check_evaluate_outputs('tmp_dir/evaluations.json', 'tmp_dir/model_card.json')"
 rm -rf tmp_dir/
 

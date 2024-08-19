@@ -32,13 +32,13 @@ allowed_session_ids = allowed_session_ids_from_shared_prompts
 assert len(allowed_session_ids) > 0
 
 def load_evals_and_clean_data(category, completor_model_name, *, run_idx=0):
-    evals_RubricEval_filename = f'outputs/global_rerun_exp_v5/{category}___{completor_model_name}___gpt-4o-2024-05-13_CoT_v0___evaluations_{run_idx}.pickle'
+    evals_RubricEval_filename = f'outputs/global_rerun_exp_v5/{category}___{completor_model_name}___gpt-4o-2024-08-06_CoT_v0___evaluations_{run_idx}.pickle'
     with open(evals_RubricEval_filename, 'rb') as file:
         evals_RubricEval = pickle.load(file)
-    evals_NoRubric_filename = f'outputs/global_no_rubrics_rerun_exp_v5/{category}___{completor_model_name}___gpt-4o-2024-05-13_CoT_v0___evaluations_{run_idx}.pickle'
+    evals_NoRubric_filename = f'outputs/global_no_rubrics_rerun_exp_v5/{category}___{completor_model_name}___gpt-4o-2024-08-06_CoT_v0___evaluations_{run_idx}.pickle'
     with open(evals_NoRubric_filename, 'rb') as file:
         evals_NoRubric = pickle.load(file)
-    evals_HELMIns_filename = f'outputs/global_HELMInstruct_generic_rubrics_rerun_exp_v5/{category}___{completor_model_name}___gpt-4o-2024-05-13_CoT_v0___evaluations_{run_idx}.pickle'
+    evals_HELMIns_filename = f'outputs/global_HELMInstruct_generic_rubrics_rerun_exp_v5/{category}___{completor_model_name}___gpt-4o-2024-08-06_CoT_v0___evaluations_{run_idx}.pickle'
     with open(evals_HELMIns_filename, 'rb') as file:
         evals_HELMIns = pickle.load(file)
 

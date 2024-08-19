@@ -1,10 +1,13 @@
-import pandas as pd
-import tempfile, os, json
-from pathlib import Path
+import json
+import os
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
-from rubric_eval.main import get_rubrics, get_completions, evaluate
+
+import pandas as pd
 from rubric_eval.helper import get_instructions
+from rubric_eval.main import evaluate, generate_outputs, generate_rubrics
 
 
 def check_evaluate_outputs(evaluations, model_card):
@@ -17,11 +20,11 @@ def check_evaluate_outputs(evaluations, model_card):
         df_model_card = pd.read_json(model_card)
     assert isinstance(df_evaluations, pd.DataFrame)
     assert isinstance(df_model_card, pd.DataFrame)
-    assert 'criteria_scores' in df_evaluations.columns
-    assert 'mean_of_avg_score' in df_model_card.columns
-    assert df_model_card['mean_of_avg_score'].iloc[0] < 4.0
-    assert 'std_of_avg_score' in df_model_card.columns
-    assert df_model_card['std_of_avg_score'].iloc[0] > 0.0
+    assert "criteria_scores" in df_evaluations.columns
+    assert "mean_of_avg_score" in df_model_card.columns
+    assert df_model_card["mean_of_avg_score"].iloc[0] < 4.0
+    assert "std_of_avg_score" in df_model_card.columns
+    assert df_model_card["std_of_avg_score"].iloc[0] > 0.0
 
 
 class TestIntegration(unittest.TestCase):
@@ -36,17 +39,17 @@ class TestIntegration(unittest.TestCase):
             with_additional_info=True,
             random_seed=123,
         )
-        self.assertTrue('prompt' in df_instructions.columns)
-        
-        df_rubrics = get_rubrics(df_instructions)
-        self.assertTrue('scoring_scales' in df_rubrics.columns)
-        
-        df_completions = get_completions("gpt-4o-2024-05-13", df_rubrics)
-        self.assertTrue('output' in df_completions.columns)
-        
-        df_evaluations, df_model_card = evaluate("gpt-4o-2024-05-13", df_completions)
+        self.assertTrue("prompt" in df_instructions.columns)
+
+        df_rubrics = generate_rubrics(df_instructions)
+        self.assertTrue("scoring_scales" in df_rubrics.columns)
+
+        df_outputs = generate_outputs("gpt-4o-2024-05-13", df_rubrics)
+        self.assertTrue("output" in df_outputs.columns)
+
+        df_evaluations, df_model_card = evaluate("gpt-4o-2024-05-13", df_outputs)
         check_evaluate_outputs(df_evaluations, df_model_card)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
