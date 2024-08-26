@@ -1,0 +1,9 @@
+test:
+  prompt_template: "Mistral-7B-Instruct-v0.3/prompt.txt"
+  fn_completions: "test_completions"
+  completions_kwargs:
+    model_name: "test"
+    value: "here's a python function"
+  batch_size: 1
+  fn_completion_parser: null
+"gpt-4o-mini-2024-07-18"

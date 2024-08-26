@@ -1,0 +1,49 @@
+Summarizer: UnstructuredSummarizer
+summarizer_kwargs:
+  prompt_template: "unstructured_gpt-4o-2024-08-06/prompt.txt"
+  subsequent_prompt_template: "unstructured_gpt-4o-2024-08-06/subsequent_prompt.txt"
+  fn_completions: "openai_completions"
+  approx_max_characters_to_summarize: 70000
+  completions_kwargs:
+    model_name: "gpt-4o-mini-2024-07-18"
+    max_tokens: 4096
+    temperature: 0.0
+  tool_choice:
+    type: function
+    function:
+      name: "make_final_evaluation_report"
+  tools:
+    - type: function
+      function:
+        name: "make_final_evaluation_report"
+        description: "Make the final evaluation report for the current LLM."
+        strict: true
+        parameters:
+          type: "object"
+          properties:
+            strengths:
+              type: "array"
+              description: "A list of key strengths of the model. The list should contain between 2 to 20 items, depending on the model's overall performance."
+              items:
+                type: "string"
+                description: "A key strength of the model, unique to the current model and providing detailed information about what the model does well."
+            weaknesses:
+              type: "array"
+              description: "A list of notable weaknesses or limitations of the model. The list should also contain between 2 to 20 items, depending on the model's overall performance."
+              items:
+                type: "string"
+                description: "A notable weakness or limitation of the model, specific to the current model and detailing the areas where it struggles or underperforms."
+            suggestions:
+              type: "array"
+              description: "Concrete, actionable recommendations for improvement. These could include specific types of additional training data, targeted fine-tuning strategies, or (sub-)areas requiring further evaluation."
+              items:
+                type: "string"
+                description: "A specific suggestion for improvement, highly actionable and targeted to the model's weaknesses."
+            overall_assessment:
+              type: "string"
+              description: "A concise paragraph summarizing the model's overall performance, key characteristics, and potential applications or limitations."
+          additionalProperties: false
+          required: [ "strengths", "weaknesses", "suggestions", "overall_assessment" ]
+  fn_completion_parser: "json_parser"
+  completion_parser_kwargs:
+    annotation_key: null

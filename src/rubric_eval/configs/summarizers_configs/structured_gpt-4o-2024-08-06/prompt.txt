@@ -1,0 +1,9 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in evaluation of LLM outputs using rubrics.
+<|im_end|>
+<|im_start|>user
+Summarize the following.
+
+{to_format}
+
+<|im_end|>

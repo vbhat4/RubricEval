@@ -1,0 +1,20 @@
+Summarizer: UnstructuredSummarizer
+summarizer_kwargs:
+  prompt_template: "unstructured_gpt-4o-2024-08-06/prompt.txt"
+  subsequent_prompt_template: "unstructured_gpt-4o-2024-08-06/subsequent_prompt.txt"
+  fn_completions: "test_completions"
+  approx_max_characters_to_summarize: 70000
+  completions_kwargs:
+    model_name: "test"
+    # write the value below but using double quotes for json
+    value : '
+      {
+        "strengths": ["good math skills", "strong writing ability"],
+        "weaknesses": ["poor communication skills", "lack of creativity"],
+        "suggestions": ["more practice with public speaking", "take a creative writing course"],
+        "overall_assessment": "This model has strong math and writing skills, but struggles with communication and creativity. It would benefit from additional practice in these areas."
+      }
+    '
+  fn_completion_parser: "json_parser"
+  completion_parser_kwargs:
+    annotation_key: null

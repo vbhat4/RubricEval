@@ -29,6 +29,7 @@ def get_output_path(
     prfx: str = "",
     sffx: str = "",
     is_rm_double_underscore: bool = True,
+    extension: str = ".json",
 ) -> Path:
     """Get the output path by potentially using th einput path with the new suffix."""
     input_path = Path(input_path)
@@ -39,27 +40,28 @@ def get_output_path(
         output_stem = prfx + output_stem + sffx
         if is_rm_double_underscore:
             output_stem = output_stem.replace("__", "_")
-        output_path = input_path.with_name(output_stem + ".json")
+        output_path = input_path.with_name(output_stem + extension)
     return output_path
 
 
-def expand_json_column(df: pd.DataFrame, column_name: str) -> pd.DataFrame:
+def expand_json_column(df: pd.DataFrame, column_name: str, is_keep_other_columns=True) -> pd.DataFrame:
     """Expands a column of JSON strings into separate columns.
 
     Args:
         df (pd.DataFrame): The DataFrame to process.
         column_name (str): The name of the column to expand.
+        is_keep_other_columns (bool): Whether to keep the other columns in the DataFrame.
 
     Example:
         >>> df = pd.DataFrame({"a": [1, 2], "b": ['{"c": 3, "d": 1}', '{"c": 4, "d": 2}']})
         >>> expand_json_column(df, "b")
                 a	c	d
-        0	1	3	1
-        1	2	4	2
+            0	1	3	1
+            1	2	4	2
     """
     return pd.concat(
-        [
-            df.drop([column_name], axis=1),
+        ([df.drop([column_name], axis=1)] if is_keep_other_columns else [])
+        + [
             # Splits up the columns from the annotation key into separate columns
             pd.json_normalize(
                 # convert the annotated string to a dictionary

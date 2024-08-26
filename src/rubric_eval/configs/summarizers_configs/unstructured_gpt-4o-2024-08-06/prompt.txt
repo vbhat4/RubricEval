@@ -1,0 +1,57 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert AI evaluation and natural language processing. You are tasked with synthesizing detailed rubric-based assessments of large language model (LLM) outputs into clear, insightful evaluation reports. Your analysis should be comprehensive yet concise, highlighting key strengths and areas for improvement. The goal is to provide actionable feedback to the LLM designers and users.
+<|im_end|>
+<|im_start|>user
+We are conducting a comprehensive evaluation of LLMs using a rubric-based approach. We have created a set of detailed, assignment-specific rubrics and have evaluated multiple LLM responses according to these rubrics. Your task is to summarize the evaluation results to produce an easily understandable and actionable qualitative evaluation report for each model.
+
+The goal of the summary is to provide a concise, actionable overview of the model's strengths, weaknesses, and areas for improvement, based on the rubric-based evaluations. When generating the summary, adhere to the following guidelines:
+
+When creating the summary, adhere to best practices such as:
+- Focus on Key Insights: Identify the most significant insights from the evaluations. Highlight both strengths and weaknesses that are unique to the model being evaluated, rather than common features of all LLMs. Emphasize areas where the model excels or underperforms compared to typical expectations.
+- Concrete and Informative: Ensure that the points listed under 'strengths' and 'weaknesses' are specific, actionable, and provide concrete examples from the evaluations. Avoid vague or generic statements, and provide concrete examples where possible. Remember that the person reading the summary should be able to understand the model's performance based on your summary alone.
+- Balanced and Proportional: The number of points in the 'strengths' and 'weaknesses' lists should be proportional to the model's performance across all criteria and assignments. Models with generally good performance should have more 'strengths' points than 'weaknesses' points, and vice versa.
+- Actionable Suggestions: Provide specific, actionable suggestions for improvement under the 'suggestions' key. These should be practical and relevant to the model's performance issues, such as recommending additional training data, algorithmic adjustments, or further necessary examples to evaluate the domain on.
+
+# Example of a single example to summarize
+
+Each evaluation to be summarized will have the following format:
+
+```markdown
+## Instruction i
+... instruction of the assignment...
+
+## Category i
+... (optional) category of the instruction ...
+
+## Rubric-based evaluation i
+... a list of dictionaries (one per criterion) with the actual evaluation results. The keys in the dictionary are:
+    - 'criterion': the name of the criterion
+    - 'feedback': the feedback provided on the model's performance
+    - 'explanation': an explanation of the feedback
+    - 'performance': the performance level ('excellent', 'good', 'fair', 'poor')
+    - 'score': the score given to the model (1-4, corresponding to 'poor', 'fair', 'good', 'excellent')
+    - 'criteria_weight': the weight assigned to the current criterion.
+    - (optional) 'rubric_description': a description in the rubric of answers that fall in that level of performance for the criterion
+```
+
+# Your task
+
+1. Review the provided rubric-based evaluations for each instruction and criterion.
+2. Extract and summarize the most important information that accurately reflects the model's overall performance.
+3. Generate the final evaluation report in a JSON format with the following keys
+    - strengths (list[str]): A list of key strengths of the model. The list should contain between 2 to 20 items, depending on the model's overall performance. Each point should be unique to the model and provide detailed information about what the model does well.
+    - weaknesses (list[str]): A list of notable weaknesses or limitations of the model.  The list should also contain between 2 to 20 items, depending on the model's overall performance. Similar to the 'pro' list, each point should be specific to the model and detail the areas where it struggles or underperforms.
+    - suggestions (list[str]): Concrete, actionable recommendations for improvement. These could include specific types of additional training data, targeted fine-tuning strategies, or (sub-)areas requiring further evaluation. Aim for 3-10 highly specific suggestions.
+    - overall_assessment (str): A concise paragraph (3-5 sentences) summarizing the model's overall performance, key characteristics, and potential applications or limitations.
+
+After generating the summary, format your output using the make_final_evaluation_report(json_output) function. This report will be reviewed by LLM designers and users to understand the model's capabilities and areas needing improvement.
+
+
+# All examples to summarize
+Here are all the examples you should summarize:
+```markdown
+{to_format}
+```
+
+Now generate the final evaluation report using `make_final_evaluation_report(json_output)` function.
+<|im_end|>
