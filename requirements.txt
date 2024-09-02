@@ -1,4 +1,4 @@
-alpaca_eval
+alpaca_eval>=0.6.6
 python-dotenv
-jupyterlab
-anthropic
+fire
+pandas

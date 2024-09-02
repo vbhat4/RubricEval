@@ -22,15 +22,12 @@ PACKAGES_DEV = [
     "python-dotenv",
 ]
 PACKAGES_ANALYSIS = ["seaborn", "matplotlib", "jupyterlab"]
-PACKAGES_LOCAL = [
-    "bitsandbytes",
-]
-PACKAGES_ALL = PACKAGES_LOCAL + PACKAGES_ANALYSIS + PACKAGES_DEV
+PACKAGES_ALL = PACKAGES_ANALYSIS + PACKAGES_DEV
 
 setuptools.setup(
     name="rubric_eval",
     version=version,
-    description="RubricEval : TODO a fancy tagline",
+    description="RubricEval: Scalable Expert Evaluation of Language Models",
     package_dir={"": "src"},
     packages=setuptools.find_packages("src"),
     author="TODO dream team",
@@ -40,12 +37,11 @@ setuptools.setup(
         "pandas",
         "huggingface_hub",
         "fire",
-        "alpaca-eval>=0.6.3",
+        "alpaca_eval>=0.6.5",
     ],
     extras_require={
         "analysis": PACKAGES_ANALYSIS,
         "dev": PACKAGES_DEV,
-        "local": PACKAGES_LOCAL,
         "all": PACKAGES_ALL,
     },
     python_requires=">=3.10",
