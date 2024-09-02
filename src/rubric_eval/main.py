@@ -101,7 +101,7 @@ def brainstorm_rubrics_from_df(
     process_input_df_(
         df_input,
         required_fields={"instruction"},
-        optional_fields={"useful_info_to_eval_instruction": ""},
+        optional_fields={"useful_info_to_eval_instruction": "", "weight": 1.0},
     )
     rubric_brainstormer = RubricBrainstormer(annotators_config=brainstormer_configs, **brainstormer_kwargs)
     brainstormed_rubric = rubric_brainstormer(df_input)
@@ -405,7 +405,13 @@ def generate_report_from_df(
         df_input = df_input.sample(min(max_instances, len(df_input)), random_state=123)
         logging.info(f"We sampled {len(df_input)} from the {n_inputs} due to max_instances.")
 
-    optional_fields = {"criteria": "", "output_price_per_example": np.nan, "output_time_per_example": np.nan}
+    optional_fields = {
+        "criteria": "",
+        "output_price_per_example": np.nan,
+        "output_time_per_example": np.nan,
+        "category": "",
+        "weight": 1.0,
+    }
     required_fields = {"instruction", "output", "rubric", "evaluation"}
     for step in ["evaluation", "output"]:
         for col in ["{step}_date", "{step}_time_per_example", "{step}_price_per_example", "{step}_version"]:

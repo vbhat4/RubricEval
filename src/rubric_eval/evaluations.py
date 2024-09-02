@@ -183,7 +183,7 @@ def format_evaluation_report_md(report_dict: dict[str, Any]) -> str:
             prfx = "\t\t"
             feedback_per_category_str = "\n".join(
                 [
-                    f"""• **{k}**:
+                    f"""* **{k}**:
     * **Strengths**:
 {strengths_formatter(v, prfx=prfx)}
     * **Weaknesses**:
@@ -217,19 +217,30 @@ def format_evaluation_report_md(report_dict: dict[str, Any]) -> str:
 {overview_str_sffx}
 ## Details
 **Model**: {rd["model"]}
+
 **Dataset**: {rd["dataset"]}
+
 **N Instructions**: {rd["n_instructions"]}
+
 **Evaluator**: {rd["evaluator"]}
+
 **Summarizer**: {rd["summarizer"]}
+
 **Report Date**: {rd["report_date"]}
+
 **Version**: {rd["report_version"]}
+
 **Report Cost**: ${rd["report_cost"]:.2f}
+
 **Report Time**: {rd["report_time"]/60:.2f} minutes
 
 ## Analysis of outputs
 **Avg. length of output**: {rd["avg_n_chars"]:.0f} characters
+
 **Avg. list presence**: {rd["proba_list"]*100:.1f} %
+
 **Avg. number of list items**: {rd["avg_n_list_items"]:.1f} list items
+
 {qualitative_str}
 """
 

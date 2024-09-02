@@ -1,4 +1,4 @@
-# <a href="https://huggingface.co/spaces/vbhat4/rubriceval" target="_blank"><img src="https://raw.githubusercontent.com/YannDubs/RubricEval/main/docs/rubriceval_icon.png" width="35"></a> [RubricEval](https://huggingface.co/spaces/vbhat4/rubriceval): Scalable Expert Evaluation of Language Model
+# <a href="https://huggingface.co/spaces/vbhat4/rubriceval" target="_blank"><img src="https://raw.githubusercontent.com/YannDubs/RubricEval/main/docs/rubriceval_icon.png" width="35"></a> [RubricEval](https://huggingface.co/spaces/vbhat4/rubriceval): Scalable Expert Evaluation of Language Models
 
 [![License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/tatsu-lab/RubricEval/blob/main/LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
