@@ -6,6 +6,7 @@ data/human_eval
 .DS_Store
 .env
 results
+scripts/**/configs/**/*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
