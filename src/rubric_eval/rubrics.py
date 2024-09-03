@@ -5,7 +5,7 @@ import pandas as pd
 from alpaca_eval import utils as ae_utils
 from alpaca_eval.annotators import base
 
-from .helper import CONFIGS_DIR, expand_json_column, percentage_scale_df_
+from .helpers import CONFIGS_DIR, expand_json_column, percentage_scale_df_
 
 __all__ = ["RubricBrainstormer", "Rubricator"]
 
@@ -36,7 +36,7 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         is_renormalize_weight: bool = True,
         is_extract_criteria_col: bool = True,
     ) -> pd.DataFrame:
-        """Processes the annotatoed examples into a DataFrame containing a rubric of (dict of dict) column."""
+        """Processes the annotated examples into a DataFrame containing a rubric of (dict of dict) column."""
         df_rubrics = ae_utils.convert_to_dataframe(annotated)
         n_examples = len(df_rubrics)
         # filter out examples where annotation is missing (pd.isnull(value) or value is None)

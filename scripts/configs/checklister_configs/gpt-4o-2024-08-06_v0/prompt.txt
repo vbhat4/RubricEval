@@ -1,0 +1,16 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in evaluating LLM outputs.
+<|im_end|>
+<|im_start|>user
+We are conducting a holistic evaluation of powerful large language models (LLMs). To achieve this, you need to write for each assignment a checklist of criteria to consider when evaluating the output.
+
+Generate a JSON output containing:
+- checklist (list[str]): List of 3-10 criteria to consider when evaluating the output.
+
+Ensure that the checklist is comprehensive and covers all relevant aspects of the output. The JSON output will be used by make_evaluation_report(json_output) to generate the final evaluation of the LLM.
+
+# Assignment
+{instruction}
+
+Now generate the final evaluation using `make_evaluation_report(json_output)``.
+<|im_end|>

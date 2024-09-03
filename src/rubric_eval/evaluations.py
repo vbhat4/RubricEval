@@ -8,7 +8,7 @@ import pandas as pd
 from alpaca_eval import utils as ae_utils
 from alpaca_eval.annotators import base
 
-from .helper import CONFIGS_DIR, expand_json_column, mean
+from .helpers import CONFIGS_DIR, expand_json_column, mean
 
 __all__ = ["Evaluator", "make_evaluation_report_dict", "format_evaluation_report_md"]
 

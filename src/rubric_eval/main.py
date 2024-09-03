@@ -31,7 +31,8 @@ from rubric_eval import (
     make_evaluation_report_dict,
     summarize,
 )
-from rubric_eval.helper import check_df_fields, get_output_path, process_input_df_
+
+from .helpers import check_df_fields, get_output_path, process_input_df_
 
 CUR_DIR = Path(__file__).parent
 
