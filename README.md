@@ -341,7 +341,7 @@ gpt-4o-2024-08-06_CoT_v0: # should be the name of the directory
   fn_completions: "openai_completions" # functions to use to get completions. see https://github.com/tatsu-lab/alpaca_eval/blob/main/src/alpaca_eval/decoders/__init__.py
   completions_kwargs: # kwargs to the completions functions. E.g. for openai it's all the openai decoding kwargs
     model_name: "gpt-4o-2024-05-13"
-    max_tokens: 4096
+    max_tokens: 8192
     # ...
   fn_completion_parser: "json_parser" # how to parse the completions. typically json parser.
 ```

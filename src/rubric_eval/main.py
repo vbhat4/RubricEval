@@ -165,14 +165,25 @@ def generate_rubrics_from_df(
         df_input = df_input.sample(min(max_instances, len(df_input)), random_state=123)
         logging.info(f"We sampled {len(df_input)} from the {n_inputs} due to max_instances.")
 
-    process_input_df_(df_input, required_fields={"instruction", "brainstormed_rubric"})
+    process_input_df_(
+        df_input,
+        required_fields={"instruction", "brainstormed_rubric"},
+        optional_fields={"brainstormed_response": ""},
+    )
     rubricator = Rubricator(annotators_config=rubricator_configs, **rubricator_kwargs)
     list_rubrics = rubricator(df_input)
+
     df_rubrics = rubricator.make_df_rubrics(list_rubrics, is_extract_criteria_col=True, is_renormalize_weight=True)
+
     if is_rm_prev_columns:
         raw_completion_cols = [c for c in df_rubrics.columns if c.endswith("raw_completion")]
         df_rubrics = df_rubrics.drop(
-            columns=["brainstormed_rubric", "learning_objectives", "useful_info_to_eval_instruction"]
+            columns=[
+                "brainstormed_rubric",
+                "brainstormed_response",
+                "learning_objectives",
+                "useful_info_to_eval_instruction",
+            ]
             + raw_completion_cols,
             errors="ignore",
         )
@@ -278,7 +289,12 @@ def generate_outputs_from_df(
     if is_rm_prev_columns:
         raw_completion_cols = [c for c in df_outputs.columns if c.endswith("raw_completion")]
         df_outputs = df_outputs.drop(
-            columns=["brainstormed_rubric", "learning_objectives", "useful_info_to_eval_instruction"]
+            columns=[
+                "brainstormed_rubric",
+                "brainstormed_response",
+                "learning_objectives",
+                "useful_info_to_eval_instruction",
+            ]
             + raw_completion_cols,
             errors="ignore",
         )
@@ -335,7 +351,11 @@ def evaluate_from_df(
         df_input = df_input.sample(min(max_instances, len(df_input)), random_state=123)
         logging.info(f"We sampled {len(df_input)} from the {n_inputs} due to max_instances.")
 
-    process_input_df_(df_input, required_fields={"instruction", "output", "rubric", "criteria"})
+    process_input_df_(
+        df_input,
+        required_fields={"instruction", "output", "rubric", "criteria"},
+        optional_fields={"excellent_response": ""},
+    )
 
     evaluator = Evaluator(annotators_config=evaluator_configs, **evaluator_kwargs)
     evaluations = evaluator(df_input)
@@ -343,7 +363,13 @@ def evaluate_from_df(
     if is_rm_prev_columns:
         raw_completion_cols = [c for c in df_eval.columns if c.endswith("raw_completion")]
         df_eval = df_eval.drop(
-            columns=["brainstormed_rubric", "learning_objectives", "useful_info_to_eval_instruction", "criteria"]
+            columns=[
+                "brainstormed_rubric",
+                "brainstormed_response",
+                "learning_objectives",
+                "useful_info_to_eval_instruction",
+                "criteria",
+            ]
             + raw_completion_cols,
             errors="ignore",
         )

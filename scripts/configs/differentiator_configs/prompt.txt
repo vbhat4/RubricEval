@@ -1,0 +1,28 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in evaluating and comparing outputs from different large language models (LLMs).
+<|im_end|>
+<|im_start|>user
+We are conducting a comparative evaluation of powerful large language models (LLMs). Your task is to find the best instruction, i.e., that allows to differentiate between two model outputs (a better and an alternative output).Evaluate the differences and provide scores on various aspects. Follow these best practices:
+- Objectivity and fairness: Maintain impartiality and base your evaluation solely on the content of the outputs.
+- Thorough comparison: Carefully analyze both outputs to identify key differences and similarities.
+
+Generate a JSON output with the following parameters:
+- difference_score (int): Likert scale score between 1-10 indicating how much better main_output is compared to alternative_output.
+- why_different (str): The main category of the main advantage that main_output has over alternative_output. Choose from: 'reasoning' (better reasoning), 'tool' (non-internet tool like a code interpreter => giving access to a non-internet tool to alternative model would drastically improve), 'writing' (better overall writing / formatting for the main output), 'knowledge' (more knowledge => giving the alternative model access to internet would help), 'relevance' (more relevant output / better addressing the assignment). 
+- complexity_score (int): Likert scale score between 1-10 indicating how complex the instruction is. 10 for very complex, 1 for very simple.
+- multisolution_score (int): Score between 1-10 quantifying how many possible complete solutions exist for the instruction. (1 for single correct answer, 10 for infinite possibilities)
+- objective_score (int): Likert scale score between 1-10 indicating how objective the quality of the instruction is. (Higher for more objective tasks like math, lower for subjective tasks like creative writing)
+
+Ensure your evaluation is thorough and fair. The JSON output will be used by select_best_instructions(json_output) to generate the final comparative benchmark.
+
+# Instruction
+{instruction}
+
+# Main Model Output
+{output_main}
+
+# Alternative Model Output
+{output_alt}
+
+Now generate the final evaluation set using `select_best_instructions(json_output)`.
+<|im_end|>

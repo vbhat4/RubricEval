@@ -31,6 +31,7 @@ class Evaluator(base.BaseAnnotatorJSON):
             "criteria",
             "rubric",
             "output",
+            "excellent_response",
         ),
         annotators_config="gpt-4o-2024-08-06_CoT_v0",
         **kwargs,
@@ -61,6 +62,7 @@ class Evaluator(base.BaseAnnotatorJSON):
         # to get the per example score, you take the score for each criterion in self.annotation_key, you then weight
         # them by the weight in "rubric" and sum them up
         df_eval["unweighted_score"] = df_eval[self.annotation_key].apply(lambda x: mean([d["score"] for d in x]))
+
         df_eval["weighted_score"] = df_eval.apply(_compute_score_from_rubric_and_grading, axis=1)
         if df_eval["weighted_score"].isnull().any():
             n_scores_missing = df_eval["weighted_score"].isnull().sum()
@@ -250,6 +252,7 @@ def format_evaluation_report_md(report_dict: dict[str, Any]) -> str:
 
 def _compute_score_from_rubric_and_grading(x: dict) -> float:
     """Compute the score from the rubric and grading."""
+
     df_grading = pd.DataFrame(x["evaluation"]).set_index("criterion")
     df_rubric = pd.DataFrame(x["rubric"]).set_index("criterion")
     if not df_grading.index.equals(df_rubric.index):

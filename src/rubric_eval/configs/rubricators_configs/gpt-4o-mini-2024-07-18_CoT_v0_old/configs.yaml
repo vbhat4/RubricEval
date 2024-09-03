@@ -51,11 +51,8 @@ gpt-4o-mini-2024-07-18_CoT_v0:
                       required: [ "excellent", "good", "fair", "poor" ]
                   additionalProperties: false
                   required: [ "criterion", "weight", "performance_to_description" ]
-              excellent_response:
-                type: "string"
-                description: "An example of an LLM's response that achieves the 'excellent' rating for each criterion."
             additionalProperties: false
-            required: [ "rubric", "excellent_response" ]
+            required: [ "rubric" ]
   batch_size: 1
   fn_completion_parser: "json_parser"
   completion_parser_kwargs:

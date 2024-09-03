@@ -10,7 +10,6 @@ from typing import Sequence
 import pandas as pd
 from alpaca_eval import utils as ae_utils
 from alpaca_eval.annotators import base
-
 from rubric_eval import helpers, main
 from rubric_eval.evaluations import Evaluator as REEvaluator
 from rubric_eval.outputs import Outputer
@@ -138,10 +137,13 @@ class SolutionEvaluator(BaseEvaluator):
     def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
         # replace all the columns with "output*" to "tmp*" so that it's not lost
         df = df.rename(columns={c: c.replace("output", "tokeep") for c in df.columns if c.startswith("output")})
+        df["modelkeep"] = df["model"]
         # dirty trick to get the model name
         outputer = Outputer(annotators_config=gold_model.split("_")[0])
         outputs = outputer(df)
         df = ae_utils.convert_to_dataframe(outputs)
+        df["solutioner"] = df["model"]
+        df["model"] = df["modelkeep"]
         # replace the new "output*" column with the "solution*"
         df = df.rename(columns={c: c.replace("output", "solution") for c in df.columns if c.startswith("output")})
         # replace the "tokeep*" columns with the "output*"
@@ -159,6 +161,7 @@ class RubricEvaluator(REEvaluator):
 
     @classmethod
     def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
+        df = df.drop(columns=["rubric", "excellent_response"])
         df_with_brainstorm = main.brainstorm_rubrics_from_df(df, gold_model, **kwargs)
-        df_with_rubrics = main.generate_rubrics_from_df(df_with_brainstorm, gold_model, **kwargs)
-        return df_with_rubrics
+        df = main.generate_rubrics_from_df(df_with_brainstorm, gold_model, **kwargs)
+        return df

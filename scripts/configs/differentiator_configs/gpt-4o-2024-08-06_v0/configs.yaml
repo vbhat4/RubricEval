@@ -1,0 +1,43 @@
+gpt-4o-2024-08-06_v0:
+  prompt_template: "gpt-4o-2024-08-06_v0/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model: "gpt-4o-2024-08-06"
+    temperature: 0
+    tool_choice:
+      type: function
+      function:
+        name: "select_best_instructions"
+    tools:
+      - type: function
+        function:
+          name: "select_best_instructions"
+          description: "Select the best instructions based on per instruction information"
+          strict: true
+          parameters:
+            type: "object"
+            properties:
+              difference_score:
+                type: "number"
+                description: "Likert scale score of how much better main_output is to alternative_output between 1-10"
+                enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+              why_different:
+                type: "string"
+                description: "What is the category of the source of hte main advantage of main_output over alternative_output. Needs to be 'reasoning', 'tool', 'writing', 'knowledge', 'relevance'."
+                enum: ['reasoning', 'tool', 'writing', 'knowledge', 'relevance']
+              complexity_score:
+                type: "number"
+                description: "Likert score of how complex the instruction is. Between 1-10"
+                enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+              multisolution_score:
+                type: "number"
+                description: "Quantification of how many possible completely solutions there are to the instruction. Between 1-10. 1 is for example in math problems where there is only one correct answer. 10 is for example in creative writing where there are infinite possible answers."
+                enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+              objective_score:
+                type: "number"
+                description: "Likert score of how objective the quality of the instruction is. Between 1-10. For example math questions are usually objective but creative writing is not."
+                enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            additionalProperties: false
+            required: ['difference_score', 'why_different', 'complexity_score', 'multisolution_score', 'objective_score']
+  batch_size: 1
+  fn_completion_parser: null

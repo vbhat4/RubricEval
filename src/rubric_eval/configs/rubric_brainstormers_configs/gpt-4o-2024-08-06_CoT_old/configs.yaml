@@ -1,8 +1,8 @@
-gpt-4o-mini-2024-07-18_CoT_v0:
+gpt-4o-2024-08-06_CoT_v0:
   prompt_template: "gpt-4o-2024-08-06_CoT_v0/prompt.txt"
   fn_completions: "openai_completions"
   completions_kwargs:
-    model_name: "gpt-4o-mini-2024-07-18"
+    model_name: "gpt-4o-2024-08-06"
     max_tokens: 8192
     temperature: 0.0
     tool_choice:
@@ -21,9 +21,6 @@ gpt-4o-mini-2024-07-18_CoT_v0:
               learning_objectives:
                 type: "string"
                 description: "The learning objectives for the assignment."
-              brainstormed_response:
-                type: "string"
-                description: "An example of a strong response for the assignment."
               brainstormed_rubric:
                 type: "array"
                 description: "A list of 3-6 objects, each representing a criterion for the assignment, including a checklist and weight"
@@ -49,9 +46,9 @@ gpt-4o-mini-2024-07-18_CoT_v0:
 #                      minItems: 5
 #                      maxItems: 10
                   additionalProperties: false
-                  required: [ "criterion", "checklist", "weight"] 
+                  required: [ "criterion", "checklist", "weight"]
             additionalProperties: false
-            required: ["learning_objectives",  "brainstormed_response", "brainstormed_rubric"]
+            required: ["learning_objectives", "brainstormed_rubric"]
   fn_completion_parser: "json_parser"
   completion_parser_kwargs:
     annotation_key: null

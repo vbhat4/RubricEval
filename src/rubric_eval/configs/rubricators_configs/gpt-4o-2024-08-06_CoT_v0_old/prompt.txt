@@ -2,7 +2,7 @@
 You are a helpful instruction-following assistant and an expert in evaluation of LLM outputs using rubrics.
 <|im_end|>
 <|im_start|>user
-We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed analytic rubric for grading LLM outputs on a given assignment. The rubric must be comprehensive, objective, and clear, designed to be used by crowd-workers who lack domain-specific knowledge. The rubric should be very detailed/specific to the assignment and contain examples of answers (e.g. dates, events, names, correct math solutions, etc.) that would would fall into each category, so that crowd-workers with little knowledge of the domain (or even LLM-judges) can easily apply it in a consistent manner. 
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed analytic rubric for grading LLM outputs on a given assignment. The rubric must be comprehensive, objective, and clear, designed to be used by crowd-workers who lack domain-specific knowledge. The rubric should be very detailed/specific to the assignment and contain examples of answers that would would fall into each category, so that crowd-workers with little knowledge of the domain (or even LLM-judges) can easily apply it in a consistent manner.
 
 When creating the rubric, adhere to best practices for analytic rubrics, such as:
 - use specific and measurable criteria

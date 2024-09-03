@@ -42,14 +42,23 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         # filter out examples where annotation is missing (pd.isnull(value) or value is None)
         df_rubrics = df_rubrics.dropna(subset=[self.annotation_key])
         n_missing = n_examples - len(df_rubrics)
+
         if n_missing > 0:
             logging.warning(f"{n_missing} examples have missing annotations for {self.__class__.__name__}.")
+
+        # TODO: understand why this can add back rows that were previously removed
         df_rubrics = expand_json_column(df_rubrics, self.annotation_key)
+        df_rubrics = df_rubrics.dropna(subset=[self.annotation_key])
 
         if rubric_columns is None:
             rubric_columns = [self.annotation_key]
 
         for col in rubric_columns:
+            # remove potential duplicate criteria in the rubric (happends with bad models)
+            df_rubrics[col] = df_rubrics[col].apply(
+                lambda x: pd.DataFrame(x).drop_duplicates(subset=["criterion"], keep="first").to_dict(orient="records")
+            )
+
             if is_renormalize_weight:
                 # each element is a list of dicts, dicts have a key "weight" that we want to normalize over the list
                 # we do so by converting list of dict to df, then normalize "weight" then convert back to list of dict
@@ -102,7 +111,7 @@ class Rubricator(BaseRubricator):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("instruction", "brainstormed_rubric"),
+        primary_keys: Sequence[str] = ("instruction", "brainstormed_rubric", "brainstormed_response"),
         annotators_config="gpt-4o-2024-08-06_CoT_v0",
         **kwargs,
     ):

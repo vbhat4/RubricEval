@@ -31,20 +31,15 @@ Experiment 2:
     methods: the rubric
     number of experiments: 3 (settings) => 150 examples
 """
+import logging
 from pathlib import Path
 from typing import Optional
 
 import fire
 from alpaca_eval import utils as ae_utils
-from rubric_eval import helpers, main
+from evaluators import BaseEvaluator, ChecklistEvaluator, NaiveEvaluator, RubricEvaluator, SolutionEvaluator
 
-from evaluators import (
-    BaseEvaluator,
-    ChecklistEvaluator,
-    NaiveEvaluator,
-    RubricEvaluator,
-    SolutionEvaluator,
-)
+from rubric_eval import helpers, main
 
 benchmark_path = helpers.MAIN_DIR / "data/benchmark/rubriceval_hard/benchmark.json"
 mixtral_out_path = helpers.MAIN_DIR / "data/benchmark/rubriceval_hard/mixtral_outputs.json"
@@ -71,6 +66,9 @@ def run_dec_usefulness(
 
     for Evaluator in Evaluators:
         for gold_model, eval_model in gold_eval_models:
+            if Evaluator == NaiveEvaluator and gold_model != eval_model:
+                logging.info(f"Skipping {Evaluator.__name__} because gold_model is not the same as eval_model")
+                continue
             df = ae_utils.load_or_convert_to_dataframe(out_path)
             if max_instances:
                 df = df.sample(max_instances, random_state=123)
@@ -90,6 +88,8 @@ def experiment_1(**kwargs):
         ("gpt-4o-2024-08-06_CoT_v0", "gpt-4o-2024-08-06_CoT_v0"),
         ("gpt-4o-mini-2024-07-18_CoT_v0", "gpt-4o-mini-2024-07-18_CoT_v0"),
         ("gpt-4o-2024-08-06_CoT_v0", "gpt-4o-mini-2024-07-18_CoT_v0"),
+        # ("Qwen1.5-7B-Chat", "Qwen1.5-7B-Chat"),
+        # ("gpt-4o-2024-08-06_CoT_v0", "Qwen1.5-7B-Chat"),
     ]
     run_dec_usefulness(
         gold_eval_models,
@@ -101,6 +101,7 @@ def experiment_1(**kwargs):
 
 
 def experiment_2(**kwargs):
+    # TODO: write the rubric and evalautor for this experiment. the issue is that they do not use function calling
     gold_eval_models = [
         ("claude-3-5-sonnet-20240620", "claude-3-5-sonnet-20240620"),
         ("Meta-Llama-3.1-8B-Instruct-Turbo", "Meta-Llama-3.1-8B-Instruct-Turbo"),

@@ -7,7 +7,7 @@ We are conducting a holistic evaluation of powerful large language models (LLMs)
 - Comprehensive Feedback: Provide detailed feedback that highlights both strengths and weaknesses of the LLM’s output for each criterion. This feedback should be specific and actionable.
 - Justification of Scores: For each score, provide a clear and thorough explanation that references specific elements of the rubric and the LLM's outputs. Explain how the LLM’s output aligns or deviates from the expectations for each performance level.
 
-Generate a JSON output containing:
+Based on the provided "Analytic Rubric" and "Strong Response" (if available, an example of a strong LLM response), evaluate the LLM's output to "Assignment". Generate a JSON output containing:
 - rubric_grading (list[dict[str, str]]): A list of dictionaries, each corresponding to the evaluation of a criterion in the rubric. Each dictionary should contain the following keys:
     - criterion (str): The name of the criterion. This should match exactly with the criterion in the rubric.
     - feedback (str): Detailed explanation of the LLM's strengths and weaknesses for this criterion.
@@ -26,7 +26,10 @@ Ensure your evaluation is thorough, fair, and aligns closely with the provided r
 ## Criteria
 {criteria}
 
-# LLM Output
+## Strong Response (optional)
+{excellent_response}
+
+# LLM Output to Evaluate
 {output}
 
 Now generate the final evaluation using `make_evaluation_report(json_output)``.
