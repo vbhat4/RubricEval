@@ -11,18 +11,12 @@ When creating the rubric, adhere to best practices for analytic rubrics, such as
 - reference concrete elements: when possible, mention specific dates, events, names, or other information the LLM should include in its response so that non-experts can apply the rubric without domain-specific knowledge.
 - use distinct performance levels: clearly differentiate between "Excellent," "Good," "Fair," and "Poor" performance for each criterion.
 
-Remember to follow good practices when writing rubrics such as:
-- use descriptive and specific criteria
-- for the description, be comprehensive, unambiguous, and avoid vague terms like “good” or “adequate.”
-- ensure that the rubric is objective and can be applied consistently by different evaluators
-- for each description, refer as much as possible to actual parts of the answer such as dates, events, names, or other information that the model should touch upon.
-
 Based on the provided "assignment" and "brainstormed rubric" (things to consider when writing the rubric) and "brainstormed response" (if available, an example of a strong LLM response) generate a JSON with output containing the following:
 - rubric (list[dict[str, str]]): A list of dictionaries, each corresponding to a criterion in the rubric. Each dictionary should have the following keys:
   - criterion (str): The name of the criterion.
   - weight (int): The weight of the criterion in the total score, expressed as an integer between 0-100.
   - performance_to_description (dict[str, str]): A mapping between the performance level ("excellent", "good", "fair", "poor") and a detailed description of what the LLM needs to do to achieve that rating for that criterion. Descriptions must be comprehensive, clear, and refer to specific parts of the ideal response for the criterion. They should be written in a way that crowd-workers can easily understand and apply to the LLM's response.
-- excellent_response (str): An example of an LLM's response that achieves the "excellent" rating for each criterion.
+- excellent_response (str): An example of a response that achieves the "excellent" rating for each criterion.
 
 The json output should then be given to `evaluate_llm(json_output)` to evaluate the llm.
 

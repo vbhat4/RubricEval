@@ -20,7 +20,7 @@ gpt-4o-2024-08-06_v0:
             properties:
               checklist:
                 type: "array"
-                description: "List of criteria to consider when evaluating the output."
+                description: "A list of 5-10 concrete and detailed questions tailored to the assignment to consider when evaluating the output."
                 items:
                   type: "string"  
             additionalProperties: false

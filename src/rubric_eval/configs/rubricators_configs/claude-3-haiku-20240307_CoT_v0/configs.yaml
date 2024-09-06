@@ -1,0 +1,56 @@
+claude-3-haiku-20240307_CoT_v0:
+  prompt_template: "claude-3-5-sonnet-20240620_CoT_v0/prompt.txt"
+  fn_completions: "anthropic_completions"
+  completions_kwargs:
+    model_name: "claude-3-haiku-20240307"
+    max_tokens: 8192
+    temperature: 0.0
+    tool_choice:
+      type: tool
+      name: "evaluate_llm"
+    tools:
+      - name: "evaluate_llm"
+        description: "Evaluate the LLM's output on the current assignment given an analytic rubric."
+        input_schema:
+          type: "object"
+          properties:
+            rubric:
+              type: "array"
+              description: "The detailed analytic rubric, represented as a list of dictionaries. Each dictionary corresponds to a criterion in the rubric, mapping performance levels to descriptions."
+              items:
+                type: "object"
+                description: "A single criterion in the rubric."
+                properties:
+                  criterion:
+                    type: "string"
+                    description: "The descriptive name of the criterion."
+                  weight:
+                    type: "number"
+                    description: "The weight of the criterion in the final score, as an integer between 0-100. The weights will be normalized to sum to 100%."
+                  performance_to_description:
+                    type: "object"
+                    description: "Mapping between performance levels and detailed descriptions of what output would receive that rating for this criterion."
+                    properties:
+                      excellent:
+                        type: "string"
+                        description: "A detailed, clear description of what constitutes an ideal output for this criterion."
+                      good:
+                        type: "string"
+                        description: "A detailed, clear description of what constitutes a good but not perfect output for this criterion."
+                      fair:
+                        type: "string"
+                        description: "A detailed, clear description of what constitutes an output that is only fair but not good for this criterion."
+                      poor:
+                        type: "string"
+                        description: "A detailed, clear description of what constitutes a poor output for this criterion."
+                    additionalProperties: false
+                    required: [ "excellent", "good", "fair", "poor" ]
+                additionalProperties: false
+                required: [ "criterion", "weight", "performance_to_description" ]
+            excellent_response:
+              type: "string"
+              description: "An example of a response that achieves the 'excellent' rating for each criterion."
+          additionalProperties: false
+          required: [ "rubric", "excellent_response" ]
+  batch_size: 1
+  fn_completion_parser: null

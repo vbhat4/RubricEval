@@ -102,10 +102,7 @@ def annotate_diff_outputs(
     df.to_json(save_path, orient="records", indent=2)
 
 
-def make_rubriceval_hard(
-    instructions_path: Path,
-    n_cat: int = 8,
-    n_per_cat: int = 15,
+def get_differentiated_data(
     skip_diff_if_exists: bool = True,
     max_instances: Optional[int] = None,
 ):
@@ -136,6 +133,27 @@ def make_rubriceval_hard(
     df = pd.read_json(diff_path)
     if max_instances:
         df = df.iloc[:max_instances]
+    return df
+
+
+def save_rubriceval_data(df: pd.DataFrame, instructions_path: Path):
+    instructions_path.parent.mkdir(parents=True, exist_ok=True)
+    cols_to_drop = list(df.filter(like="annotations_", axis=1).columns)
+    cols_to_drop += ["mean_score", "differentiator", "output_alt", "output_main"]
+    # remove user_intent for our experiments as we want all done by the same model
+    cols_to_drop += ["useful_info_to_eval_instruction"]
+    df.drop(columns=cols_to_drop, inplace=True, errors="ignore")
+    df.to_json(instructions_path, orient="records", indent=2)
+
+
+def make_rubriceval_hard(
+    instructions_path: Path,
+    n_cat: int = 8,
+    n_per_cat: int = 25,
+    max_instances: Optional[int] = None,
+    is_show_counts: bool = False,
+):
+    df = get_differentiated_data(max_instances=max_instances)
     df_groups = pd.merge(
         df.groupby("category")["difference_score"].mean(),
         df.groupby("category")["complexity_score"].mean(),
@@ -163,21 +181,48 @@ def make_rubriceval_hard(
         .apply(lambda x: x.sort_values("mean_score", ascending=False).head(n_per_cat))
         .reset_index(drop=True)
     )
-    instructions_path.parent.mkdir(parents=True, exist_ok=True)
-    cols_to_drop = list(df_hard.filter(like="annotations_", axis=1).columns)
-    cols_to_drop += ["mean_score", "differentiator", "output_alt", "output_main", "mean_score"]
-    # remove user_intent for our experiments as we want all done by the same model
-    cols_to_drop += ["useful_info_to_eval_instruction"]
-    df_hard.drop(columns=cols_to_drop, inplace=True)
-    df_hard.to_json(instructions_path, orient="records", indent=2)
+    if is_show_counts:
+        print(df_hard["category"].value_counts())
+    save_rubriceval_data(df_hard, instructions_path)
 
 
-def main(max_instances: Optional[int] = None):
+def make_rubriceval_sampled(
+    instructions_path: Path,
+    n_per_cat: int = 25,
+    max_instances: Optional[int] = None,
+    is_show_counts: bool = False,
+):
+    df = get_differentiated_data(max_instances=max_instances)
+    counts = df.groupby("category").size()
+    counts.name = "count"
+    df_groups = pd.merge(df, counts, on="category")
+    df_groups = df_groups.query("count >= @n_per_cat")
+    # sample n_per_cat using shuffle so that you can hit the cache if incresing n_per_cat
+    df_sampled = (
+        df_groups.groupby("category")
+        .apply(lambda x: x.sample(frac=1, random_state=123))  # Shuffle within each category
+        .groupby(level="category")
+        .head(n_per_cat)  # Take top n_per_cat from each category
+        .reset_index(drop=True)
+    )
+    if is_show_counts:
+        print(df_sampled["category"].value_counts())
+    save_rubriceval_data(df_sampled, instructions_path)
+
+
+def rubriceval_hard(max_instances: Optional[int] = None, **kwargs):
     instructions_path = re_helpers.MAIN_DIR / "data/benchmark/rubriceval_hard/instructions.json"
-    make_rubriceval_hard(instructions_path)  # , max_instances=max_instances)
+    make_rubriceval_hard(instructions_path, **kwargs)
     rubric_path = re_helpers.MAIN_DIR / "data/benchmark/rubriceval_hard/benchmark.json"
     brainstorm_and_generate_rubrics(input_path=instructions_path, output_path=rubric_path, max_instances=max_instances)
 
 
+def rubriceval_sampled(max_instances: Optional[int] = None, **kwargs):
+    instructions_path = re_helpers.MAIN_DIR / "data/benchmark/rubriceval_sampled/instructions.json"
+    make_rubriceval_sampled(instructions_path, **kwargs)
+    rubric_path = re_helpers.MAIN_DIR / "data/benchmark/rubriceval_sampled/benchmark.json"
+    brainstorm_and_generate_rubrics(input_path=instructions_path, output_path=rubric_path, max_instances=max_instances)
+
+
 if __name__ == "__main__":
-    fire.Fire(main)
+    fire.Fire({"hard": rubriceval_hard, "sampled": rubriceval_sampled})

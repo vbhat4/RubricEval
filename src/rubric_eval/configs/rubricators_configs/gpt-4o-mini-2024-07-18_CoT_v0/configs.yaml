@@ -53,7 +53,7 @@ gpt-4o-mini-2024-07-18_CoT_v0:
                   required: [ "criterion", "weight", "performance_to_description" ]
               excellent_response:
                 type: "string"
-                description: "An example of an LLM's response that achieves the 'excellent' rating for each criterion."
+                description: "An example of a response that achieves the 'excellent' rating for each criterion."
             additionalProperties: false
             required: [ "rubric", "excellent_response" ]
   batch_size: 1

@@ -1,0 +1,50 @@
+Mixtral-8x7B-Instruct-v0.1_CoT_v0:
+  prompt_template: "gpt-4o-2024-08-06_CoT_v0/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "mistralai/Mixtral-8x7B-Instruct-v0.1"
+    max_tokens: 8192
+    requires_chatml: True
+    client_kwargs:
+      base_url: 'https://api.together.xyz'
+    temperature: 0
+    tool_choice:
+      type: function
+      function:
+        name: "make_evaluation_report"
+    tools:
+      - type: function
+        function:
+          name: "make_evaluation_report"
+          description: "Aggregates all the scores and feedback over criteria and instructions to make the final evaluation report."
+          parameters:
+            type: "object"
+            properties:
+              rubric_grading:
+                type: "array"
+                description: "The evaluation for each criterion in the analytic rubric, represented as a list of dictionaries. Each dictionary provides feedback, an explanation, and the final score for the LLM output on that criterion."
+                items:
+                  type: "object"
+                  description: "The evaluation for a single criterion in the rubric."
+                  properties:
+                    criterion:
+                      type: "string"
+                      description: "The descriptive name of the criterion. This must match exactly with the criterion in the rubric."
+                    feedback:
+                      type: "string"
+                      description: "A concise but complete explanation of what the LLM did well and what it did poorly on that criterion."
+                    explanation:
+                      type: "string"
+                      description: "A concise but complete explanation of why you chose the specific performance level for that criterion, referencing the rubric and specific elements of the LLM's output."
+                    performance:
+                      type: "string"
+                      enum: [ "excellent", "good", "fair", "poor" ]
+                      description: "The level of performance the LLM achieved on that criterion."
+                  additionalProperties: false
+                  required: [ "criterion", "feedback", "explanation", "performance" ]
+            additionalProperties: false
+            required: [ "rubric_grading" ]
+  batch_size: 1
+  fn_completion_parser: "json_parser"
+  completion_parser_kwargs:
+    annotation_key: "rubric_grading"

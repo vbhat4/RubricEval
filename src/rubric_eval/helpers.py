@@ -1,4 +1,5 @@
 import ast
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -46,13 +47,28 @@ def get_output_path(
     return output_path
 
 
-def expand_json_column(df: pd.DataFrame, column_name: str, is_keep_other_columns=True) -> pd.DataFrame:
+def literal_eval_if_string(x: Any) -> Any:
+    """Literal eval if the input is a string."""
+    try:
+        return ast.literal_eval(x) if isinstance(x, str) else x
+    except Exception as e:
+        breakpoint()
+
+
+def expand_json_column(
+    df: pd.DataFrame,
+    column_name: str,
+    is_keep_other_columns: bool = True,
+    is_add_prefix: bool = False,
+) -> pd.DataFrame:
     """Expands a column of JSON strings into separate columns.
 
     Args:
         df (pd.DataFrame): The DataFrame to process.
         column_name (str): The name of the column to expand.
         is_keep_other_columns (bool): Whether to keep the other columns in the DataFrame.
+        is_add_prefix (bool): whether to add `column_name` as a prefix to the new columns from the
+            json. Note that this will not be added if the column already starts with the `column_name`.
 
     Example:
         >>> df = pd.DataFrame({"a": [1, 2], "b": ['{"c": 3, "d": 1}', '{"c": 4, "d": 2}']})
@@ -61,16 +77,23 @@ def expand_json_column(df: pd.DataFrame, column_name: str, is_keep_other_columns
             0	1	3	1
             1	2	4	2
     """
+    mask = df[column_name] == ""
+    if mask.any():
+        logging.warning(f"{mask.sum()} examples have empty {column_name} and will be dropped.")
+        df = df[~mask]
+
+    # Splits up the columns from the annotation key into separate columns
+    columns_to_add = pd.json_normalize(
+        # convert the annotated string to a dictionary
+        df[column_name].apply(literal_eval_if_string),
+        max_level=0,
+    )
+    if is_add_prefix:
+        columns_to_add.columns = [
+            column_name + "_" + col if not col.startswith(column_name) else col for col in columns_to_add.columns
+        ]
     return pd.concat(
-        ([df.drop([column_name], axis=1)] if is_keep_other_columns else [])
-        + [
-            # Splits up the columns from the annotation key into separate columns
-            pd.json_normalize(
-                # convert the annotated string to a dictionary
-                df[column_name].apply(ast.literal_eval),
-                max_level=0,
-            ),
-        ],
+        ([df.drop([column_name], axis=1)] if is_keep_other_columns else []) + [columns_to_add],
         axis=1,
     )
 

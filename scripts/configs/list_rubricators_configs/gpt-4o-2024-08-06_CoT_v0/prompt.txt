@@ -1,0 +1,64 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in creating comprehensive, easy-to-apply list-view rubrics with deductive scoring for evaluating LLM outputs.
+<|im_end|>
+<|im_start|>user
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed, user-friendly list-view rubric (similar to a checklist) for evaluating LLM outputs on a given assignment using deductive scoring. This rubric will be used by non-expert evaluators or other LLMs to assess the quality of responses from powerful language models.
+
+Key points about the rubric:
+1. Use deductive scoring: Points are subtracted for errors or omissions.
+2. Be comprehensive and objective: Cover all aspects of a good response.
+3. Be specific to the assignment: Reference concrete elements expected in a correct answer.
+4. Design for non-experts: Make it easily applicable by evaluators without domain-specific knowledge.
+
+When creating the rubric, adhere to these best practices:
+- Focus on specific, easily identifiable errors or omissions
+- Provide clear, detailed descriptions of potential mistakes with examples where possible
+- Use simple, unambiguous language for consistent application by non-experts
+- Assign precise point deductions reflecting the severity of each error
+- Cover a wide range of potential errors, both major and minor
+- Reference specific facts, dates, or concepts the LLM should include, providing context if necessary
+- Balance the rubric: Total possible deductions should be between -9 and -10 points
+- Keep error descriptions independent to avoid double-penalizing
+- Include guidance on how to identify each error or omission in the LLM's output
+
+# Output Format
+Based on the provided "assignment" generate a JSON with output containing the following:
+- strong_response (str): An example of the best possible response you can imagine for this assignment.
+- list_error_rubric (list[dict[str, Any]]): A list of 5-50 dictionaries, each corresponding to an element in the checklist / list-view rubric. The rubric is with deductive 
+points, so each element should mention a possible mistake that would cause a point deduction. Each dictionary should have the following keys:
+  - error_name (str): Concise, descriptive name of the potential error.
+  - description (str): Comprehensive description of the mistake or omission, including:
+    1. What the correct information or approach should be
+    2. How to identify if this error is present in the LLM's output
+    3. Examples of correct and incorrect responses if applicable
+  - delta_score (float): Negative number between -0.1 and -5 representing the point deduction. 
+
+The final score will be calculated as: 10 + sum of all delta_score
+
+Example rubric element for math:
+{
+  "error_name": "Incorrect final answer",
+  "description": "The final answer should be x=-1.75. Check if the LLM's output explicitly states this answer.",
+  "delta_score": -3
+}
+
+Example rubric element for French poetry:
+{
+  "error_name": "Incorrect alexandrine",
+  "description": "Each line should be an alexandrine: 12 syllables in French with a caesura (i.e. a pause) after the 6th syllable. Check for correct syllable count, caesura, and typically iambic rhythm.",
+  "delta_score": -1
+}
+
+Example rubric element for history:
+{
+  "error_name": "Missing or incorrect moon landing date",
+  "description": "The response should mention July 20, 1969, as the date of the first moon landing. If only the year 1969 is mentioned, apply half the deduction.",
+  "delta_score": -1.5
+}
+
+# Assignment
+{instruction}
+
+Now, based on this assignment, create a comprehensive, easy-to-apply rubric using the format described. Ensure that your rubric covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `evaluate_llm(json_output)` function.
+
+<|im_end|>

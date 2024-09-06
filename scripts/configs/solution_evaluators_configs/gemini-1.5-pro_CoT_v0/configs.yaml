@@ -1,0 +1,29 @@
+gemini-1.5-pro_CoT_v0:
+  prompt_template: "gemini-1.5-pro_CoT_v0/prompt.txt"
+  fn_completions: "google_completions"
+  completions_kwargs:
+    model_name: "gemini-1.5-pro"
+    max_output_tokens: 8192
+    candidate_count: 1
+    temperature: 0
+    tool_config:
+      function_calling_config:
+        mode: "ANY"
+        allowed_function_names:
+          - "make_evaluation_report"
+    tools:
+      - function_declarations:
+        - name: "make_evaluation_report"
+          description: "Aggregates all the scores and feedback over instructions to make the final evaluation report."
+          parameters:
+            type: "object"
+            properties:
+              explanation:
+                type: "string"
+                description: "Brief justification for the chosen performance level."
+              final_score:
+                type: "number"
+                description: "Likert scale score between 1 and 10 that quantifies the overall quality of the LLM's output."
+            required: [ "explanation", "final_score" ]
+  batch_size: 1
+  fn_completion_parser: null

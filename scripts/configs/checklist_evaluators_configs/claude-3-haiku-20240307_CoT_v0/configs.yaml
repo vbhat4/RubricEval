@@ -1,0 +1,27 @@
+claude-3-haiku-20240307_CoT_v0:
+  prompt_template: "claude-3-5-sonnet-20240620_CoT_v0/prompt.txt"
+  fn_completions: "anthropic_completions"
+  completions_kwargs:
+    model_name: "claude-3-haiku-20240307"
+    max_tokens: 8192
+    temperature: 0
+    tool_choice:
+      type: tool
+      name: "make_evaluation_report"
+    tools:
+      - name: "make_evaluation_report"
+        description: "Aggregates all the scores and feedback over instructions to make the final evaluation report."
+        input_schema:
+          type: "object"
+          properties:
+            explanation:
+              type: "string"
+              description: "Brief justification for the chosen performance level."
+            final_score:
+              type: "number"
+              description: "Likert scale score between 1 and 10 that quantifies the overall quality of the LLM's output."
+          additionalProperties: false
+          required: [ "explanation", "final_score" ]
+  batch_size: 1
+  fn_completion_parser: null
+  

@@ -22,7 +22,7 @@ Based on the provided "assignment" and "brainstormed rubric" (things to consider
   - criterion (str): The name of the criterion.
   - weight (int): The weight of the criterion in the total score, expressed as an integer between 0-100.
   - performance_to_description (dict[str, str]): A mapping between the performance level ("excellent", "good", "fair", "poor") and a detailed description of what the LLM needs to do to achieve that rating for that criterion. Descriptions must be comprehensive, clear, and refer to specific parts of the ideal response for the criterion. They should be written in a way that crowd-workers can easily understand and apply to the LLM's response.
-- excellent_response (str): An example of an LLM's response that achieves the "excellent" rating for each criterion.
+- excellent_response (str): An example of a response that achieves the "excellent" rating for each criterion.
 
 The json output should then be given to `evaluate_llm(json_output)` to evaluate the llm.
 

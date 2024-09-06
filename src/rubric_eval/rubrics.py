@@ -54,7 +54,7 @@ class BaseRubricator(base.BaseAnnotatorJSON):
             rubric_columns = [self.annotation_key]
 
         for col in rubric_columns:
-            # remove potential duplicate criteria in the rubric (happends with bad models)
+            # remove potential duplicate criteria in the rubric (happens with bad models)
             df_rubrics[col] = df_rubrics[col].apply(
                 lambda x: pd.DataFrame(x).drop_duplicates(subset=["criterion"], keep="first").to_dict(orient="records")
             )

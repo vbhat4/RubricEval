@@ -10,6 +10,7 @@ scripts/**/configs/**/*.json
 src/**/configs/**/*.json
 configs/**/*.json
 annotations_seed*.json
+data/benchmark/rubriceval_*_*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

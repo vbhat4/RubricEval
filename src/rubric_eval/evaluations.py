@@ -1,3 +1,4 @@
+import ast
 import logging
 from datetime import datetime
 from pathlib import Path
@@ -54,10 +55,27 @@ class Evaluator(base.BaseAnnotatorJSON):
     ) -> pd.DataFrame:
         """Add scores to the dataframe based on the rubric."""
         df_eval = ae_utils.convert_to_dataframe(annotated)
+
+        df_eval = df_eval.dropna(subset=[self.annotation_key])
+
+        mask_str = df_eval[self.annotation_key].apply(lambda x: isinstance(x, str))
+        if mask_str.any():
+            logging.warning(f"{mask_str.sum()} examples have string annotations in {self.annotation_key}.")
+            df_eval.loc[mask_str, self.annotation_key] = df_eval.loc[mask_str, self.annotation_key].apply(
+                ast.literal_eval
+            )
+
         performance_to_score = dict(excellent=4, good=3, fair=2, poor=1)
+
+        def get_score_for_criterion(d: dict) -> float | int:
+            if "likert_score" in d:
+                return d["likert_score"]
+            else:
+                # convert the performance to a score between 1-10
+                return (performance_to_score[d["performance"]] - 1) * 3 + 1
+
         df_eval[self.annotation_key] = df_eval[self.annotation_key].apply(
-            # add "score" based on "performance" mapped by dict(excellent=4, good=3, fair=2, poor=1)
-            lambda x: [{**d, "score": performance_to_score[d["performance"]]} for d in x]
+            lambda x: [{**d, "score": get_score_for_criterion(d)} for d in x]
         )
         # to get the per example score, you take the score for each criterion in self.annotation_key, you then weight
         # them by the weight in "rubric" and sum them up
@@ -252,10 +270,10 @@ def format_evaluation_report_md(report_dict: dict[str, Any]) -> str:
 
 def _compute_score_from_rubric_and_grading(x: dict) -> float:
     """Compute the score from the rubric and grading."""
-
     df_grading = pd.DataFrame(x["evaluation"]).set_index("criterion")
     df_rubric = pd.DataFrame(x["rubric"]).set_index("criterion")
-    if not df_grading.index.equals(df_rubric.index):
+    necessary_indices = df_rubric.query("weight > 0").index
+    if not (set(necessary_indices).issubset(set(df_grading.index))):
         return np.nan
     out = (df_grading["score"] * df_rubric.reindex(df_grading.index)["weight"] / 100).sum()
     return out
