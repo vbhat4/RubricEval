@@ -38,8 +38,11 @@ gemini-1.5-flash_CoT_v0:
                         type: "string"
                         enum: [ "excellent", "good", "fair", "poor" ]
                         description: "The level of performance the LLM achieved on that criterion."
+                      likert_score: 
+                        type: "number"
+                        description: "A numerical score between 1 and 10, reflecting a more fine-grained performance of the LLM's output for this criterion. 'poor': 1-2, 'fair': 3-5, 'good': 6-8, 'excellent': 9-10."
                     #additionalProperties: false
-                    required: [ "criterion", "feedback", "explanation", "performance" ]
+                    required: [ "criterion", "feedback", "explanation", "performance", "likert_score" ]
               #additionalProperties: false
               required: [ "rubric_grading" ]
   batch_size: 1

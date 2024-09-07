@@ -1,0 +1,51 @@
+claude-3-5-sonnet-20240620_CoT_v-1:
+  prompt_template: "claude-3-5-sonnet-20240620_CoT_v-1/prompt.txt"
+  fn_completions: "anthropic_completions"
+  completions_kwargs:
+    model_name: "claude-3-5-sonnet-20240620"
+    max_tokens: 8192
+    temperature: 0.0
+    tool_choice:
+      type: tool
+      name: "generate_detailed_rubric"
+    tools:
+      - name: "generate_detailed_rubric"
+        description: "Generate a detailed rubric for a given assignment."
+        input_schema:
+          type: "object"
+          properties:
+            learning_objectives:
+              type: "string"
+              description: "The learning objectives for the assignment."
+            brainstormed_response:
+              type: "string"
+              description: "An example of a strong response for the assignment."
+            brainstormed_rubric:
+              type: "array"
+              description: "A list of 3-6 objects, each representing a criterion for the assignment, including a checklist and weight"
+              minItems: 3
+              maxItems: 6
+              items:
+                type: "object"
+                description: "A criterion for the assignment"
+                properties:
+                  criterion:
+                    type: "string"
+                    description: "Descriptive name of the current criterion"
+                  weight:
+                    type: "number"
+                    description: "The weight of the criterion in the final rubric. Should be an integer between 0-100. Larger means more weight for that criterion. The final weight will be renormalized so that it's in percentage."
+                    minimum: 0
+                    maximum: 100
+                  checklist:
+                    type: "array"
+                    description: "A list of 5-10 concrete and detailed questions tailored to the assignment. Those questions will be used to judge assignment's output on the current criterion. "
+                    items:
+                      type: "string"
+                    minItems: 5
+                    maxItems: 10
+                additionalProperties: false
+                required: [ "criterion", "checklist", "weight"]
+          additionalProperties: false
+          required: ["learning_objectives", "brainstormed_response", "brainstormed_rubric"]
+  fn_completion_parser: null

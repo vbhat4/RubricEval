@@ -52,7 +52,7 @@ def literal_eval_if_string(x: Any) -> Any:
     try:
         return ast.literal_eval(x) if isinstance(x, str) else x
     except Exception as e:
-        breakpoint()
+        return ""
 
 
 def expand_json_column(
@@ -82,12 +82,18 @@ def expand_json_column(
         logging.warning(f"{mask.sum()} examples have empty {column_name} and will be dropped.")
         df = df[~mask]
 
+    df[column_name] = df[column_name].apply(literal_eval_if_string)
+
+    # convert the annotated string to a dictionary
+    mask = df[column_name] == ""
+    if mask.any():
+        logging.warning(
+            f"{mask.sum()} examples have not been able to be parsed from {column_name} and will be dropped."
+        )
+        df = df[~mask]
+
     # Splits up the columns from the annotation key into separate columns
-    columns_to_add = pd.json_normalize(
-        # convert the annotated string to a dictionary
-        df[column_name].apply(literal_eval_if_string),
-        max_level=0,
-    )
+    columns_to_add = pd.json_normalize(df[column_name], max_level=0)
     if is_add_prefix:
         columns_to_add.columns = [
             column_name + "_" + col if not col.startswith(column_name) else col for col in columns_to_add.columns

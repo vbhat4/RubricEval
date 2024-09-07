@@ -4,7 +4,7 @@ gpt-4o-mini-2024-07-18_CoT_v0:
   completions_kwargs:
     model_name: "gpt-4o-mini-2024-07-18"
     max_tokens: 8192
-    temperature: 0
+    temperature: 0.0
     tool_choice:
       type: function
       function:
@@ -36,12 +36,17 @@ gpt-4o-mini-2024-07-18_CoT_v0:
                       description: "A concise but complete explanation of why you chose the specific performance level for that criterion, referencing the rubric and specific elements of the LLM's output."
                     performance:
                       type: "string"
-                      enum: [ "excellent", "good", "fair", "poor" ]
+                      enum: ["excellent", "good", "fair", "poor"]
                       description: "The level of performance the LLM achieved on that criterion."
+                    likert_score:
+                      type: "number"
+                      # minimum: 1
+                      # maximum: 10
+                      description: "A numerical score between 1 and 10, reflecting a more fine-grained performance of the LLM's output for this criterion. 'poor': 1-2, 'fair': 3-5, 'good': 6-8, 'excellent': 9-10."
                   additionalProperties: false
-                  required: [ "criterion", "feedback", "explanation", "performance" ]
+                  required: ["criterion", "feedback", "explanation", "performance", "likert_score"]
             additionalProperties: false
-            required: [ "rubric_grading" ]
+            required: ["rubric_grading"]
   batch_size: 1
   fn_completion_parser: "json_parser"
   completion_parser_kwargs:

@@ -1,5 +1,5 @@
 <|im_start|>system
-You are a helpful instruction-following assistant and an expert in evaluating LLM outputs using detailed analytic rubrics.
+You are a highly skilled and impartial evaluator, specializing in the assessment of large language model (LLM) outputs using detailed analytic rubrics. Your expertise lies in providing thorough, fair, and constructive evaluations.
 <|im_end|>
 <|im_start|>user
 <instructions>
@@ -10,17 +10,19 @@ We are conducting a holistic evaluation of powerful large language models (LLMs)
 </instructions>
 
 <formatting>
-Based on the provided "Analytic Rubric" and "Strong Response" (if available, an example of a strong LLM response), evaluate the LLM's output (in output_to_evaluate) to "Assignment" (in assignment). Generate a JSON output containing:
+Based on the provided "Analytic Rubric" and "Strong Response" (if available), evaluate the LLM's output for the given "Assignment". Generate a JSON output containing:
 - rubric_grading (list[dict[str, str]]): A list of dictionaries, each corresponding to the evaluation of a criterion in the rubric. Each dictionary should contain the following keys:
     - criterion (str): The name of the criterion. This should match exactly with the criterion in the rubric.
     - feedback (str): Concise but complete explanation of the LLM's strengths and weaknesses for this criterion.
     - explanation (str): Justification for the chosen performance level, referencing specific parts of the rubric.
     - performance (str): The level of performance achieved ("excellent", "good", "fair", or "poor").
+    - likert_score (float): A numerical score between 1 and 10, reflecting the performance of the LLM's output for this criterion. "poor": 1-2, "fair": 3-5, "good": 6-8, "excellent": 9-10. This gives more granularity than the performance level.
 
-Ensure your evaluation is thorough, fair, and aligns closely with the provided rubric. The JSON output will be used by make_evaluation_report(json_output) to generate the final evaluation of the LLM.
+Ensure your evaluation is thorough, fair, and closely aligned with the provided rubric. The JSON output will be used by make_evaluation_report(json_output) to generate the final evaluation of the LLM.
 </formatting>
 
 <assignment>
+# Assignment
 {instruction}
 </assignment>
 
@@ -36,9 +38,10 @@ Ensure your evaluation is thorough, fair, and aligns closely with the provided r
 {excellent_response}
 </information>
 
-<output_to_evaluate>
+<llm_output_to_evaluate>
+# LLM Output to Evaluate
 {output}
-</output_to_evaluate>
+</llm_output_to_evaluate>
 
-Now generate the final evaluation using `make_evaluation_report(json_output)`. Remember that your json_output should have "rubric_grading" key.
+Now, conduct your comprehensive evaluation and generate the final report using `make_evaluation_report(json_output)`.
 <|im_end|>

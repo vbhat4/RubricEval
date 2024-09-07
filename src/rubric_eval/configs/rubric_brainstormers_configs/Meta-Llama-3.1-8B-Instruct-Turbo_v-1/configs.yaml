@@ -1,0 +1,60 @@
+Meta-Llama-3.1-8B-Instruct-Turbo_CoT_v-1:
+  prompt_template: "Meta-Llama-3.1-8B-Instruct-Turbo_CoT_v-1/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "Meta-Llama-3.1-8B-Instruct-Turbo"
+    requires_chatml: True
+    client_kwargs:
+      base_url: 'https://api.together.xyz'
+    max_tokens: 8192
+    temperature: 0.0
+    tool_choice:
+      type: function
+      function:
+        name: "generate_detailed_rubric"
+    tools:
+      - type: function
+        function:
+          name: "generate_detailed_rubric"
+          description: "Generate a detailed rubric for a given assignment."
+          strict: true
+          parameters:
+            type: "object"
+            properties:
+              learning_objectives:
+                type: "string"
+                description: "The learning objectives for the assignment."
+              brainstormed_response:
+                type: "string"
+                description: "An example of a strong response for the assignment."
+              brainstormed_rubric:
+                type: "array"
+                description: "A list of 3-6 objects, each representing a criterion for the assignment, including a checklist and weight"
+                minItems: 3
+                maxItems: 6
+                items:
+                  type: "object"
+                  description: "A criterion for the assignment"
+                  properties:
+                    criterion:
+                      type: "string"
+                      description: "Descriptive name of the current criterion"
+                    weight:
+                      type: "number"
+                      description: "The weight of the criterion in the final rubric. Should be an integer between 0-100. Larger means more weight for that criterion. The final weight will be renormalized so that it's in percentage."
+                      minimum: 0
+                      maximum: 100
+                    checklist:
+                      type: "array"
+                      description: "A list of 5-10 concrete and detailed questions tailored to the assignment. Those questions will be used to judge assignment's output on the current criterion. "
+                      items:
+                        type: "string"
+                      minItems: 5
+                      maxItems: 10
+                  additionalProperties: false
+                  required: [ "criterion", "checklist", "weight"]
+            additionalProperties: false
+            required: ["learning_objectives", "brainstormed_response", "brainstormed_rubric"]
+  fn_completion_parser: "llama3_tool_parser"
+  completion_parser_kwargs:
+    annotation_key: null

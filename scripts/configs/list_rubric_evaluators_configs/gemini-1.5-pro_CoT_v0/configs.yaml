@@ -1,0 +1,51 @@
+gemini-1.5-pro_CoT_v0:
+  prompt_template: "gemini-1.5-pro_CoT_v0/prompt.txt"
+  fn_completions: "google_completions"
+  completions_kwargs:
+    model_name: "gemini-1.5-pro"
+    max_output_tokens: 8192
+    candidate_count: 1
+    temperature: 0
+    tool_config:
+      function_calling_config:
+        mode: "ANY"
+        allowed_function_names:
+          - "make_evaluation_report"
+    tools:
+      - function_declarations:
+          - name: "make_evaluation_report"
+            description: "Evaluate the LLM's output on the current assignment given a list-view rubric with deductive scoring."
+            parameters:
+              type: "object"
+              properties:
+                explanation:
+                  type: "string"
+                  description: "A concise explanation of the LLM's performance, referencing specific parts of the LLM's output and the rubric description. This should mention all the error_name entries from the rubric that are being deducted, as well as any additional errors or outstanding performances not covered by the rubric if applicable."
+                list_error_rubric_grading:
+                  type: "array"
+                  description: "A list of dictionaries, each corresponding to an error, omission, or exceptional performance that actually applies to the output. Include only relevant items from the provided List-view Rubric with Deductive Scoring or additional observations not covered by the rubric. Do not include errors that do not apply to the output."
+                  items:
+                    type: "object"
+                    description: "An error, omission, or exceptional performance that applies to the output. If it doesn't apply (delta_score zero) then don't include it!"
+                    properties:
+                      error_name:
+                        type: "string"
+                        description: "The error_name from the rubric or a new error_name for additional observations."
+                      is_present_in_rubric:
+                        type: "boolean"
+                        description: "Whether the item is present in the original list-view rubric (true) or is an additional observation (false)."
+                      concise_explanation:
+                        type: "string"
+                        description: "Concise explanation about why the `error_name` applies, highlighting the specific part of the LLM's output that is incorrect or problematic."
+                      optional_comment:
+                        type: "string"
+                        description: "Rare additional comment about the item. Use an empty string ('') unless there's an exceptional case that requires explanation."
+                      delta_score:
+                        type: "number"
+                        description: "The non-zero score to be applied. Negative for deductions, positive for exceptional performances that warrant additional points."
+                    required: ["error_name", "is_present_in_rubric", "concise_explanation", "optional_comment", "delta_score"]
+              required: ["explanation", "list_error_rubric_grading"]
+  batch_size: 1
+  fn_completion_parser: "json_parser"
+  completion_parser_kwargs:
+    annotation_key: "list_error_rubric_grading"

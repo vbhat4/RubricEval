@@ -1,3 +1,4 @@
+import json
 import logging
 from pathlib import Path
 from typing import Optional, Sequence
@@ -6,9 +7,16 @@ import fire
 import pandas as pd
 from alpaca_eval import utils as ae_utils
 from alpaca_eval.annotators import base
+from experiments.evaluators import Checklister, ListRubricator
 
 from rubric_eval import helpers as re_helpers
-from rubric_eval.main import brainstorm_and_generate_rubrics, generate_outputs
+from rubric_eval.main import (
+    brainstorm_and_generate_rubrics,
+    brainstorm_rubrics_from_df,
+    generate_outputs,
+    generate_rubrics_from_df,
+)
+from rubric_eval.rubrics import Rubricator, RubricBrainstormer
 
 
 class Differentiator(base.BaseAnnotatorJSON):
@@ -188,7 +196,7 @@ def make_rubriceval_hard(
 
 def make_rubriceval_sampled(
     instructions_path: Path,
-    n_per_cat: int = 25,
+    n_per_cat: int = 10,  # 25,
     max_instances: Optional[int] = None,
     is_show_counts: bool = False,
 ):
@@ -196,7 +204,8 @@ def make_rubriceval_sampled(
     counts = df.groupby("category").size()
     counts.name = "count"
     df_groups = pd.merge(df, counts, on="category")
-    df_groups = df_groups.query("count >= @n_per_cat")
+    # df_groups = df_groups.query("count >= @n_per_cat")
+    df_groups = df_groups.query("count >= 25")  # TODO uncomment above
     # sample n_per_cat using shuffle so that you can hit the cache if incresing n_per_cat
     df_sampled = (
         df_groups.groupby("category")
@@ -224,5 +233,71 @@ def rubriceval_sampled(max_instances: Optional[int] = None, **kwargs):
     brainstorm_and_generate_rubrics(input_path=instructions_path, output_path=rubric_path, max_instances=max_instances)
 
 
+def rubriceval_stanford_ml(is_expert_annotated: bool = True, is_rubric **kwargs):
+    readable_dataset_path = Path("data/benchmark/rubriceval_stanford_ml/readable_dataset")
+    readable_dataset_path.mkdir(parents=True, exist_ok=True)
+    instructions_path = (
+        re_helpers.MAIN_DIR / "data/benchmark/rubriceval_stanford_ml/rubriceval_stanford_ml_instructions.json"
+    )
+    if is_expert_annotated:
+
+    instructions_path = (
+        re_helpers.MAIN_DIR / "data/benchmark/rubriceval_stanford_ml/rubriceval_stanford_ml_instructions.json"
+    )
+    # data is already written
+    df = pd.read_json(instructions_path)
+
+    annotators = []
+    ann_kwargs = dict(other_output_keys_to_keep=[], **kwargs)
+
+    # add columns from auto generated checklist
+    checklister = Checklister(**ann_kwargs)
+    df = ae_utils.convert_to_dataframe(checklister(df))
+    annotators.append(checklister)
+
+    # add columns from auto generated list rubric
+    list_rubricator = ListRubricator(**ann_kwargs)
+    df = ae_utils.convert_to_dataframe(list_rubricator(df))
+    df = re_helpers.expand_json_column(df, list_rubricator.annotation_key)
+    df.drop(columns=["strong_response"], inplace=True)
+    annotators.append(list_rubricator)
+
+    # add columns from auto brainstormed rubrics
+    if "brainstormed_rubric" not in df.columns:
+        rubric_brainstormer = RubricBrainstormer(**ann_kwargs)
+        df["useful_info_to_eval_instruction"] = "Here's a good solution to the problem:\n" + df["expert_solution"]
+        df = rubric_brainstormer.make_df_rubrics(
+            rubric_brainstormer(df), is_renormalize_weight=True, is_extract_criteria_col=False
+        )
+        df.drop(
+            columns=["brainstormed_response", "useful_info_to_eval_instruction", "learning_objectives"], inplace=True
+        )
+        annotators.append(rubric_brainstormer)
+
+    else:
+        # add columns from auto generated rubrics
+        rubricator = Rubricator(**ann_kwargs)
+        df["brainstormed_response"] = df["expert_solution"]
+        df = rubricator.make_df_rubrics(rubricator(df), is_extract_criteria_col=True, is_renormalize_weight=True)
+        annotators.append(rubricator)
+
+    for ann in annotators:
+        df[f"expert_{ann.annotation_key}"] = df[ann.annotation_key]
+        df[f"expert_{ann.annotation_key}_time_sec"] = ""
+        df.drop(columns=[ann.annotator_column, ann.annotation_key], inplace=True)
+
+    for i, row in df.iterrows():
+        readable_dataset = ""
+        for k, v in row.to_dict().items():
+            if k == "short_name":
+                continue
+            if isinstance(v, (list, tuple, dict)):
+                v = json.dumps(v, indent=2)
+            readable_dataset += f"# <{k}>:\n{v}\n"
+        # save to markdown file
+        with open(readable_dataset_path / f"{row['short_name']}.md", "w") as file:
+            file.write(readable_dataset)
+
+
 if __name__ == "__main__":
-    fire.Fire({"hard": rubriceval_hard, "sampled": rubriceval_sampled})
+    fire.Fire({"hard": rubriceval_hard, "sampled": rubriceval_sampled, "stanford_ml": rubriceval_stanford_ml})

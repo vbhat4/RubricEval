@@ -8,48 +8,42 @@ gpt-4o-2024-08-06_CoT_v0:
     tool_choice:
       type: function
       function:
-        name: "generate_detailed_rubric"
+        name: "generate_detailed_analytic_rubric"
     tools:
       - type: function
         function:
-          name: "generate_detailed_rubric"
-          description: "Generate a detailed rubric for a given assignment."
+          name: "generate_detailed_analytic_rubric"
+          description: "Generate a detailed analytic rubric for evaluating LLM outputs on a given assignment."
           strict: true
           parameters:
             type: "object"
             properties:
               learning_objectives:
                 type: "string"
-                description: "The learning objectives for the assignment."
+                description: "Clearly define the learning objectives of the assignment."
               brainstormed_response:
                 type: "string"
-                description: "An example of a strong response for the assignment."
+                description: "Provide a very strong solution for the assignment."
               brainstormed_rubric:
                 type: "array"
-                description: "A list of 3-6 objects, each representing a criterion for the assignment, including a checklist and weight"
-#                minItems: 3
-#                maxItems: 6
+                description: "A list of 3-6 dictionaries, each corresponding to a criterion in the analytic rubric."
                 items:
                   type: "object"
                   description: "A criterion for the assignment"
                   properties:
                     criterion:
                       type: "string"
-                      description: "Descriptive name of the current criterion"
+                      description: "Concise, descriptive name of the criterion."
                     weight:
-                      type: "number"
-                      description: "The weight of the criterion in the final rubric. Should be an integer between 0-100. Larger means more weight for that criterion. The final weight will be renormalized so that it's in percentage."
-#                      minimum: 0
-#                      maximum: 100
+                      type: "integer"
+                      description: "A number between 0-100 representing the importance of the criterion."
                     checklist:
                       type: "array"
-                      description: "A list of 5-10 concrete and detailed questions tailored to the assignment. Those questions will be used to judge assignment's output on the current criterion. "
+                      description: "A list of 5-10 specific questions or points to consider when evaluating this criterion."
                       items:
                         type: "string"
-#                      minItems: 5
-#                      maxItems: 10
                   additionalProperties: false
-                  required: [ "criterion", "checklist", "weight"]
+                  required: ["criterion", "weight", "checklist"]
             additionalProperties: false
             required: ["learning_objectives", "brainstormed_response", "brainstormed_rubric"]
   fn_completion_parser: "json_parser"

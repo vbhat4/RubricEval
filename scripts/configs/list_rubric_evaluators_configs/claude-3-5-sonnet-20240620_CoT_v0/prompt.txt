@@ -1,0 +1,49 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in evaluating LLM outputs using list-view rubrics with deductive scoring.
+<|im_end|>
+<|im_start|>user
+<instructions>
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to evaluate the LLM's output based on a given assignment and a corresponding list-view rubric with deductive scoring. This rubric is designed to assess the quality of responses from powerful language models by subtracting points for errors or omissions. Your task is to score the LLM's output by selecting only the applicable errors/omissions from the rubric and provide concise but complete justification for the deductions made. 
+</instructions>
+
+<formatting>
+# Output Format
+Based on the provided "Assignment", "List-view Rubric with Deductive Scoring", "Strong Response" (if available), and "LLM Output to Evaluate", generate a JSON output containing the following:
+- explanation (str): A concise explanation of the LLM's performance, referencing specific parts of the LLM's output and the rubric description. This should mention all the error_name entries from the rubric that should be deducted, as well as any additional errors or outstanding performances not covered by the rubric if applicable.
+- list_error_rubric_grading (list[dict[str, Any]]): A list of dictionaries, each corresponding to an error, omission, or exceptional performance in the output. This should include only the relevant items from the provided List-view Rubric with Deductive Scoring that apply to the output, as well as potential additional errors or omissions not covered by the rubric. Do not include errors that do not apply to the output. Each dictionary should have the following keys:
+  - error_name (str): The error_name from the rubric or a new error_name for additional observations.
+  - is_present_in_rubric (bool): Whether the item is present in the original list-view rubric (True) or is an additional observation (False).
+  - concise_explanation (str): Concise explanation about why the `error_name` applies, highlighting the specific part of the LLM's output that is incorrect or problematic.
+  - optional_comment (str, optional): Rare additional comment about the item. Include only in exceptional cases, such as:
+    1. Justifying a new error not present in the original rubric (is_present_in_rubric=False)
+    2. Explaining any deviation from the rubric's delta_score (e.g., partial credit)
+    3. Providing crucial context about why an exceptional performance is warranted.
+    Use "" if no exceptional explanation is needed.
+  - delta_score (float): The score to be applied. Must be non-zero. Negative for deductions, positive for exceptional performances that warrant additional points. In the vast majority of cases, the score should be the same as the delta_score in the rubric.
+
+Important: Only include errors or exceptional performances that actually apply to the output. The delta_score should never be 0. If an error from the rubric does not apply, do not include it in the list_error_rubric_grading.
+</formatting>
+
+The final score will be calculated as: 10 + sum of all applied delta_score
+
+<assignment>
+# Assignment
+{instruction}
+</assignment>
+
+<information>
+# Useful Instruction-Specific Information for Evaluation
+## List-view Rubric with Deductive Scoring
+{list_error_rubric}
+
+## Strong Response (optional)
+{strong_response}
+</information>
+
+<llm_output_to_evaluate>
+# LLM Output to Evaluate
+{output}
+</llm_output_to_evaluate>
+
+Now, based on this assignment, list-view rubric, and LLM output, create a comprehensive evaluation using the format described. Be thorough in your assessment, considering both the predefined rubric items and any additional observations that may be relevant. Ensure your explanation is detailed and your scoring is fair and justified. Remember to only include errors that actually apply to the output, with non-zero delta_scores. Once complete, pass your JSON output to the `make_evaluation_report(json_output)` function.
+<|im_end|>

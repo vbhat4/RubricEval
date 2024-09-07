@@ -84,9 +84,9 @@ class NaiveEvaluator(BaseEvaluator):
         return df
 
 
-class _Checklister(base.BaseAnnotatorJSON):
+class Checklister(base.BaseAnnotatorJSON):
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
-    DEFAULT_ANNOTATION_TYPE = str
+    DEFAULT_ANNOTATION_TYPE = object
     # the following line means that you can use both the rubric_eval or alpaca_eval models
     DEFAULT_BASE_DIR = CONFIGS_DIR / "checklisters_configs"
     annotator_column = "checklister"
@@ -95,7 +95,7 @@ class _Checklister(base.BaseAnnotatorJSON):
         self,
         *args,
         primary_keys: Sequence[str] = ("instruction",),
-        annotators_config="gpt-4o-2024-08-06_CoT_v0",
+        annotators_config="gpt-4o-2024-08-06_v0",
         **kwargs,
     ):
         super().__init__(
@@ -125,33 +125,9 @@ class ChecklistEvaluator(BaseEvaluator):
 
     @classmethod
     def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
-        checklister = _Checklister(annotators_config=gold_model.replace("_CoT", ""))
+        checklister = Checklister(annotators_config=gold_model.replace("_CoT", ""))
         checklists = checklister(df)
         df = ae_utils.convert_to_dataframe(checklists)
-        df["checklist"] = df["checklist"].apply(lambda x: "\n".join(x))
-
-        return df
-
-
-class ChecklistEvaluator(BaseEvaluator):
-    __doc__ = base.BaseAnnotatorJSON.__doc__.replace(
-        "Base class for a pool of annotators.",
-        "Auto evaluator of the output using a gold checklist.",
-    )
-    DEFAULT_BASE_DIR = CONFIGS_DIR / "checklist_evaluators_configs"
-    PRIMARY_KEYS = (
-        "instruction",
-        "output",
-        "checklist",
-    )
-
-    @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
-        checklister = _Checklister(annotators_config=gold_model.replace("_CoT", ""))
-        checklists = checklister(df)
-        df = ae_utils.convert_to_dataframe(checklists)
-        df["checklist"] = df["checklist"].apply(lambda x: "\n".join(x))
-
         return df
 
 
@@ -215,9 +191,9 @@ class RubricEvaluator(RubricSolutionEvaluator):
         return df
 
 
-class _ListRubricator(base.BaseAnnotatorJSON):
+class ListRubricator(base.BaseAnnotatorJSON):
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
-    DEFAULT_ANNOTATION_TYPE = str
+    DEFAULT_ANNOTATION_TYPE = object
     # the following line means that you can use both the rubric_eval or alpaca_eval models
     DEFAULT_BASE_DIR = CONFIGS_DIR / "list_rubricators_configs"
     annotator_column = "list_rubricator"
@@ -260,7 +236,7 @@ class ListRubricSolutionEvaluator(BaseEvaluator):
     @classmethod
     def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
         df = df.drop(columns=["list_error_rubric", cls.EXCELLENT_OUT_COL], errors="ignore")
-        list_rubricator = _ListRubricator(annotators_config=gold_model)
+        list_rubricator = ListRubricator(annotators_config=gold_model)
         list_rubrics = list_rubricator(df)
         df = ae_utils.convert_to_dataframe(list_rubrics)
         df = helpers.expand_json_column(df, list_rubricator.annotation_key)
@@ -275,7 +251,10 @@ class ListRubricSolutionEvaluator(BaseEvaluator):
         # now sum up the "deductive_score" for each key
         lower_bound = 1
         upper_bound = 10
-        df["final_score"] = upper_bound + df["evaluation"].apply(lambda d: sum([v["delta_score"] for v in d]))
+        try:
+            df["final_score"] = upper_bound + df["evaluation"].apply(lambda d: sum([v["delta_score"] for v in d]))
+        except Exception as e:
+            breakpoint()
         df["final_score"] = df["final_score"].apply(lambda x: max(lower_bound, min(upper_bound, x)))
         return df
 

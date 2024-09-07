@@ -1,21 +1,54 @@
 <|im_start|>system
-You are a helpful instruction-following assistant and an expert in evaluation of LLM outputs using analytic rubrics.
+You are a helpful instruction-following assistant and an expert in creating comprehensive, easy-to-apply analytic rubrics for evaluating LLM outputs.
 <|im_end|>
 <|im_start|>user
-We are conducting a holistic evaluation of powerful large language models (LLMs). To do so, we need to create a thorough analytic rubric for grading LLM outputs on a given assignment. The rubric must be detailed, descriptive, objective, and clear, designed by experts in the field. These rubrics will be used by crowd-workers to assess the LLM's response, even if they lack domain-specific knowledge. The final rubric should be very detailed/specific to the assignment and contain examples of answers that would would fall into each category, so that crowd-workers with little knowledge of the domain (or even LLM-judges) can easily apply it in a consistent manner. Your task is to brainstorm the criteria and essential considerations for writing the rubric on the provided assignment. To ensure that the final rubric can be applied by non-experts, the brainstorm should already refer to specific and concrete examples, dates, events, names, or other information the LLM's response should address for that criterion.
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed, user-friendly analytic rubric for evaluating LLM outputs on a given assignment. This rubric will be used by non-expert evaluators or other LLMs to assess the quality of responses from powerful language models.
 
-Based on the provided "assignment" and "additional information to evaluate the prompt's responses" if available, generate a JSON output containing the following:
-- learning_objectives (str): Clearly define the learning objectives of the assignment. What specific skills, knowledge, or competencies should the LLM demonstrate by completing the assignment? Ensure these objectives align with the core goals of the task.
+Key points about the rubric:
+1. Be comprehensive and objective: Cover all aspects of a good response.
+2. Be specific to the assignment: Reference concrete elements expected in a correct answer.
+3. Design for non-experts: Make it easily applicable by evaluators without domain-specific knowledge.
+4. Include clear performance levels: Provide distinct categories for each criterion (e.g., Excellent, Good, Fair, Poor).
+
+When creating the rubric, adhere to these best practices:
+- Focus on specific, easily identifiable elements of a good response.
+- Provide clear, detailed descriptions of expected performance at each level.
+- Use simple, unambiguous language for consistent application by non-experts.
+- Cover a wide range of potential responses, from excellent to poor.
+- Reference specific facts, dates, concepts, or methodologies the LLM should include, providing context if necessary.
+- Include guidance on how to identify the quality of each criterion in the LLM's output.
+- Provide examples of responses that would fall into each performance level.
+
+# Output Format
+Based on the provided "assignment," generate a JSON output containing the following:
+- learning_objectives (str): Clearly define the learning objectives of the assignment.
 - brainstormed_response (str): Provide a very strong solution for the assignment.
-- brainstormed_rubric (list[dict]): Identify 3-6 key criteria for assessment of the current assignment, including their weights and detailed checklists. Each criterion should focus on different specific and concrete aspects of the assignment. Include a "General Quality" criterion to assess clarity, conciseness, helpfulness, and understandability. Ensure the criteria are balanced, specific to the assignment, and reflective of the expected learning outcomes. Use clear, concise language suitable for non-experts while maintaining rigor and objectivity. For each criterion, provide a descriptive name, a weight (integer 0-100, where larger represents more importance) and a thorough checklist of questions  designed to help evaluators judge this criterion. Each question should be specific, tailored to the assignment, refer to the ideal LLM response where applicable, and mention potential and common mistakes for the current assignment. Include all relevant details, such as dates, events, names, or other information the LLM's response should address. Use the provided "additional expert information to evaluate the prompt's responses" when available.
+- brainstormed_rubric (list[dict]): A list of 3-6 dictionaries, each corresponding to a criterion in the analytic rubric. Each dictionary should have the following keys:
+  - criterion (str): Concise, descriptive name of the criterion.
+  - weight (int): A number between 0-100 representing the importance of the criterion.
+  - checklist (list[str]): A list of 5-10 specific questions or points to consider when evaluating this criterion.
 
-The JSON output will be used by `generate_detailed_analytic_rubric(json_output)` to create the final analytic rubric for evaluating LLM outputs.
+Example rubric element:
+{
+  "criterion": "Historical Accuracy",
+  "weight": 30,
+  "checklist": [
+    "Does the response correctly state that the American Civil War occurred from 1861 to 1865?",
+    "Is Abraham Lincoln mentioned as the President of the United States during this period?",
+    "Are the main causes of the war (slavery, states' rights, economic differences) accurately described?",
+    "Is the Emancipation Proclamation of 1863 mentioned and its significance explained?",
+    "Are key battles such as Gettysburg (1863) and Antietam (1862) referenced?",
+    "Is the surrender at Appomattox Court House in 1865 mentioned as the end of the war?",
+    "Are the consequences of the war, including the abolition of slavery and the Reconstruction era, discussed?"
+  ]
+}
 
-## Assignment
+# Assignment
 {instruction}
 
 ## Useful information to evaluate the prompt's responses (optional)
 {useful_info_to_eval_instruction}
 
-Now generate the rubric using `generate_detailed_analytic_rubric(json_output)`.
+Now, based on this assignment, create a comprehensive, easy-to-apply analytic rubric using the format described. Ensure that your rubric covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `generate_detailed_analytic_rubric(json_output)` function.
+
 <|im_end|>

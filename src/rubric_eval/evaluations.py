@@ -60,10 +60,20 @@ class Evaluator(base.BaseAnnotatorJSON):
 
         mask_str = df_eval[self.annotation_key].apply(lambda x: isinstance(x, str))
         if mask_str.any():
-            logging.warning(f"{mask_str.sum()} examples have string annotations in {self.annotation_key}.")
             df_eval.loc[mask_str, self.annotation_key] = df_eval.loc[mask_str, self.annotation_key].apply(
-                ast.literal_eval
+                ae_utils.convert_str_to_sequence
             )
+            mask_str_new = df_eval[self.annotation_key].apply(lambda x: isinstance(x, str))
+            if mask_str_new.any():
+                # let's drop this time
+                logging.warning(
+                    f"{mask_str_new.sum()} examples have string annotations in {self.annotation_key} we are droping them."
+                )
+                df_eval = df_eval[~mask_str_new]
+            else:
+                logging.warning(
+                    f"{mask_str.sum()} examples had string annotations in {self.annotation_key}, we converted them."
+                )
 
         performance_to_score = dict(excellent=4, good=3, fair=2, poor=1)
 

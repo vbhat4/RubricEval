@@ -102,7 +102,7 @@ def brainstorm_rubrics_from_df(
     process_input_df_(
         df_input,
         required_fields={"instruction"},
-        optional_fields={"useful_info_to_eval_instruction": "", "weight": 1.0},
+        optional_fields={"useful_info_to_eval_instruction": ""},
     )
     rubric_brainstormer = RubricBrainstormer(annotators_config=brainstormer_configs, **brainstormer_kwargs)
     brainstormed_rubric = rubric_brainstormer(df_input)
