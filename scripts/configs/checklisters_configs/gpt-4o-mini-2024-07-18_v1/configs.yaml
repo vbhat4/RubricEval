@@ -1,0 +1,32 @@
+gpt-4o-mini-2024-07-18_v1:
+  prompt_template: "gpt-4o-2024-08-06_v1/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "gpt-4o-mini-2024-07-18"
+    max_tokens: 8192
+    temperature: 0
+    tool_choice:
+      type: function
+      function:
+        name: "make_evaluation_report"
+    tools:
+      - type: function
+        function:
+          name: "make_evaluation_report"
+          description: "Run the evaluation report based on the checklist and the LLM's output."
+          strict: true
+          parameters:
+            type: "object"
+            properties:
+              checklist:
+                type: "array"
+                description: "A list of 3-30 concrete and detailed questions tailored to the assignment to consider when evaluating the output."
+                items:
+                  type: "string"  
+            additionalProperties: false
+            required: [ "checklist" ]
+  batch_size: 1
+  fn_completion_parser: json_parser
+  completion_parser_kwargs:
+    annotation_key: checklist
+

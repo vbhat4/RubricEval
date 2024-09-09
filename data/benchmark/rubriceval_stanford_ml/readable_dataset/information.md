@@ -1,7 +1,6 @@
 # <category>:
 Stats & ML
 # <instruction>:
-
 Shannon's information theory has been a cornerstone in the development of modern communication systems. However, it is now used much more broadly in machine learning, statistics, and other fields. One issue with Shannon's theory is that it studies the existence of information rather than its quality or usability. Specifically, Shannon’s information misses two key aspects of the downstream task. First, it is agnostic to how the actions or predictions from the decision maker (DM) will be evaluated. Second, it does not depend on the computational constraints of the DM, e.g., a polynomial-time complexity algorithm or a linear predictor. As a result, its applications in decision-making or machine learning can give rise to false claims. For example, the data processing inequality would imply that features of deeper layers in a neural network are less informative than earlier ones. Similarly, as mutual information is invariant to bijections, encrypting a message should not alter its informativeness for any DM, which is, of course, not true in practice.
 
 A potential solution to this problem is to generalize Shannon's information theory by taking a utilitarian perspective that considers both the potential actions (i.e., its computational constraints) of the decision maker and the loss function that will be used to evaluate the actions. We call this utilitarian information theory. Here's an explanation of it.
@@ -31,10 +30,10 @@ The same construction naturally gives rise to a notion of \textit{utilitarian in
 
 Formally:
 
-\begin{definition} [Action Predictive Family] Let $\Omega_{\text{action}} = \lbrace f: \mathcal{X} \cup \lbrace \emptyset \rbrace \to \mathcal{A} \rbrace$, we say that $\mathcal{V} \subset \Omega_{\text{action}}$ is a predictive family (for $\mathcal{A}$) if it satisfies 
-\begin{align} 
-\forall f \in \mathcal{V}, \forall a \in \mathrm{range}(f), \exists f' \in \mathcal{V}, \forall x\in\mathcal{X}, f'(x) = a, f'(\emptyset) = a 
-\end{align} 
+\begin{definition} [Action Predictive Family] Let $\Omega_{\text{action}} = \lbrace f: \mathcal{X} \cup \lbrace \emptyset \rbrace \to \mathcal{A} \rbrace$, we say that $\mathcal{V} \subset \Omega_{\text{action}}$ is a predictive family (for $\mathcal{A}$) if it satisfies
+\begin{align}
+\forall f \in \mathcal{V}, \forall a \in \mathrm{range}(f), \exists f' \in \mathcal{V}, \forall x\in\mathcal{X}, f'(x) = a, f'(\emptyset) = a
+\end{align}
 \end{definition}
 
 Predictive families essentially mean that there always exists a function that can predict any constant value for any input. This is a very mild assumption that is satisfied by most hypothesis classes in practice. We also call this property Optional Ignorance.
@@ -43,8 +42,8 @@ Predictive families essentially mean that there always exists a function that ca
 \begin{align}
     H_{\ell, \mathcal{V}}(Y) &:= \inf_{f \in \mathcal{V}} \mathbb{E}\left[ \ell(Y, f[\emptyset]) \right] \\
     H_{\ell, \mathcal{V}}(Y|X) &:= \inf_{f \in \mathcal{V}} \mathbb{E}\left[ \ell(Y, f[X]) \right]
-\end{align} 
-\end{definition} 
+\end{align}
+\end{definition}
 Intuitively, the Utilitarian Entropy is the Bayes risk, i.e., the risk of the best prediction function.
 
 \begin{definition}[Utilitarian Mutual Information] For any loss function $\ell$, predictive family $\mathcal{V}$, and random variables $X$ and $Y$, the utilitarian mutual information is defined as 
@@ -53,11 +52,9 @@ I_{\ell, \mathcal{V}}(X \to Y) := H_{\ell, \mathcal{V}} (Y) - H_{\ell, \mathcal{
 \end{align} 
 \end{definition} 
 
-
-
 ## Questions
 
-For each of the following statements, prove whether they are true or false. The proof whould be detailed.
+For each of the following statements, prove whether they are true or false. The proof should be detailed.
 
 1. Utilitarian information is always symmetric, i.e., $\operatorname{I}_{\ell,\mathcal{V}}(X; Y) = \operatorname{I}_{\ell,\mathcal{V}}(Y; X)$.
 2. Utilitarian information is always non-negative.
@@ -67,11 +64,7 @@ For each of the following statements, prove whether they are true or false. The 
 6. Utilitarian information is always invariant to bijections, i.e., $\operatorname{I}_{\ell,\mathcal{V}}(X; Y) = \operatorname{I}_{\ell,\mathcal{V}}(b_X(X); Y)$ for any bijection $b_X$.
 
 For each of those questions also provide an explanation / illustration of why that makes sense for machine learning. 
-
-
 # <expert_solution>:
-
-
 ## Symmetry
 
 **False.** Utilitarian information is not symmetric.
@@ -101,7 +94,7 @@ Therefore, the utilitarian mutual information is:
 \]
 Since \(\operatorname{I}_{\ell, \mathcal{V}}(X; Y) \neq \operatorname{I}_{\ell, \mathcal{V}}(Y; X)\), utilitarian information is not symmetric.
 
-*Machine Learning Perspective:* In practical machine learning, predicting a target variable from features is often easier than the reverse. For example, in classification tasks, predicting the class label (a lower-dimensional output) from features (often high-dimensional and complex) is generally more straightforward than predicting the features given the class label.
+*Machine Learning Perspective:* In practical machine learning, predicting a target variable from features is often easier than the reverse. For example, in classification tasks, predicting the class label (a lower-dimensional output) from features (often high-dimensional and complex) is generally more straightforward than predicting the features given the class label. This asymmetry is captured by utilitarian information, reflecting the practical differences in predictive power between features and targets.
 
 ## Non-Negativity
 
@@ -121,7 +114,7 @@ Thus:
 \operatorname{I}_{\ell,\mathcal{V}}(X; Y) = \operatorname{H}_{\ell}(Y) - \operatorname{H}_{\ell,\mathcal{V}}(Y \mid X) \geq 0.
 \]
 
-*Machine Learning Perspective:* In machine learning, having access to additional features or information can never worsen a model's performance since it always has the option not to use that information. Thus, additional information can only help or maintain the current state, ensuring non-negativity.
+*Machine Learning Perspective:* In machine learning, having access to additional features or information can never worsen a model's performance since it always has the option not to use that information. This property ensures that feature selection or addition can only improve or maintain the current predictive performance, never decrease it. The non-negativity of utilitarian information aligns with this fundamental principle in machine learning.
 
 ## Recovery of Shannon's Information Theory
 
@@ -171,11 +164,9 @@ Using MAE loss \(\ell\) and the predictive family \(\mathcal{V}\) consisting of 
 - \(f(X = 0) = 0, f(X = 1) = 1, f(X = 2) = 11\)  
 - \(g(\cdot) = 2\)  
 
-The utilitarian marginal and conditional entropies are both 1. Predicting with \(f\) yields a higher risk since it cannot predict well when \(X = 2\). The risk using \(f\) is \(0 + 10 \times 0.25 + 11 \times 0.25 = 5.25\). Predicting with \(c_0\) yields a risk of 0.75. Thus, \(\operatorname{I}_{\ell, \mathcal{V}}(X; Y) = 0.75
+The utilitarian marginal and conditional entropies are both 1. Predicting with \(f\) yields a higher risk since it cannot predict well when \(X = 2\). The risk using \(f\) is \(0 + 10 \times 0.25 + 11 \times 0.25 = 5.25\). Predicting with \(c_0\) yields a risk of 0.75. Thus, \(\operatorname{I}_{\ell, \mathcal{V}}(X; Y) = 0.75 - 0.75 = 0\). However, if a function \(h\) exists such that \(h(2) = 1\) and is the identity otherwise, then \(f\) applied to \(h(X)\) becomes a good predictor, making \(\operatorname{I}_{\ell, \mathcal{V}}(h(X); Y) = 0.75 - 0.25 = 0.5\). Given \(X - h(X) - Y\) is a Markov chain, \(\operatorname{I}_{\ell, \mathcal{V}}(h(X); Y) = 0.5 > 0 = \operatorname{I}_{\ell, \mathcal{V}}(X; Y)\), violating the Data Processing Inequality.
 
- - 0.75 = 0\). However, if a function \(h\) exists such that \(h(2) = 1\) and is the identity otherwise, then \(f\) applied to \(h(X)\) becomes a good predictor, making \(\operatorname{I}_{\ell, \mathcal{V}}(h(X); Y) = 0.75 - 0.25 = 0.5\). Given \(X - h(X) - Y\) is a Markov chain, \(\operatorname{I}_{\ell, \mathcal{V}}(h(X); Y) = 0.5 > 0 = \operatorname{I}_{\ell, \mathcal{V}}(X; Y)\), violating the Data Processing Inequality.
-
-*Machine Learning Perspective:* Feature preprocessing can enhance the "extractability" of information by a predictor, even if a preprocessing function is bijective. This reflects practical scenarios where feature engineering or transformations can increase predictive power.
+*Machine Learning Perspective:* Feature preprocessing can enhance the "extractability" of information by a predictor, even if a preprocessing function is bijective. This reflects practical scenarios where feature engineering or transformations can increase predictive power. In machine learning, it's common to apply transformations to input features (e.g., normalization, scaling, or non-linear transformations) that can significantly improve model performance, even though these transformations don't add new information in the Shannon sense.
 
 ## Independence
 
@@ -208,116 +199,181 @@ Consider the previous example where a function \(h\) was a bijection that improv
 **Conclusion:** Utilitarian information theory provides a more nuanced approach to information theory in the context of machine learning by incorporating computational constraints and task-specific loss functions. This aligns well with practical scenarios where perfect information is unattainable, and decision-makers must operate within computational and informational limits.
 # <expert_checklist>:
 [
-  "Does the proof for the symmetry of utilitarian information (statement 1) clearly demonstrate whether or not \\(\\operatorname{I}_{\\ell,\\mathcal{V}}(X; Y) = \\operatorname{I}_{\\ell,\\mathcal{V}}(Y; X)\\) holds?",
-  "Is the non-negativity of utilitarian information (statement 2) proven with a clear logical argument or counterexample?",
-  "Does the explanation for statement 3 effectively show how utilitarian information can recover Shannon's information theory for specific choices of \\(\\mathcal{V}\\) and \\(\\ell\\)?",
-  "Is the Data Processing Inequality (statement 4) addressed with a valid proof or counterexample, and is the reasoning clear?",
-  "Does the proof for statement 5 correctly establish whether utilitarian information is zero for independent random variables \\(X\\) and \\(Y\\)?",
-  "Is the invariance to bijections (statement 6) proven or disproven with a clear and logical argument?",
-  "Are the explanations or illustrations provided for each statement relevant and insightful for understanding their implications in machine learning?",
-  "Is the mathematical notation used in the proofs consistent and correctly applied throughout the evaluation?",
-  "Are the proofs detailed and comprehensive, covering all necessary aspects to support the conclusions?",
-  "Is the overall structure of the evaluation logical and easy to follow, with each statement addressed systematically?"
+  "Does the response correctly identify whether utilitarian information is symmetric and provide a valid counterexample if it is not? (High importance)",
+  "Is the explanation of why utilitarian information is not symmetric clear and related to practical machine learning scenarios? (Moderate importance)",
+  "Does the response correctly prove that utilitarian information is always non-negative? (High importance)",
+  "Is the explanation of non-negativity in utilitarian information related to the principle that additional information cannot worsen model performance? (Moderate importance)",
+  "Does the response correctly demonstrate that utilitarian information can recover Shannon's information theory for specific choices of \\(\\mathcal{V}\\) and \\(\\ell\\)? (High importance)",
+  "Is the explanation of how utilitarian information recovers Shannon's theory clear and related to unconstrained predictive scenarios in machine learning? (Moderate importance)",
+  "Does the response correctly address whether utilitarian information satisfies the Data Processing Inequality and provide a valid counterexample if it does not? (High importance)",
+  "Is the explanation of the Data Processing Inequality violation related to feature preprocessing in machine learning? (Moderate importance)",
+  "Does the response correctly prove that utilitarian information between two independent random variables is always zero? (High importance)",
+  "Is the explanation of utilitarian information being zero for independent variables related to the lack of predictive power in machine learning? (Moderate importance)",
+  "Does the response correctly address whether utilitarian information is invariant to bijections and provide a valid counterexample if it is not? (High importance)",
+  "Is the explanation of invariance to bijections related to feature transformations in machine learning? (Moderate importance)",
+  "Does the response provide detailed proofs or counterexamples for each statement as required? (High importance)",
+  "Are the machine learning perspectives provided for each statement clear and relevant to the concepts being discussed? (Moderate importance)",
+  "Is the overall explanation of utilitarian information theory and its implications in machine learning clear and comprehensive? (High importance)",
+  "Does the response avoid unnecessary or irrelevant details that do not contribute to the understanding of utilitarian information theory? (Low importance)",
+  "Is the response structured logically, with clear sections for each statement and its proof or counterexample? (Moderate importance)",
+  "Does the response use clear and precise language, making it accessible to non-expert evaluators? (Moderate importance)"
 ]
 # <expert_checklist_time_sec>:
-
+1178.0
 # <expert_list_error_rubric>:
 [
   {
-    "error_name": "Incorrect symmetry claim",
-    "description": "The response should correctly identify that utilitarian information is not always symmetric. Check if the response claims symmetry without considering the role of the loss function \\(\\ell\\) and predictive family \\(\\mathcal{V}\\). Incorrect: 'Utilitarian information is always symmetric.' Correct: 'Utilitarian information is not always symmetric due to different loss functions and predictive families.'",
-    "delta_score": -1.5
-  },
-  {
-    "error_name": "Incorrect non-negativity claim",
-    "description": "The response should state that utilitarian information is always non-negative. Verify if the response incorrectly claims that it can be negative. Incorrect: 'Utilitarian information can be negative.' Correct: 'Utilitarian information is always non-negative as it measures a reduction in uncertainty.'",
+    "error_name": "Incorrect proof of symmetry",
+    "description": "The proof for whether utilitarian information is symmetric should clearly demonstrate that \\(\\operatorname{I}_{\\ell,\\mathcal{V}}(X; Y)\\) is not equal to \\(\\operatorname{I}_{\\ell,\\mathcal{V}}(Y; X)\\) using a valid counterexample. Check if the example provided correctly shows the asymmetry in utilitarian information.",
     "delta_score": -1
   },
   {
-    "error_name": "Failure to recover Shannon's theory",
-    "description": "The response should explain that utilitarian information can recover Shannon's information theory under certain conditions. Check if the response fails to mention this equivalence. Incorrect: 'Utilitarian information cannot recover Shannon's theory.' Correct: 'Utilitarian information can recover Shannon's theory for specific \\(\\mathcal{V}\\) and \\(\\ell\\).'",
+    "error_name": "Incorrect proof of non-negativity",
+    "description": "The proof for non-negativity should show that \\(\\operatorname{I}_{\\ell,\\mathcal{V}}(X; Y) \\geq 0\\) by demonstrating that the conditional entropy is always less than or equal to the marginal entropy. Verify if the explanation aligns with the principle that additional information cannot worsen predictive performance.",
     "delta_score": -1
   },
   {
-    "error_name": "Incorrect Data Processing Inequality claim",
-    "description": "The response should correctly state that utilitarian information does not always satisfy the Data Processing Inequality. Check if the response incorrectly claims it does. Incorrect: 'Utilitarian information always satisfies the Data Processing Inequality.' Correct: 'Utilitarian information does not always satisfy the Data Processing Inequality due to the influence of \\(\\ell\\) and \\(\\mathcal{V}\\).'",
-    "delta_score": -1.5
-  },
-  {
-    "error_name": "Incorrect independence claim",
-    "description": "The response should state that utilitarian information between independent variables is zero. Verify if the response incorrectly claims otherwise. Incorrect: 'Utilitarian information can be non-zero for independent variables.' Correct: 'Utilitarian information is zero for independent variables as knowing one does not reduce uncertainty about the other.'",
+    "error_name": "Incorrect recovery of Shannon's information theory",
+    "description": "The explanation should show how utilitarian information theory can recover Shannon's information theory by choosing appropriate \\(\\mathcal{V}\\) and \\(\\ell\\). Check if the example uses logarithmic loss and an unrestricted predictive family to demonstrate this recovery.",
     "delta_score": -1
   },
   {
-    "error_name": "Incorrect bijection invariance claim",
-    "description": "The response should correctly identify that utilitarian information is not always invariant to bijections. Check if the response incorrectly claims invariance. Incorrect: 'Utilitarian information is always invariant to bijections.' Correct: 'Utilitarian information is not always invariant to bijections due to the dependency on \\(\\ell\\) and \\(\\mathcal{V\\).'",
-    "delta_score": -1.5
+    "error_name": "Incorrect proof of Data Processing Inequality",
+    "description": "The proof should demonstrate whether utilitarian information satisfies the Data Processing Inequality using a valid counterexample. Verify if the example correctly shows a scenario where preprocessing can increase utilitarian information, violating the inequality.",
+    "delta_score": -1
   },
   {
-    "error_name": "Lack of machine learning context",
-    "description": "The response should provide a machine learning context or illustration for each statement. Check if the response lacks such context. Incorrect: 'Utilitarian information is not always symmetric.' Correct: 'Utilitarian information is not always symmetric, similar to how different features have different predictive powers in machine learning.'",
+    "error_name": "Incorrect proof of independence",
+    "description": "The proof should show that utilitarian information between two independent variables is zero by demonstrating that the conditional entropy equals the marginal entropy. Check if the explanation aligns with the principle that independent variables provide no information about each other.",
     "delta_score": -1
+  },
+  {
+    "error_name": "Incorrect proof of invariance to bijections",
+    "description": "The proof should demonstrate whether utilitarian information is invariant to bijections using a valid counterexample. Verify if the example correctly shows how a bijection can alter utilitarian information, reflecting practical scenarios in machine learning.",
+    "delta_score": -1
+  },
+  {
+    "error_name": "Lack of machine learning perspective",
+    "description": "Each proof should include an explanation or illustration of why the result makes sense for machine learning. Check if the response provides a clear and relevant machine learning perspective for each statement.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Unclear or incomplete proofs",
+    "description": "The proofs should be clear, detailed, and complete. Check if any proof lacks clarity or omits important steps or explanations.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Irrelevant or unnecessary details",
+    "description": "The response should be concise and focused on the task. Check if there are any irrelevant or unnecessary details that do not contribute to the understanding of the proofs.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect or unclear definitions",
+    "description": "The definitions provided for utilitarian entropy, mutual information, and predictive families should be correct and clear. Check if any definitions are incorrect or unclear.",
+    "delta_score": -0.5
   }
 ]
 # <expert_list_error_rubric_time_sec>:
-
+1200.0
 # <expert_brainstormed_rubric>:
 [
   {
-    "criterion": "Understanding of Utilitarian Information Theory",
+    "criterion": "Correctness of statements",
     "weight": 30.0,
     "checklist": [
-      "Does the response correctly define utilitarian information theory?",
-      "Are the key components of utilitarian information theory, such as utilitarian entropy and mutual information, accurately described?",
-      "Is the distinction between Shannon's information theory and utilitarian information theory clearly explained?",
-      "Does the response address the computational constraints of decision makers in utilitarian information theory?",
-      "Are the implications of utilitarian information theory in machine learning contexts discussed?"
+      "Does the response correctly state that utilitarian information is not always symmetric? (i.e. original statement is false)",
+      "Does the response correctly state that utilitarian information is always non-negative? (i.e. original statement is true)",
+      "Does the response correctly state that utilitarian information can recover Shannon's information theory? (i.e. original statement is true)",
+      "Does the response correctly state that utilitarian information does not always satisfy the Data Processing Inequality (DPI)? (i.e. original statement is false)",
+      "Does the response correctly state that utilitarian information between independent variables is always zero? (i.e. original statement is true)",
+      "Does the response correctly state that utilitarian information is not always invariant to bijections? (i.e. original statement is false)"
     ]
   },
   {
     "criterion": "Accuracy of Proofs and Counterexamples",
-    "weight": 25.0,
+    "weight": 40.0,
     "checklist": [
-      "Are the proofs for each statement logically sound and mathematically correct?",
-      "Do the counterexamples effectively demonstrate the falsehood of certain statements?",
-      "Is the reasoning behind each proof and counterexample clearly articulated?",
-      "Are the mathematical notations and expressions used correctly?",
-      "Does the response provide sufficient detail to understand the proofs and counterexamples?"
-    ]
-  },
-  {
-    "criterion": "Clarity and Coherence",
-    "weight": 20.0,
-    "checklist": [
-      "Is the response well-organized and easy to follow?",
-      "Are the explanations clear and concise, avoiding unnecessary jargon?",
-      "Does the response maintain a logical flow from one section to the next?",
-      "Are complex ideas broken down into understandable parts for non-experts?",
-      "Is the language used appropriate for a non-expert audience?"
+      "Is there a correct proof or counterexample showing that invariance to symmetry does not hold? (A valid counterexample could involve a scenario where the predictive family is very limited and can predict much better X to Y than Y to X. Other valid approaches may exist.)",
+      "Is the proof for non-negativity correct? (The proof must use the definition of action predictive family, i.e., Optional Ignorance. This property is crucial as non-negativity wouldn't hold otherwise.)",
+      "Is the proof for recovery of Shannon's information theory correct? (The proof should consider the setting where the predictive family includes all measurable functions and the loss function is the log-loss, i.e., \u2113(y, \u0177) = -log \u0177(y). It could then use the properness of log-loss to show that the Bayes predictor is the conditional distribution so that the utilitarian conditional entropy is the same as in Shannon's conditional entropy.)",
+      "Is there a correct proof or counterexample showing that the Data Processing Inequality (DPI) does not always hold? (A valid counterexample could involve a preprocessing step that makes prediction easier, violating the DPI. For instance, consider a scenario where the predictive family is very limited and doesn't contain the Bayes predictor from X to Y, but there exists another function g so that the composition g \u2218 f (for an f in the predictive family) would perfectly predict Y. Other valid approaches may exist.)",
+      "Is the proof that independence of random variables gives zero utilitarian information correct? (One valid approach would be to use Jensen's inequality and the assumption of Optional Ignorance to show that information is non-positive. Then, given the non-negativity of utilitarian information, this would imply it is zero. Other valid proofs may exist.)",
+      "Is there a correct proof or counterexample showing that invariance to bijections does not always hold? (A valid counterexample could show how a bijective transformation of X can change the utilitarian information by making Y easier or harder to predict. For example, this could occur if the function mapping X to Y is in a limited predictive family, and choosing a bijection g to Y such that g^-1 \u2218 f is not in the predictive family. Then the utilitarian information would have decreased, violating invariance. Other valid approaches may exist.)",
+      "Are the proofs comprehensive rather than purely intuitive? (Look for detailed mathematical steps and reasoning, not just high-level explanations)",
+      "Are the counterexamples provided with numerical values rather than just high-level intuition? (Look for specific numerical examples where applicable)",
+      "Are all the assumptions and properties being used clearly stated in the proofs? (Each proof should explicitly mention the assumptions and properties it relies on)"
     ]
   },
   {
     "criterion": "Relevance to Machine Learning",
-    "weight": 15.0,
+    "weight": 20.0,
     "checklist": [
-      "Does the response connect utilitarian information theory to practical machine learning scenarios?",
-      "Are examples from machine learning used to illustrate key points?",
-      "Is the relevance of utilitarian information theory to machine learning clearly explained?",
-      "Does the response highlight the benefits and limitations of utilitarian information theory in machine learning?",
-      "Are the machine learning perspectives on each statement insightful and relevant?"
+      "Does the answer provide an intuition as to why information should be non-symmetric in machine learning settings? (For example, explaining that it's often easier to predict Y from X than X from Y in real-world scenarios)",
+      "Does the answer provide an intuition as to why information should be non-negative in machine learning settings? (For example, explaining that adding features can never worsen a model's performance if used optimally)",
+      "Does the answer provide an intuition as to why information should be able to recover Shannon's information theory in machine learning settings? (For example, explaining that when the predictive family is unconstrained, utilitarian information theory aligns with Shannon's framework, retaining all its properties)",
+      "Does the answer provide an intuition as to why information should not always satisfy the DPI in machine learning settings? (For example, explaining how feature preprocessing such as normalization or embedding can enhance the 'extractability' of information by a predictor)",
+      "Does the answer provide an intuition as to why information should be zero for independent variables in machine learning settings? (For example, explaining that adding irrelevant features won't add any predictive power or information gain)",
+      "Does the answer provide an intuition as to why information should not be invariant to bijections in machine learning settings? (For example, explaining how feature preprocessing such as normalization or embedding can enhance the 'extractability' of information by a predictor even if it's bijective)",
+      "Does the response connect utilitarian information theory to practical machine learning scenarios? (Look for concrete examples or applications in ML that illustrate the theoretical concepts)",
+      "Are the machine learning perspectives on each statement insightful and relevant? (Look for clear connections between the theoretical concepts and ML practices, showing how utilitarian information theory applies to real-world ML problems)"
     ]
   },
   {
-    "criterion": "Use of Examples and Illustrations",
+    "criterion": "Clarity and conciseness of explanation",
     "weight": 10.0,
     "checklist": [
-      "Are examples used effectively to illustrate key concepts?",
-      "Do the examples enhance understanding of utilitarian information theory?",
-      "Are the examples relevant and well-chosen for the context of the assignment?",
-      "Is there a balance between theoretical explanations and practical examples?",
-      "Do the examples help clarify complex ideas for non-experts?"
+      "Is the response well-organized and easy to follow? (Look for a clear structure with logical flow of ideas, possibly with section headers or numbered points)",
+      "Does the response avoid irrelevant or unnecessary details not asked in the question? (The answer should focus on the properties of utilitarian information theory and their relevance to machine learning, without digressing into unrelated topics)",
+      "Is the response concise and to the point? (Look for succinct explanations that convey the necessary information without unnecessary elaboration)",
+      "Are the key concepts and calculations clearly explained? (Look for clear definitions of terms like 'utilitarian information', 'Data Processing Inequality', etc., and step-by-step explanations of any calculations or proofs)",
+      "Does the answer provide some intuition behind why each statement is true or false? (Look for explanations that go beyond just stating facts, offering insights into the underlying reasons for each property of utilitarian information theory)"
     ]
   }
 ]
 # <expert_brainstormed_rubric_time_sec>:
+1138.0
+# <expert_rubric>:
+[
+  {
+    "criterion": "Correctness of Statements",
+    "weight": 30.0,
+    "performance_to_description": {
+      "excellent": "The response correctly identifies the truth value of all six statements regarding utilitarian information theory. Each statement is addressed with a clear and accurate determination of whether it is true or false, based on the definitions and properties of utilitarian information theory.",
+      "good": "The response correctly identifies the truth value of at least five out of the six statements. Minor errors or omissions may be present, but the overall understanding of utilitarian information theory is demonstrated.",
+      "fair": "The response correctly identifies the truth value of at least three out of the six statements. There may be significant errors or misunderstandings in the remaining statements.",
+      "poor": "The response fails to correctly identify the truth value of more than three statements, indicating a fundamental misunderstanding of utilitarian information theory."
+    }
+  },
+  {
+    "criterion": "Accuracy of Proofs and Counterexamples",
+    "weight": 40.0,
+    "performance_to_description": {
+      "excellent": "The response provides accurate and detailed proofs or counterexamples for each statement. Each proof or counterexample is mathematically sound, comprehensive, and includes all necessary assumptions and properties. Numerical examples are provided where applicable.",
+      "good": "The response provides mostly accurate proofs or counterexamples for at least five statements. Some minor errors or omissions may be present, but the overall logic is sound. Numerical examples may be lacking in some cases.",
+      "fair": "The response provides accurate proofs or counterexamples for at least three statements. There may be significant errors or omissions in the logic or assumptions of the remaining proofs.",
+      "poor": "The response fails to provide accurate proofs or counterexamples for more than three statements, indicating a lack of understanding of the mathematical principles involved."
+    }
+  },
+  {
+    "criterion": "Relevance to Machine Learning",
+    "weight": 20.0,
+    "performance_to_description": {
+      "excellent": "The response provides insightful and relevant connections between utilitarian information theory and practical machine learning scenarios for each statement. Concrete examples or applications in machine learning are included to illustrate the theoretical concepts.",
+      "good": "The response provides relevant connections between utilitarian information theory and machine learning for at least five statements. Some examples or applications may be less detailed or insightful.",
+      "fair": "The response provides relevant connections for at least three statements. The connections may be superficial or lack concrete examples.",
+      "poor": "The response fails to provide relevant connections between utilitarian information theory and machine learning for more than three statements."
+    }
+  },
+  {
+    "criterion": "Clarity and Conciseness of Explanation",
+    "weight": 10.0,
+    "performance_to_description": {
+      "excellent": "The response is well-organized, easy to follow, and concise. Key concepts and calculations are clearly explained, and the response avoids irrelevant details. Intuition behind each statement is provided.",
+      "good": "The response is mostly well-organized and clear, with minor issues in flow or conciseness. Most key concepts are explained, but some explanations may lack depth or clarity.",
+      "fair": "The response is somewhat organized but may be difficult to follow in places. Key concepts may be poorly explained or missing, and the response may include irrelevant details.",
+      "poor": "The response is poorly organized and difficult to follow. Key concepts are not clearly explained, and the response includes many irrelevant details."
+    }
+  }
+]
+# <expert_rubric_time_sec>:
 

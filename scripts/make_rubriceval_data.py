@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from pathlib import Path
 from typing import Optional, Sequence
 
@@ -233,19 +234,52 @@ def rubriceval_sampled(max_instances: Optional[int] = None, **kwargs):
     brainstorm_and_generate_rubrics(input_path=instructions_path, output_path=rubric_path, max_instances=max_instances)
 
 
-def rubriceval_stanford_ml(is_expert_annotated: bool = True, is_rubric **kwargs):
-    readable_dataset_path = Path("data/benchmark/rubriceval_stanford_ml/readable_dataset")
-    readable_dataset_path.mkdir(parents=True, exist_ok=True)
-    instructions_path = (
-        re_helpers.MAIN_DIR / "data/benchmark/rubriceval_stanford_ml/rubriceval_stanford_ml_instructions.json"
-    )
-    if is_expert_annotated:
+def _convert_dict_to_markdown(d: dict):
+    md = ""
+    for k, v in d.items():
+        if isinstance(v, (list, tuple, dict)):
+            v = json.dumps(v, indent=2)
+        md += f"# <{k}>:\n{v}\n"
+    return md
 
-    instructions_path = (
-        re_helpers.MAIN_DIR / "data/benchmark/rubriceval_stanford_ml/rubriceval_stanford_ml_instructions.json"
-    )
-    # data is already written
-    df = pd.read_json(instructions_path)
+
+def _convert_md_to_dict(md: str):
+    d = {}
+    pattern = r"# <(.*?)>:\n"
+    matches = list(re.finditer(pattern, md))
+    for i, match in enumerate(matches):
+        key = match.group(1)
+        start = match.end()
+        end = matches[i + 1].start() if i < len(matches) - 1 else len(md)
+        value = md[start:end].rstrip("\n")
+        value = ae_utils.convert_str_to_sequence(value)
+        d[key] = value
+    return d
+
+
+def _load_readable_stanford_ml_dataset(path: Path):
+    dataset = []
+    for f_path in path.glob("*.md"):
+        with open(f_path, "r") as f:
+            expert_txt = f.read()
+            expert_dict = _convert_md_to_dict(expert_txt)
+            expert_dict["short_name"] = f_path.stem
+            dataset.append(expert_dict)
+    df = pd.DataFrame(dataset)
+    for c in df.columns:
+        if "_time_sec" in c:
+            df[c] = df[c].replace("", None).astype(float)
+    return df
+
+
+def rubriceval_stanford_ml(is_expert_annotated: bool = True, **kwargs):
+    stanford_ml_path = re_helpers.MAIN_DIR / "data/benchmark/rubriceval_stanford_ml"
+    expert_path = stanford_ml_path / "readable_dataset_expert"
+    readable_dataset_path = stanford_ml_path / "readable_dataset"
+    readable_dataset_path.mkdir(parents=True, exist_ok=True)
+    benchmark_path = stanford_ml_path / "benchmark.json"
+    df = _load_readable_stanford_ml_dataset(expert_path)
+    df["useful_info_to_eval_instruction"] = "### Good solution to the assignment:\n" + df["expert_solution"]
 
     annotators = []
     ann_kwargs = dict(other_output_keys_to_keep=[], **kwargs)
@@ -258,42 +292,43 @@ def rubriceval_stanford_ml(is_expert_annotated: bool = True, is_rubric **kwargs)
     # add columns from auto generated list rubric
     list_rubricator = ListRubricator(**ann_kwargs)
     df = ae_utils.convert_to_dataframe(list_rubricator(df))
-    df = re_helpers.expand_json_column(df, list_rubricator.annotation_key)
-    df.drop(columns=["strong_response"], inplace=True)
+    # df = re_helpers.expand_json_column(df, list_rubricator.annotation_key)
+    # df.drop(columns=["strong_response"], inplace=True)
     annotators.append(list_rubricator)
 
-    # add columns from auto brainstormed rubrics
-    if "brainstormed_rubric" not in df.columns:
-        rubric_brainstormer = RubricBrainstormer(**ann_kwargs)
-        df["useful_info_to_eval_instruction"] = "Here's a good solution to the problem:\n" + df["expert_solution"]
-        df = rubric_brainstormer.make_df_rubrics(
-            rubric_brainstormer(df), is_renormalize_weight=True, is_extract_criteria_col=False
-        )
-        df.drop(
-            columns=["brainstormed_response", "useful_info_to_eval_instruction", "learning_objectives"], inplace=True
-        )
-        annotators.append(rubric_brainstormer)
+    rubric_brainstormer = RubricBrainstormer(**ann_kwargs)
+    df = rubric_brainstormer(df)
+    df = rubric_brainstormer.make_df_rubrics(
+        df, is_renormalize_weight=True, is_extract_criteria_col=False, is_expand_json_column=False
+    )
+    annotators.append(rubric_brainstormer)
 
-    else:
-        # add columns from auto generated rubrics
-        rubricator = Rubricator(**ann_kwargs)
-        df["brainstormed_response"] = df["expert_solution"]
-        df = rubricator.make_df_rubrics(rubricator(df), is_extract_criteria_col=True, is_renormalize_weight=True)
-        annotators.append(rubricator)
+    # in case you have expert brainstormed rubrics then replace brainstormed_rubric with expert_brainstormed_rubric
+    if "expert_brainstormed_rubric" in df.columns:
+        # to know if you are actually expert annotated check if expert_brainstormed_rubric_time_sec is not empty
+        mask_is_expert = df["expert_brainstormed_rubric_time_sec"].notna()
+        df.loc[mask_is_expert, "brainstormed_rubric"] = df.loc[mask_is_expert, "expert_brainstormed_rubric"]
+
+    # add columns from auto generated rubrics
+    rubricator = Rubricator(**ann_kwargs)
+    df = rubricator.make_df_rubrics(
+        rubricator(df), is_extract_criteria_col=False, is_renormalize_weight=True, is_expand_json_column=False
+    )
+    annotators.append(rubricator)
 
     for ann in annotators:
         df[f"expert_{ann.annotation_key}"] = df[ann.annotation_key]
-        df[f"expert_{ann.annotation_key}_time_sec"] = ""
+        time_col = f"expert_{ann.annotation_key}_time_sec"
+        if time_col in df.columns:
+            df[time_col].fillna("", inplace=True)
+        else:
+            df[time_col] = ""
         df.drop(columns=[ann.annotator_column, ann.annotation_key], inplace=True)
 
+    df.drop(columns=["useful_info_to_eval_instruction"], inplace=True)
+
     for i, row in df.iterrows():
-        readable_dataset = ""
-        for k, v in row.to_dict().items():
-            if k == "short_name":
-                continue
-            if isinstance(v, (list, tuple, dict)):
-                v = json.dumps(v, indent=2)
-            readable_dataset += f"# <{k}>:\n{v}\n"
+        readable_dataset = _convert_dict_to_markdown({k: v for k, v in row.to_dict().items() if k != "short_name"})
         # save to markdown file
         with open(readable_dataset_path / f"{row['short_name']}.md", "w") as file:
             file.write(readable_dataset)

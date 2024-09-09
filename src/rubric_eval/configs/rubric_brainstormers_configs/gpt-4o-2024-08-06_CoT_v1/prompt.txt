@@ -1,0 +1,184 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in creating comprehensive, easy-to-apply analytic rubrics for evaluating LLM outputs. Your rubrics will be used by non-expert evaluators, including crowdworkers or other LLMs, who may not have domain-specific knowledge.
+<|im_end|>
+<|im_start|>user
+<instructions>
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed, user-friendly analytic rubric for evaluating LLM outputs on a given assignment. This rubric will be used by non-expert evaluators (such as crowdworkers) or other LLMs to assess the quality of responses from powerful language models.
+
+Key points about the rubric:
+1. Be comprehensive and objective: Cover all aspects of a good response.
+2. Be specific to the assignment: Reference concrete elements expected in a correct answer.
+3. Design for non-experts: Make it easily applicable by evaluators without domain-specific knowledge.
+4. Include clear performance levels: Provide distinct categories for each criterion (e.g., Excellent, Good, Fair, Poor).
+
+When creating the rubric, adhere to these best practices:
+- Focus on specific, easily identifiable elements of a good response.
+- Provide clear, detailed descriptions of expected performance at each level.
+- Use unambiguous language for consistent application by non-experts.
+- Cover potential mistakes/properties of a wide range of potential responses.
+- Reference specific facts, dates, concepts, or methodologies the LLM should include, providing context if necessary.
+- Include guidance on how to identify the quality of each criterion in the LLM's output.
+- Provide examples of responses that would fall into each performance level.
+- Clearly indicate when a specific element is the only correct answer or when it's an example of a possible correct answer.
+- Specify the severity or importance of each element or error in the checklist.
+</instructions>
+
+<formatting>
+# Output Format
+Based on the provided assignment and optionally additional useful information about the assignment, generate a JSON output containing the following:
+- learning_objectives (str): Clearly define the learning objectives of the assignment.
+- brainstormed_rubric (list[dict]): A list of 2-10 dictionaries, each corresponding to a criterion in the analytic rubric. Each dictionary should have the following keys:
+  - criterion (str): Concise, descriptive name of the criterion.
+  - weight (int): A number between 0-100 representing the importance of the criterion.
+  - checklist (list[str]): A list of 3-15 specific elements to consider when evaluating this criterion. Each element should contain a detailed description of what to look for, including examples if applicable. Specify whether the example is the only correct answer or one of multiple possible correct answers. Describe the severity or importance of getting this element wrong.
+</formatting>
+
+<example>
+# Example
+As an example here's a possible machine learning task:
+
+Implement a 3-layer feedforward neural multi-label binary classifier in numpy with the following architecture:```latex
+$input\ (\mathbb{R}^{d}) 
+\to \mathrm{\mathbf{linear}} 
+\to \mathrm{\mathbf{ScaledReLU}} 
+\to tmp\ (\mathbb{R}^{h}) 
+\to \mathrm{\mathbf{linear}} 
+\to \mathrm{\mathbf{ScaledReLU}} 
+\to tmp\ (\mathbb{R}^{h}) 
+\to \mathrm{\mathbf{linear}}  
+\to logits\ (\mathbb{R}^{c})
+\to \mathrm{\mathbf{Sigmoid}}
+\to prediction \ (\mathbb{R}^{c})
+$
+```
+
+The loss function to be used for training this network is the mean negative log-likelihood. Below is the final structure of the MLP class. Your job is to fill in the definitions of the functions called by the MLP class.
+
+```python
+class MLP:
+    def __init__(self, d, h, c):
+        self.layers = [
+            Linear(d, h), ScaledReLU(h),  
+            Linear(h, h), ScaledReLU(h),  
+            Linear(h, c), Sigmoid(c)  
+        ]
+        
+    def forward(self, X):
+        """Predict classes for a batch of n examples"""
+        out = X  # $\in \mathbb{R}^{n \times d}$
+        for layer in self.layers:
+            out = layer.forward(out) 
+        return out
+    
+    def sgd(self, X_train, Y_train):
+        ...
+
+    def single_step_sgd(self, X, Y):  # $X\in \mathbb{R}^{n\times d}$, $Y\in \mathbb{R}^{n\times c}$
+        """Train the MLP with a single step of batched SGD."""
+        Y_hat = self.forward(X)  # $\in \mathbb{R}^{n \times c}$
+        loss_nabla_O = get_grad_log_loss(Y, Y_hat)
+        for layer in self.layers[::-1]:  # backward pass reverses layers
+            loss_nabla_O, *param_grads = layer.backward(loss_nabla_O)
+            layer.update_params_(*param_grads, lr=0.1)
+```
+
+You should write the `forward`, `backward`, `update_params_`, and `__init__` methods for the `Linear`, `ScaledReLU`, and `Sigmoid` classes, as well as the `get_grad_log_loss` function. Note that `ScaledReLU` is similar to ReLU, but it scales the output by 2 if the input is greater than 1 and 0 otherwise. For the linear layer, use Kaiming initialization for the weights and zero initialization for the bias. Use activation checkpointing to save memory wherever possible. Implement everything using NumPy. Your code should be fully functional.
+
+Considering only matrix multiplications in your code, approximately how much slower (in terms of FLOPs) would it be to train our MLP on $n = 10,000$ examples versus performing inference on $n = 10,000$ examples? Your answer should be an integer (round it if you get a float). Provide your derivation.
+
+# Possible brainstormed_rubric
+Here's a possible brainstormed rubric for this assignment:
+[
+  {
+    "criterion": "Following assignment instructions",
+    "weight": 10.0,
+    "checklist": [
+      "Does the code attempt to use activation checkpointing? (Moderate importance)",
+      "Does the code use Kaiming initialization for weights and zero initialization for bias? (Moderate importance)",
+      "Are all the required functions/classes implemented: Linear, ScaledReLU, Sigmoid, get_grad_log_loss? (High importance)",
+      "Does the FLOPs calculation only consider matrix multiplications? (Moderate importance)",
+      "Is the code fully functional or at least attempting to be? (Moderate importance)",
+      "Does the code follow all the instructions given in the prompt? (Moderate importance)",
+      "Is the final answer for the FLOPs an integer? (Low importance)"
+    ]
+  },
+  {
+    "criterion": "Implementation of the forward pass",
+    "weight": 25.0,
+    "checklist": [
+      "Is the forward pass for linear layer correctly implemented as X @ W + b? (Moderate importance)",
+      "Is the forward pass for ScaledReLU correctly implemented as X * 2 if X > 1 else 0? For example it can be computed as `X * scaled_mask` where `scaled_mask=(X > 1) * 2` or it can be computed as `np.where(X > 1, X * 2, 0)` (Moderate importance)",
+      "Is the forward pass for sigmoid correctly implemented as 1 / (1 + np.exp(-X))? (Moderate importance)",
+      "Does the activation checkpointing correctly save O for the sigmoid, scaled_mask for the ScaledReLU, and X for the linear layer? (Moderate importance)",
+      "Are the weights of the linear layer correctly initialized using Kaiming initialization (np.random.randn(d, h) * np.sqrt(2/d))? (Moderate importance)",
+      "Is the bias of the linear layer correctly initialized to zero (np.zeros(h))? (Low importance)"
+    ]
+  },
+  {
+    "criterion": "Implementation of the backward pass and gradient calculation",
+    "weight": 25.0,
+    "checklist": [
+      "Is the backward pass for linear layer correctly implemented (loss_nabla_X = loss_nabla_O @ self.W.T, loss_nabla_W = self.X.T @ loss_nabla_O, loss_nabla_b = loss_nabla_O.sum(axis=0))? (Moderate importance)",
+      "Is the backward pass for ScaledReLU correctly implemented (loss_nabla_X = loss_nabla_O * self.scaled_mask)? (Moderate importance)",
+      "Is the backward pass for sigmoid correctly implemented (loss_nabla_X = loss_nabla_O * self.O * (1-self.O))? (Moderate importance)",
+      "Is the gradient calculation in get_grad_log_loss correct (1/len(Y) * (Y_hat-Y)/((Y_hat * (1-Y_hat))+ eps))? (Moderate importance)",
+      "Is normalization by the number of examples in the batch only done in get_grad_log_loss? (Low importance)",
+      "Is SGD correctly applied in the update_params_ method of the linear layer (self.W -= lr * loss_nabla_W and self.b -= lr * loss_nabla_b)? (Moderate importance)",
+      "Is the update_params_ method correctly skipped for ScaledReLU and Sigmoid as they have no parameters? (Moderate importance)",
+      "Are the correct gradients returned for each layer and the loss? (Moderate importance)",
+      "Is activation checkpointing correctly used in the backward pass instead of recomputing the activations? (Moderate importance)"
+    ]
+  },
+  {
+    "criterion": "Overall code quality",
+    "weight": 15.0,
+    "checklist": [
+      "Is the code fully functional? (High importance)",
+      "Does the code follow good coding practices? (Low importance)",
+      "Is the code simple and easy to understand? (Low importance)",
+      "Is the code concise and free of unnecessary or irrelevant details? (Low importance)",
+      "Are clear and descriptive names used for variables and functions? (Low importance)",
+      "Is the code efficient, avoiding unnecessary operations and loops (i.e., uses vectorized operations)? (Moderate importance)",
+      "Does the code handle edge cases and potential errors (e.g., division by zero, invalid inputs)? (Low importance)",
+      "Are necessary comments and docstrings included to explain the code if not self-explanatory? (Low importance)",
+      "Does the code follow correct Python style and formatting? (Low importance)",
+      "Is the code numerically stable? (Moderate importance)"
+    ]
+  },
+  {
+    "criterion": "Computational Complexity Analysis",
+    "weight": 20.0,
+    "checklist": [
+      "Does the analysis correctly consider only the linear layer for matrix multiplications? (Low importance)",
+      "Is the number of FLOPs for a matrix multiplication correctly calculated as approximately 2nio? or no(2i-1) if you consider the fact that there's one less add than multiplications. (Moderate importance)",
+      "Is the number of FLOPs for the forward pass of the linear layer correctly calculated as 2nio? (Moderate importance)",
+      "Is the number of FLOPs for the backward pass of the linear layer correctly calculated as 4nio? 2nio for the gradient w.r.t. activations and 2nio for the gradient w.r.t. weights. (Moderate importance)",
+      "Is the number of FLOPs for inference correctly calculated as just the inference FLOPs? i.e. 2nio. (Moderate importance)",
+      "Is the total number of FLOPs for training correctly calculated as inference + backward pass FLOPs? Note that you shouldn't penalize if they correctly added their forward and backward FLOPs, but one of their two FLOPs is wrong (because they will already be penalized for that above). If everything else is correct it should be `4nio+2nio=6nio`. (Moderate importance)",
+      "Is the ratio of training to inference FLOPs correctly calculated? Note that you shouldn't penalize if the ratio they computed is correct for their FLOPs but their training or inference FLOPs are wrong (because they will already be penalized for that above). If everything else is correct it should be training/inference=6nio/2nio=3. (Moderate importance)",
+      "Does the response correctly notice that the ratio is independent of $n$ (or rather large $n$ is equivalent to only considering matrix multiplications). (Low importance)"
+    ]
+  },
+  {
+    "criterion": "Clarity and conciseness of explanation",
+    "weight": 5.0,
+    "checklist": [
+      "Is the explanation of the FLOPs calculation clear and easy to follow? (Moderate importance)",
+      "Does the response avoid irrelevant or unnecessary details not asked in the question? (Low importance)",
+      "Is the response concise and to the point? (Low importance)",
+      "Are the key concepts and calculations clearly explained? (Low importance)"
+    ]
+  }
+]
+</example>
+
+<task>
+# Actual assignment for which to brainstorm rubrics
+{instruction}
+
+## Useful information to evaluate the prompt's responses (optional)
+{useful_info_to_eval_instruction}
+</task>
+
+Now, based on this assignment, create a comprehensive, easy-to-apply analytic rubric using the format described. Ensure that your rubric covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `generate_detailed_analytic_rubric(json_output)` function.
+<|im_end|>

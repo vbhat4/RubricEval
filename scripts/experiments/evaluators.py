@@ -40,7 +40,7 @@ class BaseEvaluator(base.BaseAnnotatorJSON):
     def __init__(
         self,
         *args,
-        annotators_config: str = "gpt-4o-2024-08-06_CoT_v0",
+        annotators_config: str = "gpt-4o-2024-08-06_CoT_v1",
         **kwargs,
     ):
         super().__init__(
@@ -94,8 +94,8 @@ class Checklister(base.BaseAnnotatorJSON):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("instruction",),
-        annotators_config="gpt-4o-2024-08-06_v0",
+        primary_keys: Sequence[str] = ("instruction", "useful_info_to_eval_instruction"),
+        annotators_config="gpt-4o-2024-08-06_v1",
         **kwargs,
     ):
         super().__init__(
@@ -109,6 +109,10 @@ class Checklister(base.BaseAnnotatorJSON):
     @property
     def annotation_key(self) -> str:
         return "checklist"
+
+    @property
+    def dflt_annotator_kwargs(self):
+        return dict(available_fields_to_format=self.available_fields_to_format, is_log_first_prompt=True)
 
 
 class ChecklistEvaluator(BaseEvaluator):
@@ -124,8 +128,10 @@ class ChecklistEvaluator(BaseEvaluator):
     )
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
-        checklister = Checklister(annotators_config=gold_model.replace("_CoT", ""))
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
+        df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
+        df["useful_info_to_eval_instruction"] = "### Good solution to the assignment:\n" + df["solution"]
+        checklister = Checklister(annotators_config=gold_model.replace("_CoT", ""), **kwargs)
         checklists = checklister(df)
         df = ae_utils.convert_to_dataframe(checklists)
         return df
@@ -144,20 +150,8 @@ class SolutionEvaluator(BaseEvaluator):
     )
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
-        # replace all the columns with "output*" to "tmp*" so that it's not lost
-        df = df.rename(columns={c: c.replace("output", "tokeep") for c in df.columns if c.startswith("output")})
-        df["modelkeep"] = df["model"]
-        # dirty trick to get the model name
-        outputer = Outputer(annotators_config=gold_model.split("_")[0])
-        outputs = outputer(df)
-        df = ae_utils.convert_to_dataframe(outputs)
-        df["solutioner"] = df["model"]
-        df["model"] = df["modelkeep"]
-        # replace the new "output*" column with the "solution*"
-        df = df.rename(columns={c: c.replace("output", "solution") for c in df.columns if c.startswith("output")})
-        # replace the "tokeep*" columns with the "output*"
-        df = df.rename(columns={c: c.replace("tokeep", "output") for c in df.columns if c.startswith("tokeep")})
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
+        df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
         return df
 
 
@@ -201,8 +195,8 @@ class ListRubricator(base.BaseAnnotatorJSON):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("instruction",),
-        annotators_config="gpt-4o-2024-08-06_CoT_v0",
+        primary_keys: Sequence[str] = ("instruction", "useful_info_to_eval_instruction"),
+        annotators_config="gpt-4o-2024-08-06_CoT_v1",
         **kwargs,
     ):
         super().__init__(
@@ -216,6 +210,10 @@ class ListRubricator(base.BaseAnnotatorJSON):
     @property
     def annotation_key(self) -> str:
         return "list_error_rubric"
+
+    @property
+    def dflt_annotator_kwargs(self):
+        return dict(available_fields_to_format=self.available_fields_to_format, is_log_first_prompt=True)
 
 
 class ListRubricSolutionEvaluator(BaseEvaluator):
@@ -234,9 +232,11 @@ class ListRubricSolutionEvaluator(BaseEvaluator):
     )
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
         df = df.drop(columns=["list_error_rubric", cls.EXCELLENT_OUT_COL], errors="ignore")
-        list_rubricator = ListRubricator(annotators_config=gold_model)
+        df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
+        df["useful_info_to_eval_instruction"] = "### Good solution to the assignment:\n" + df["solution"]
+        list_rubricator = ListRubricator(annotators_config=gold_model, **kwargs)
         list_rubrics = list_rubricator(df)
         df = ae_utils.convert_to_dataframe(list_rubrics)
         df = helpers.expand_json_column(df, list_rubricator.annotation_key)
@@ -266,3 +266,22 @@ class ListRubricEvaluator(ListRubricSolutionEvaluator):
         # remove the response
         df[cls.EXCELLENT_OUT_COL] = ""
         return df
+
+
+# HELPERS
+
+
+def add_solution_to_df(df: pd.DataFrame, annotators_config: str, **ann_kwargs) -> pd.DataFrame:
+    df = df.rename(columns={c: c.replace("output", "tokeep") for c in df.columns if c.startswith("output")})
+    df["modelkeep"] = df["model"]
+    # dirty trick to get the model name
+    outputer = Outputer(annotators_config=annotators_config, **ann_kwargs)
+    outputs = outputer(df)
+    df = ae_utils.convert_to_dataframe(outputs)
+    df["solutioner"] = df["model"]
+    df["model"] = df["modelkeep"]
+    # replace the new "output*" column with the "solution*"
+    df = df.rename(columns={c: c.replace("output", "solution") for c in df.columns if c.startswith("output")})
+    # replace the "tokeep*" columns with the "output*"
+    df = df.rename(columns={c: c.replace("tokeep", "output") for c in df.columns if c.startswith("tokeep")})
+    return df

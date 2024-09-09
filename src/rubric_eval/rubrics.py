@@ -11,7 +11,7 @@ __all__ = ["RubricBrainstormer", "Rubricator"]
 
 
 class BaseRubricator(base.BaseAnnotatorJSON):
-    DEFAULT_ANNOTATION_TYPE = str
+    DEFAULT_ANNOTATION_TYPE = object
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
 
     def __init__(
@@ -29,12 +29,18 @@ class BaseRubricator(base.BaseAnnotatorJSON):
             **kwargs,
         )
 
+    @property
+    def dflt_annotator_kwargs(self):
+        # TODO: remove is_log_first_prompt for release
+        return dict(available_fields_to_format=self.available_fields_to_format, is_log_first_prompt=True)
+
     def make_df_rubrics(
         self,
         annotated: Sequence[dict],
         rubric_columns: Optional[Sequence[str]] = None,
         is_renormalize_weight: bool = True,
         is_extract_criteria_col: bool = True,
+        is_expand_json_column: bool = True,
     ) -> pd.DataFrame:
         """Processes the annotated examples into a DataFrame containing a rubric of (dict of dict) column."""
         df_rubrics = ae_utils.convert_to_dataframe(annotated)
@@ -46,9 +52,11 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         if n_missing > 0:
             logging.warning(f"{n_missing} examples have missing annotations for {self.__class__.__name__}.")
 
-        # TODO: understand why this can add back rows that were previously removed
-        df_rubrics = expand_json_column(df_rubrics, self.annotation_key)
-        df_rubrics = df_rubrics.dropna(subset=[self.annotation_key])
+        # TODO: will likely end up removing this
+        if is_expand_json_column:
+            # TODO: understand why this can add back rows that were previously removed
+            df_rubrics = expand_json_column(df_rubrics, self.annotation_key)
+            df_rubrics = df_rubrics.dropna(subset=[self.annotation_key])
 
         if rubric_columns is None:
             rubric_columns = [self.annotation_key]
@@ -85,7 +93,7 @@ class RubricBrainstormer(BaseRubricator):
         self,
         *args,
         primary_keys: Sequence[str] = ("instruction", "useful_info_to_eval_instruction"),
-        annotators_config="gpt-4o-2024-08-06_CoT_v0",
+        annotators_config="gpt-4o-2024-08-06_CoT_v1",
         **kwargs,
     ):
         super().__init__(
@@ -111,8 +119,8 @@ class Rubricator(BaseRubricator):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("instruction", "brainstormed_rubric", "brainstormed_response"),
-        annotators_config="gpt-4o-2024-08-06_CoT_v0",
+        primary_keys: Sequence[str] = ("instruction", "brainstormed_rubric", "useful_info_to_eval_instruction"),
+        annotators_config="gpt-4o-2024-08-06_CoT_v1",
         **kwargs,
     ):
         super().__init__(

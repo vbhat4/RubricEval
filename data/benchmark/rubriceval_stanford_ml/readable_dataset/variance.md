@@ -25,8 +25,6 @@ f_{suburban}(x) = \frac{1}{\sqrt{2\pi} \cdot 0.5} \cdot e^{-\frac{(x - 2)^2}{2 \
 ```
 
 Assume that 70% of the drones operate in the urban area and 30% in the suburban area. So the delivery times are a mixture of the two distributions. What is the mean and variance of the delivery times?
-
-
 # <expert_solution>:
 To calculate the variance of the delivery times, we can use the following formula for the variance of a mixture of distributions:
 
@@ -51,7 +49,7 @@ E[X^k] = \frac{2}{d+c-b-a}\frac{1}{(k+1)(k+2)}\left(\frac{d^{k+2} - c^{k+2}}{d -
 \end{align}
 ```
 
-Using this formula with k=1, a=0, b=1, c=3, and d=4 
+Using this formula with k=1, a=0, b=1, c=3, and d=4
 
 ```latex
 \begin{align}
@@ -62,7 +60,7 @@ Using this formula with k=1, a=0, b=1, c=3, and d=4
 \end{align}
 ```
 
-and 
+and
 
 ```latex
 \begin{align}
@@ -74,17 +72,17 @@ and
 \end{align}
 ```
 
-Putting all together we have that the mean of the mixture is 
+Putting all together we have that the mean of the mixture is
 
-```latex    
+```latex
 \begin{align}
 \mu  &= \sum_{i=1}^n w_i\mu_i\\
 & = 0.3 * 5 + 0.7 * 2\\
 & = 2.9
 \end{align}
-``` 
+```
 
-and the variance of the mixture is 
+and the variance of the mixture is
 
 ```latex
 \begin{align}
@@ -93,68 +91,104 @@ and the variance of the mixture is
 & = 2.4763
 \end{align}
 ```
-
 # <expert_checklist>:
 [
-  "Does the output correctly identify the type of distribution used for each environment (Trapezoidal for urban and Normal for suburban)?",
-  "Is the formula for the Trapezoidal Distribution correctly applied with the given parameters a=0, b=1, c=3, and d=4?",
-  "Is the formula for the Normal Distribution correctly applied with the given mean of 5 hours and standard deviation of 0.1 hours?",
-  "Does the output correctly calculate the mean of the mixed distribution, considering the 70% urban and 30% suburban operation?",
-  "Does the output correctly calculate the variance of the mixed distribution, considering the 70% urban and 30% suburban operation?",
-  "Is the explanation of the calculation process clear and logically structured?",
-  "Are any assumptions made during the calculations clearly stated and justified?",
-  "Does the output provide a final answer for both the mean and variance of the delivery times?",
-  "Is the output free from mathematical errors in the calculations?",
-  "Does the output consider the implications of the distribution characteristics on delivery time predictions?"
+  "Is the Trapezoidal distribution for the urban area correctly defined with parameters a=0, b=1, c=3, and d=4? (High importance)",
+  "Is the Normal distribution for the suburban area correctly defined with a mean of 5 hours and a standard deviation of 0.1 hours? (High importance)",
+  "Is the formula for the mean of a mixture of distributions correctly applied as \\( \\mu = \\sum_{i=1}^n w_i\\mu_i \\)? (High importance)",
+  "Is the formula for the variance of a mixture of distributions correctly applied as \\( \\sigma^2 = \\sum_{i=1}^n w_i(\\sigma_i^2 + \\mu_i^{2} )- \\mu^2 \\)? (High importance)",
+  "Is the mean of the Trapezoidal distribution correctly calculated using the provided formula for \\( E[X] \\)? (Moderate importance)",
+  "Is the variance of the Trapezoidal distribution correctly calculated using the provided formula for \\( E[X^2] - \\mu_t^2 \\)? (Moderate importance)",
+  "Is the mean of the Normal distribution correctly identified as 5? (Low importance)",
+  "Is the variance of the Normal distribution correctly identified as 0.01? (Low importance)",
+  "Is the weight of 70% for the urban area and 30% for the suburban area correctly applied in the mixture calculations? (High importance)",
+  "Is the final mean of the delivery times correctly calculated as 2.9? (High importance)",
+  "Is the final variance of the delivery times correctly calculated as 2.4763? (High importance)",
+  "Are the calculations for \\( E[X] \\) and \\( E[X^2] \\) for the Trapezoidal distribution correctly performed using integration or the provided formula? (Moderate importance)",
+  "Is the explanation of the calculation process clear and logical, making it easy to follow for non-experts? (Moderate importance)",
+  "Are all mathematical expressions and calculations correctly formatted and free of errors? (High importance)",
+  "Does the response include a clear and concise summary of the findings, including the mean and variance of the delivery times? (Moderate importance)",
+  "Is the response free from unnecessary or irrelevant details that do not contribute to solving the problem? (Low importance)",
+  "Does the response demonstrate a good understanding of the statistical concepts involved in the problem? (High importance)"
 ]
 # <expert_checklist_time_sec>:
 
 # <expert_list_error_rubric>:
 [
   {
-    "error_name": "Incorrect mean calculation for urban area",
-    "description": "The mean for the urban area's Trapezoidal Distribution should be calculated as \\( \\mu_{urban} = \\frac{a + b + c + d}{4} = 2 \\). Check if the LLM's output uses this formula correctly.",
-    "delta_score": -1
-  },
-  {
-    "error_name": "Incorrect variance calculation for urban area",
-    "description": "The variance for the urban area's Trapezoidal Distribution should be calculated as \\( \\sigma^2_{urban} = \\frac{(d-a)^2 + (c-b)^2 - (d-c)(b-a)}{18} \\approx 1.056 \\). Verify if the LLM's output applies this formula accurately.",
-    "delta_score": -1
-  },
-  {
-    "error_name": "Incorrect mean calculation for suburban area",
-    "description": "The mean for the suburban area's Normal Distribution should be \\( \\mu_{suburban} = 5 \\). Ensure the LLM's output states this correctly.",
+    "error_name": "Incorrect mean calculation for Trapezoidal distribution",
+    "description": "The mean of the Trapezoidal distribution should be calculated using the formula provided: \\( \\mu_t = \\frac{1}{3(d+c-b-a)}\\left(\\frac{d^3 - c^3}{d - c} - \\frac{b^3 - a^3}{b - a}\\right) \\). For the given parameters a=0, b=1, c=3, d=4, the mean should be 2. Check if the LLM output matches this calculation.",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect variance calculation for suburban area",
-    "description": "The variance for the suburban area's Normal Distribution should be \\( \\sigma^2_{suburban} = 0.01 \\). Check if the LLM's output mentions this correctly.",
+    "error_name": "Incorrect variance calculation for Trapezoidal distribution",
+    "description": "The variance of the Trapezoidal distribution should be calculated using the formula: \\( \\sigma_t^2 = E[X^2] - \\mu_t^2 \\). For the given parameters, the variance should be \\( \\frac{5}{6} \\). Verify if the LLM output correctly computes this value.",
     "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect mean calculation for Normal distribution",
+    "description": "The mean of the Normal distribution is given as 5. Ensure that the LLM output correctly identifies and uses this value in calculations.",
+    "delta_score": -0.25
+  },
+  {
+    "error_name": "Incorrect variance calculation for Normal distribution",
+    "description": "The variance of the Normal distribution is given as 0.01. Check if the LLM output correctly uses this value in its calculations.",
+    "delta_score": -0.25
   },
   {
     "error_name": "Incorrect mixture mean calculation",
-    "description": "The overall mean for the mixture distribution should be \\( \\mu = 0.7 \\times \\mu_{urban} + 0.3 \\times \\mu_{suburban} = 2.9 \\). Verify if the LLM's output calculates this correctly.",
-    "delta_score": -1.5
-  },
-  {
-    "error_name": "Incorrect mixture variance calculation",
-    "description": "The overall variance for the mixture distribution should be calculated using the formula \\( \\sigma^2 = 0.7 \\times (\\sigma^2_{urban} + (\\mu_{urban} - \\mu)^2) + 0.3 \\times (\\sigma^2_{suburban} + (\\mu_{suburban} - \\mu)^2) \\approx 2.6322 \\). Ensure the LLM's output applies this formula correctly.",
-    "delta_score": -2
-  },
-  {
-    "error_name": "Missing explanation of distribution types",
-    "description": "The response should explain that the urban area follows a Trapezoidal Distribution and the suburban area follows a Normal Distribution. Check if this explanation is present.",
+    "description": "The mean of the mixture distribution should be calculated as \\( \\mu = 0.3 \\times 5 + 0.7 \\times 2 = 2.9 \\). Ensure the LLM output correctly computes this value.",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect parameter values for distributions",
-    "description": "The response should use the correct parameters: Trapezoidal (a=0, b=1, c=3, d=4) and Normal (mean=5, sd=0.1). Verify if these values are used correctly.",
-    "delta_score": -1
+    "error_name": "Incorrect mixture variance calculation",
+    "description": "The variance of the mixture distribution should be calculated using the formula: \\( \\sigma^2 = \\sum_{i=1}^n w_i(\\sigma_i^2 + \\mu_i^{2} )- \\mu^2 \\). For the given distributions, the variance should be approximately 2.4763. Verify if the LLM output matches this calculation.",
+    "delta_score": -0.5
   },
   {
-    "error_name": "Lack of clarity in explanation",
-    "description": "The explanation should be clear and logical, guiding the reader through the calculations step-by-step. If the explanation is confusing or lacks logical flow, apply this deduction.",
-    "delta_score": -1
+    "error_name": "Misinterpretation of distribution parameters",
+    "description": "Ensure that the LLM correctly interprets the parameters for both the Trapezoidal and Normal distributions. Misinterpretation can lead to incorrect calculations. Check if the parameters a, b, c, d for Trapezoidal and mean, variance for Normal are used correctly.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Failure to apply mixture distribution formula",
+    "description": "The LLM should apply the correct formula for calculating the mean and variance of a mixture distribution. Check if the LLM uses the weighted sum of means and variances correctly.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect application of probability weights",
+    "description": "The LLM should correctly apply the weights (70% for urban, 30% for suburban) in the mixture distribution calculations. Verify if these weights are used accurately in the mean and variance calculations.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Unclear explanation or derivation",
+    "description": "The LLM's explanation or derivation of the mean and variance should be clear and detailed. Check if the output provides a step-by-step explanation that is easy to follow.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Irrelevant or excessive details",
+    "description": "The LLM output should focus on relevant details necessary for the calculation. Penalize if the response includes unnecessary information that could confuse the evaluator.",
+    "delta_score": -0.25
+  },
+  {
+    "error_name": "Mathematical notation errors",
+    "description": "Ensure that the LLM uses correct mathematical notation throughout the explanation. Incorrect notation can lead to misunderstandings. Check for any errors in the representation of formulas or calculations.",
+    "delta_score": -0.25
+  },
+  {
+    "error_name": "Failure to verify assumptions",
+    "description": "The LLM should verify the assumptions given in the problem, such as the distribution types and their parameters. Check if the output acknowledges and uses these assumptions correctly.",
+    "delta_score": -0.25
+  },
+  {
+    "error_name": "Incorrect use of exponential function in Normal distribution",
+    "description": "The LLM should correctly apply the exponential function in the Normal distribution formula. Check if the output uses \\( e^{-\\frac{(x - \\mu)^2}{2 \\sigma^2}} \\) correctly.",
+    "delta_score": -0.25
+  },
+  {
+    "error_name": "Incorrect integration for Trapezoidal distribution moments",
+    "description": "The LLM should correctly integrate the Trapezoidal distribution function to find moments. Check if the integration is performed correctly for calculating mean and variance.",
+    "delta_score": -0.5
   }
 ]
 # <expert_list_error_rubric_time_sec>:
@@ -162,49 +196,115 @@ and the variance of the mixture is
 # <expert_brainstormed_rubric>:
 [
   {
-    "criterion": "Understanding of Distributions",
+    "criterion": "Understanding of Distribution Models",
+    "weight": 25.0,
+    "checklist": [
+      "Does the response correctly identify the Trapezoidal distribution for the urban area? (High importance)",
+      "Does the response correctly identify the Normal distribution for the suburban area? (High importance)",
+      "Are the parameters for the Trapezoidal distribution (a=0, b=1, c=3, d=4) correctly used? (Moderate importance)",
+      "Are the parameters for the Normal distribution (mean=5, standard deviation=0.1) correctly used? (Moderate importance)",
+      "Is there a clear explanation of why these distributions are appropriate for the respective environments? (Low importance)"
+    ]
+  },
+  {
+    "criterion": "Calculation of Mean and Variance",
     "weight": 30.0,
     "checklist": [
-      "Does the response correctly identify the Trapezoidal distribution for the urban area?",
-      "Is the Normal distribution correctly identified for the suburban area?",
-      "Are the parameters for each distribution correctly stated?",
-      "Does the response explain the impact of environmental factors on the distribution choice?",
-      "Is the concept of a mixed distribution correctly applied?"
+      "Is the formula for the mean of a mixture of distributions correctly applied? (High importance)",
+      "Is the formula for the variance of a mixture of distributions correctly applied? (High importance)",
+      "Are the individual means and variances of the Trapezoidal and Normal distributions correctly calculated? (Moderate importance)",
+      "Is the final mean of the mixture distribution correctly calculated as 2.9? (High importance)",
+      "Is the final variance of the mixture distribution correctly calculated as 2.4763? (High importance)"
     ]
   },
   {
-    "criterion": "Mathematical Accuracy",
-    "weight": 30.0,
-    "checklist": [
-      "Are the formulas for mean and variance correctly applied?",
-      "Is the calculation of the mean for the Trapezoidal distribution accurate?",
-      "Is the calculation of the variance for the Trapezoidal distribution accurate?",
-      "Are the calculations for the Normal distribution correct?",
-      "Is the final calculation of the mixed distribution's mean and variance correct?"
-    ]
-  },
-  {
-    "criterion": "Application of Concepts",
+    "criterion": "Application of Statistical Concepts",
     "weight": 20.0,
     "checklist": [
-      "Does the response apply the concept of distribution to real-world scenarios?",
-      "Is there a clear explanation of how the distributions model the delivery times?",
-      "Are the assumptions for each distribution clearly stated?",
-      "Does the response demonstrate an understanding of how to combine distributions?",
-      "Is the reasoning behind the choice of distributions logical and well-explained?"
+      "Does the response correctly use the formula for the k-th moment of the Trapezoidal distribution? (Moderate importance)",
+      "Is the integration of the distribution function correctly performed if used instead of the formula? (Moderate importance)",
+      "Are the calculations for E[X] and E[X^2] for the Trapezoidal distribution correctly performed? (Moderate importance)",
+      "Is the understanding of variance as E[X^2] - (E[X])^2 demonstrated? (Moderate importance)",
+      "Is the concept of a mixture distribution clearly explained and applied? (Low importance)"
     ]
   },
   {
-    "criterion": "Clarity and Communication",
-    "weight": 20.0,
+    "criterion": "Clarity and Explanation",
+    "weight": 15.0,
     "checklist": [
-      "Is the response clearly structured and easy to follow?",
-      "Are the steps in the calculations clearly explained?",
-      "Is the language simple and accessible to non-experts?",
-      "Are technical terms explained or defined?",
-      "Is there a logical flow from problem statement to solution?"
+      "Is the explanation of the calculations clear and easy to follow? (Moderate importance)",
+      "Are the steps in the calculation process logically ordered and well-explained? (Moderate importance)",
+      "Does the response avoid unnecessary jargon and complex language? (Low importance)",
+      "Is the response concise and to the point? (Low importance)",
+      "Are key concepts and calculations clearly highlighted and explained? (Low importance)"
+    ]
+  },
+  {
+    "criterion": "Accuracy and Completeness",
+    "weight": 10.0,
+    "checklist": [
+      "Is the response free from mathematical errors? (High importance)",
+      "Are all parts of the assignment addressed? (Moderate importance)",
+      "Is the final answer for both mean and variance provided? (High importance)",
+      "Does the response include all necessary calculations and explanations? (Moderate importance)",
+      "Is the response consistent with the given problem statement and assumptions? (Moderate importance)"
     ]
   }
 ]
 # <expert_brainstormed_rubric_time_sec>:
+
+# <expert_rubric>:
+[
+  {
+    "criterion": "Understanding of Distribution Models",
+    "weight": 25.0,
+    "performance_to_description": {
+      "excellent": "The response correctly identifies the Trapezoidal distribution for the urban area and the Normal distribution for the suburban area. It accurately uses the parameters for the Trapezoidal distribution (a=0, b=1, c=3, d=4) and the Normal distribution (mean=5, standard deviation=0.1). The explanation of why these distributions are appropriate for the respective environments is clear and logical.",
+      "good": "The response correctly identifies the distributions for both environments and uses the parameters accurately, but the explanation of why these distributions are appropriate is either missing or lacks depth.",
+      "fair": "The response identifies the correct distributions but makes minor errors in parameter usage or provides a vague explanation of their appropriateness.",
+      "poor": "The response fails to correctly identify the distributions or uses incorrect parameters, with little to no explanation of their appropriateness."
+    }
+  },
+  {
+    "criterion": "Calculation of Mean and Variance",
+    "weight": 30.0,
+    "performance_to_description": {
+      "excellent": "The response correctly applies the formula for the mean and variance of a mixture of distributions. It accurately calculates the individual means and variances of the Trapezoidal and Normal distributions, resulting in a final mean of 2.9 and variance of 2.4763.",
+      "good": "The response correctly applies the formulas and calculates the final mean and variance, but may have minor errors in intermediate steps or lacks detailed explanation.",
+      "fair": "The response attempts to apply the formulas but makes significant errors in calculation or fails to reach the correct final mean and variance.",
+      "poor": "The response shows a fundamental misunderstanding of how to calculate the mean and variance of a mixture of distributions, with incorrect or missing calculations."
+    }
+  },
+  {
+    "criterion": "Application of Statistical Concepts",
+    "weight": 20.0,
+    "performance_to_description": {
+      "excellent": "The response correctly uses the formula for the k-th moment of the Trapezoidal distribution and demonstrates understanding of variance as E[X^2] - (E[X])^2. The concept of a mixture distribution is clearly explained and applied.",
+      "good": "The response uses the correct formulas and demonstrates understanding of key statistical concepts, but explanations may be brief or lack depth.",
+      "fair": "The response shows some understanding of statistical concepts but makes errors in application or provides unclear explanations.",
+      "poor": "The response demonstrates little to no understanding of the statistical concepts required for the task, with incorrect applications and explanations."
+    }
+  },
+  {
+    "criterion": "Clarity and Explanation",
+    "weight": 15.0,
+    "performance_to_description": {
+      "excellent": "The explanation of the calculations is clear, logically ordered, and easy to follow. The response avoids unnecessary jargon and is concise, with key concepts and calculations clearly highlighted.",
+      "good": "The explanation is generally clear and logical, but may include some jargon or lack conciseness.",
+      "fair": "The explanation is somewhat unclear or disorganized, making it difficult to follow the logic of the calculations.",
+      "poor": "The explanation is confusing, disorganized, or missing, making it difficult to understand the calculations."
+    }
+  },
+  {
+    "criterion": "Accuracy and Completeness",
+    "weight": 10.0,
+    "performance_to_description": {
+      "excellent": "The response is free from mathematical errors and addresses all parts of the assignment. The final answer for both mean and variance is provided, with all necessary calculations and explanations included.",
+      "good": "The response is mostly accurate and complete, but may contain minor errors or omissions in calculations or explanations.",
+      "fair": "The response contains several errors or omissions, affecting the accuracy and completeness of the final answer.",
+      "poor": "The response is largely inaccurate or incomplete, with significant errors or missing elements."
+    }
+  }
+]
+# <expert_rubric_time_sec>:
 

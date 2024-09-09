@@ -1,0 +1,124 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in creating comprehensive, easy-to-apply checklists for evaluating LLM outputs.
+<|im_end|>
+<|im_start|>user
+<instructions>
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed, user-friendly checklist for evaluating LLM outputs on a given assignment. This checklist will be used by non-expert evaluators or other LLMs to assess the quality of responses from powerful language models.
+</instructions>
+
+<checklist_guidelines>
+When creating the checklist, adhere to these best practices:
+- Be comprehensive and objective: Cover all aspects of a good response.
+- Be specific to the assignment: Reference concrete elements expected in a correct answer.
+- Design for non-experts: Make it easily applicable by evaluators without domain-specific knowledge.
+- Focus on specific, easily identifiable elements of a good response.
+- Use unambiguous language for consistent application by non-experts.
+- Cover potential mistakes/properties of a wide range of potential responses.
+- Reference specific facts, dates, concepts, or methodologies the LLM should include, providing context if necessary.
+- Include guidance on how to identify the quality of each criterion in the LLM's output.
+- For each checklist item, explain its importance (e.g., high, moderate, low) to help evaluators prioritize.
+</checklist_guidelines>
+
+<formatting>
+Based on the assignment below and optionally additional useful information about the assignement, generate a JSON output containing:
+- checklist (list[str]): A list of 3-30 concrete and detailed questions tailored to the assignment to consider when evaluating the output. Each question should include its importance level.
+</formatting>
+
+<example>
+# Example
+As an example here's a possible machine learning task:
+
+Implement a 3-layer feedforward neural multi-label binary classifier in numpy with the following architecture:```latex
+$input\ (\mathbb{R}^{d}) 
+\to \mathrm{\mathbf{linear}} 
+\to \mathrm{\mathbf{ScaledReLU}} 
+\to tmp\ (\mathbb{R}^{h}) 
+\to \mathrm{\mathbf{linear}} 
+\to \mathrm{\mathbf{ScaledReLU}} 
+\to tmp\ (\mathbb{R}^{h}) 
+\to \mathrm{\mathbf{linear}}  
+\to logits\ (\mathbb{R}^{c})
+\to \mathrm{\mathbf{Sigmoid}}
+\to prediction \ (\mathbb{R}^{c})
+$```
+
+The loss function to be used for training this network is the mean negative log-likelihood. Below is the final structure of the MLP class. Your job is to fill in the definitions of the functions called by the MLP class.
+
+```python
+class MLP:
+    def __init__(self, d, h, c):
+        self.layers = [
+            Linear(d, h), ScaledReLU(h),  
+            Linear(h, h), ScaledReLU(h),  
+            Linear(h, c), Sigmoid(c)  
+        ]
+        
+    def forward(self, X):
+        """Predict classes for a batch of n examples"""
+        out = X  # $\in \mathbb{R}^{n \times d}$
+        for layer in self.layers:
+            out = layer.forward(out) 
+        return out
+    
+    def sgd(self, X_train, Y_train):
+        ...
+
+    def single_step_sgd(self, X, Y):  # $X\in \mathbb{R}^{n\times d}$, $Y\in \mathbb{R}^{n\times c}$
+        """Train the MLP with a single step of batched SGD."""
+        Y_hat = self.forward(X)  # $\in \mathbb{R}^{n \times c}$
+        loss_nabla_O = get_grad_log_loss(Y, Y_hat)
+        for layer in self.layers[::-1]:  # backward pass reverses layers
+            loss_nabla_O, *param_grads = layer.backward(loss_nabla_O)
+            layer.update_params_(*param_grads, lr=0.1)
+```
+
+You should write the `forward`, `backward`, `update_params_`, and `__init__` methods for the `Linear`, `ScaledReLU`, and `Sigmoid` classes, as well as the `get_grad_log_loss` function. Note that `ScaledReLU` is similar to ReLU, but it scales the output by 2 if the input is greater than 1 and 0 otherwise. For the linear layer, use Kaiming initialization for the weights and zero initialization for the bias. Use activation checkpointing to save memory wherever possible. Implement everything using NumPy. Your code should be fully functional.
+
+Considering only matrix multiplications in your code, approximately how much slower (in terms of FLOPs) would it be to train our MLP on $n = 10,000$ examples versus performing inference on $n = 10,000$ examples? Your answer should be an integer (round it if you get a float). Provide your derivation.
+
+# Possible checklist for this assignment:
+[
+  "Is Kaiming initialization correctly used for weights in the Linear layer (np.random.randn(d, h) * np.sqrt(2/d))? (Moderate importance)",
+  "Are biases in the Linear layer initialized to zeros (np.zeros(h))? (Low importance)",
+  "Is the forward pass of the Linear layer correctly implemented as X @ self.W + self.b? (Moderate importance)",
+  "Is the backward pass of the Linear layer w.r.t. activations correct (loss_nabla_O @ self.W.T)? (Moderate importance)",
+  "Is the backward pass of the Linear layer w.r.t. weights correct (self.X.T @ loss_nabla_O)? (Moderate importance)",
+  "Is the backward pass of the Linear layer w.r.t. bias correct (loss_nabla_O.sum(axis=0))? (Moderate importance)",
+  "Is activation checkpointing used to save X in the forward pass of the Linear layer? (Low importance)",
+  "Is the forward pass of ScaledReLU correctly implemented to scale output by 2 if input > 1, and 0 otherwise? For example, using np.where(X > 1, X * 2, 0) or X * self.scaled_mask where scaled_mask = (X > 1).astype(X.dtype) * 2. (Moderate importance)",
+  "Is the backward pass of ScaledReLU correctly implemented (loss_nabla_O * self.scaled_mask)? (Moderate importance)",
+  "Is activation checkpointing used to save scaled_mask in the forward pass of ScaledReLU? (Low importance)",
+  "Is the forward pass of Sigmoid correctly implemented as 1 / (1 + np.exp(-X))? (Moderate importance)",
+  "Is the backward pass of Sigmoid correctly implemented (loss_nabla_O * self.O * (1-self.O))? (Moderate importance)",
+  "Is activation checkpointing used to save O in the forward pass of Sigmoid? (Low importance)",
+  "Is get_grad_log_loss correctly implemented as something along the lines of 1/len(Y) * (Y_hat-Y)/((Y_hat * (1-Y_hat))+ eps)? (Moderate importance)",
+  "Is normalization by batch size done only in get_grad_log_loss rather than in layer backward passes? (Low importance)",
+  "Is a small epsilon added in get_grad_log_loss to avoid division by zero? (Low importance)",
+  "Is update_params_ correctly implemented for the Linear layer (self.W -= lr * loss_nabla_W, self.b -= lr * loss_nabla_b)? (Moderate importance)",
+  "Is update_params_ correctly skipped for ScaledReLU and Sigmoid as they have no parameters? (Low importance)",
+  "Is the number of FLOPs for forward pass of linear layer correctly calculated as 2nio? (Moderate importance)",
+  "Is the number of FLOPs for backward pass of linear layer correctly calculated as 4nio (2nio for gradient w.r.t. activations and 2nio for gradient w.r.t. weights)? (Moderate importance)",
+  "Is the total number of FLOPs for training correctly calculated as inference + backward pass FLOPs? Note that you shouldn't penalize if they correctly added their forward and backward FLOPs, but one of their two FLOPs is wrong (because they will already be penalized for that above). If everything else is correct it should be `4nio+2nio=6nio`. (Moderate importance)",
+  "Is the number of FLOPs for inference correctly calculated as just the inference FLOPs? i.e. 2nio. (Moderate importance)",
+  "Is the ratio of training to inference FLOPs correctly calculated? Note that you shouldn't penalize if the ratio they computed is correct for their FLOPs but their training or inference FLOPs are wrong (because they will already be penalized for that above). If everything else is correct it should be training/inference=6nio/2nio=3. (Moderate importance)",
+  "Is it noted that the ratio is independent of n (or that large n is equivalent to only considering matrix multiplications)? (Low importance)",
+  "Is the code fully functional and attempting to implement all required components? (High importance)",
+  "Does the code follow good coding practices, including clear variable names? (Low importance)",
+  "Is the code simple, concise, and easy to understand? (Low importance)",
+  "Are unnecessary or irrelevant details avoided in the code and explanation? (Low importance)",
+  "Does the code handle potential numerical instabilities (e.g., using epsilon in get_grad_log_loss)? (Moderate importance)",
+  "Is the code efficient, e.g., using vectorized operations instead of loops? (Moderate importance)",
+  "Are all required functions/classes implemented: Linear, ScaledReLU, Sigmoid, get_grad_log_loss? (High importance)"
+]
+</example>
+
+<task>
+# Actual assignment for which to brainstorm rubrics
+{instruction}
+
+## (Optional) Additional useful information about the assignment
+{useful_info_to_eval_instruction}
+</task>
+
+Now, based on this assignment, create a comprehensive, easy-to-apply checklist using the format described. Ensure that your checklist covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `make_evaluation_report(json_output)` function.
+<|im_end|>

@@ -1,0 +1,228 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in creating comprehensive, easy-to-apply list-view rubrics with deductive scoring for evaluating LLM outputs. Your rubrics will be used by non-expert evaluators, including crowdworkers or other LLMs, who may not have domain-specific knowledge.
+<|im_end|>
+<|im_start|>user
+<instructions>
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed, user-friendly list-view rubric (similar to a checklist) for evaluating LLM outputs on a given assignment using deductive scoring. This rubric will be used by non-expert evaluators or other LLMs to assess the quality of responses from powerful language models.
+
+Key points about the rubric:
+1. Use deductive scoring: Points are subtracted for errors or omissions.
+2. Be comprehensive and objective: Cover all aspects of a good response.
+3. Be specific to the assignment: Reference concrete elements expected in a correct answer.
+4. Design for non-experts: Make it easily applicable by evaluators without domain-specific knowledge.
+
+When creating the rubric, adhere to these best practices:
+- Focus on specific, easily identifiable errors or omissions
+- Provide clear, detailed descriptions of potential mistakes with examples where possible
+- Use unambiguous language for consistent application by non-experts
+- Assign precise point deductions reflecting the severity of each error
+- Cover a wide range of potential errors, both major and minor
+- Reference specific facts, dates, or concepts the LLM should include, providing context if necessary
+- Balance the rubric: Total possible deductions should be between -9 and -10 points
+- Keep error descriptions independent to avoid double-penalizing
+- Include guidance on how to identify each error or omission in the LLM's output
+</instructions>
+
+<formatting>
+# Output Format
+Based on the provided "assignment" generate a JSON with output containing the following:
+- list_error_rubric (list[dict[str, Any]]): A list of 5-50 dictionaries, each corresponding to an element in the checklist / list-view rubric. The rubric is with deductive 
+points, so each element should mention a possible mistake that would cause a point deduction. Each dictionary should have the following keys:
+  - error_name (str): Concise, descriptive name of the potential error.
+  - description (str): Comprehensive description of the mistake or omission, including:
+    1. What the correct information or approach should be
+    2. How to identify if this error is present in the LLM's output
+    3. Examples of correct and incorrect responses if applicable
+  - delta_score (float): Negative number between -0.1 and -5 representing the point deduction. 
+
+The final score will be calculated as: 10 + sum of all delta_score
+</formatting>
+
+<example>
+# Example
+As an example here's a possible machine learning task:
+
+Implement a 3-layer feedforward neural multi-label binary classifier in numpy with the following architecture:```latex
+$input\ (\mathbb{R}^{d}) 
+\to \mathrm{\mathbf{linear}} 
+\to \mathrm{\mathbf{ScaledReLU}} 
+\to tmp\ (\mathbb{R}^{h}) 
+\to \mathrm{\mathbf{linear}} 
+\to \mathrm{\mathbf{ScaledReLU}} 
+\to tmp\ (\mathbb{R}^{h}) 
+\to \mathrm{\mathbf{linear}}  
+\to logits\ (\mathbb{R}^{c})
+\to \mathrm{\mathbf{Sigmoid}}
+\to prediction \ (\mathbb{R}^{c})
+$```
+
+The loss function to be used for training this network is the mean negative log-likelihood. Below is the final structure of the MLP class. Your job is to fill in the definitions of the functions called by the MLP class.
+
+```python
+class MLP:
+    def __init__(self, d, h, c):
+        self.layers = [
+            Linear(d, h), ScaledReLU(h),  
+            Linear(h, h), ScaledReLU(h),  
+            Linear(h, c), Sigmoid(c)  
+        ]
+        
+    def forward(self, X):
+        """Predict classes for a batch of n examples"""
+        out = X  # $\in \mathbb{R}^{n \times d}$
+        for layer in self.layers:
+            out = layer.forward(out) 
+        return out
+    
+    def sgd(self, X_train, Y_train):
+        ...
+
+    def single_step_sgd(self, X, Y):  # $X\in \mathbb{R}^{n\times d}$, $Y\in \mathbb{R}^{n\times c}$
+        """Train the MLP with a single step of batched SGD."""
+        Y_hat = self.forward(X)  # $\in \mathbb{R}^{n \times c}$
+        loss_nabla_O = get_grad_log_loss(Y, Y_hat)
+        for layer in self.layers[::-1]:  # backward pass reverses layers
+            loss_nabla_O, *param_grads = layer.backward(loss_nabla_O)
+            layer.update_params_(*param_grads, lr=0.1)
+```
+
+You should write the `forward`, `backward`, `update_params_`, and `__init__` methods for the `Linear`, `ScaledReLU`, and `Sigmoid` classes, as well as the `get_grad_log_loss` function. Note that `ScaledReLU` is similar to ReLU, but it scales the output by 2 if the input is greater than 1 and 0 otherwise. For the linear layer, use Kaiming initialization for the weights and zero initialization for the bias. Use activation checkpointing to save memory wherever possible. Implement everything using NumPy. Your code should be fully functional.
+
+Considering only matrix multiplications in your code, approximately how much slower (in terms of FLOPs) would it be to train our MLP on $n = 10,000$ examples versus performing inference on $n = 10,000$ examples? Your answer should be an integer (round it if you get a float). Provide your derivation.
+
+# Possible list_error_rubric rubric for this assignment:
+[
+  {
+    "error_name": "Does not initialize the bias of the Linear layer with zeros",
+    "description": "The bias of the linear layer is not initialized with zeros as asked in the prompt, i.e., it should be something like `np.zeros(output_dim)`.",
+    "delta_score": -0.25
+  },
+  {
+    "error_name": "Does not initialize the weights of the Linear layer with Kaiming initialization",
+    "description": "The Linear layer should use Kaiming initialization, i.e., something along the lines of `np.random.randn(input_dim, output_dim) * np.sqrt(2. / input_dim)`.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the forward of the Linear layer",
+    "description": "The forward of the linear layer is incorrect, it should be something like `X @ self.W + self.b`.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the forward of the ScaledReLU",
+    "description": "The ScaledReLU should output `X * 2` if `X > 1` and `0` otherwise. E.g. using `np.where(X > 1, X * 2, 0)` or equivalently using a scaled mask `scaled_mask = (X > 1).astype(X.dtype) * 2`.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the forward of the Sigmoid",
+    "description": "The Sigmoid function should be computed using something like `1 / (1 + np.exp(-X))`.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Missing activation checkpointing",
+    "description": "Activation checkpointing should be used, as asked in the prompt. For the linear layer it should save the input `X`, for the sigmoid it should save the output `O`, and for the ScaledReLU it should save something like the scaled mask `scaled_mask`. Each of those are worth 0.5 points so 1.5 points total. Also deduct points if the code saves unnecessary variables. Also deduct points if the activations are saved but not used in the backward pass.",
+    "delta_score": -1.5
+  },
+  {
+    "error_name": "Major mistake in the backward of the Sigmoid",
+    "description": "The backward pass of the Sigmoid is incorrect, it should be something like `loss_nabla_X = loss_nabla_O * self.O * (1-self.O)`. Penalize completely if didn't multiply by loss_nabla_O, i.e., didn't apply the chain rule correctly.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the backward of the ScaledReLU",
+    "description": "The ScaledReLU should scale the gradients similarly to the forward pass, i.e., something like `loss_nabla_X = loss_nabla_O * self.scaled_mask`.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the backward of the Linear layer w.r.t activations",
+    "description": "The backward pass of the Linear layer w.r.t. activations is incorrect, it should be something like `loss_nabla_X = loss_nabla_O @ self.W.T`. Penalize completely if the multiplication wouldn't run correctly (e.g., dimensions don't match).",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the backward of the Linear layer w.r.t weights",
+    "description": "The backward pass of the Linear layer w.r.t. weights is incorrect, it should be something like `loss_nabla_W = self.X.T @ loss_nabla_O`. Penalize completely if the multiplication wouldn't run correctly (e.g., dimensions don't match).",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the backward of the Linear layer w.r.t bias",
+    "description": "The backward pass of the Linear layer w.r.t. bias is incorrect, it should be something like `loss_nabla_b = loss_nabla_O.sum(axis=0)`. Penalize completely if the sum is over the wrong axis.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Implements update_params_ for ScaledReLU or Sigmoid",
+    "description": "The code wrongly implements update_params_ for ScaledReLU or Sigmoid. Those layers have no parameters to update.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major mistake in the update_params_ of the linear layer",
+    "description": "The update_params_ method of the linear layer is incorrect, it should apply SGD using something like `self.W -= lr * loss_nabla_W` and `self.b -= lr * loss_nabla_b`.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Minor mistake across backward pass",
+    "description": "A minor mistake across multiple of the backward passes, e.g., divides some or all of the gradients by the number of examples in the batch. Or gets a correct but transposed gradient. Use this category to avoid deducting points on each backward pass, just penalize once with the current error across some/all of the backward passes.",
+    "delta_score": -0.75
+  },
+  {
+    "error_name": "Incorrect gradient calculation in get_grad_log_loss",
+    "description": "The gradient of the log loss should be calculated using something like `1/len(Y) * (Y_hat-Y)/((Y_hat * (1-Y_hat))+ eps)`. Penalize only half if it's not normalized by the examples in the batch.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Other coding mistakes",
+    "description": "Other coding mistakes not listed above. Penalize completely if the code doesn't run, i.e., missing imports, indentation errors, syntax errors, etc.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major coding practices mistakes",
+    "description": "Major coding practices mistakes, e.g., uses cryptic names, terrible readability, etc. Feel free to penalize only partially.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Major inefficiencies in the code",
+    "description": "Major inefficiencies in the code, e.g., uses loops instead of vectorized operations, etc.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect FLOPs for the forward pass",
+    "description": "The FLOPs calculation should be something like `2nio` for the forward pass of the linear layer.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect FLOPs for the backward pass",
+    "description": "The FLOPs calculation should be essentially `4nio` for the backward pass of the linear layer.",
+    "delta_score": -1
+  },
+  {
+    "error_name": "Doesn't recognize that training requires both forward and backward pass",
+    "description": "Training requires both forward and backward pass. Note that you shouldn't penalize if they correctly added their forward and backward FLOPs, but one of their two FLOPs is wrong (because they will already be penalized for that above). If everything else is correct it should be `4nio+2nio=6nio`.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect computation of the ratio of training to inference FLOPs",
+    "description": "Doesn't divide correctly the number of training/inference FLOPs. Note that you shouldn't penalize if the ratio they computed is correct for their FLOPs but their training or inference FLOPs are wrong (because they will already be penalized for that above). If everything else is correct it should be training/inference=6nio/2nio=3.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Unclear answer or formatting",
+    "description": "The answer is unclear or lacks major details.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Irrelevant or unnecessary details",
+    "description": "The answer includes many irrelevant or unnecessary details making it much longer than required.",
+    "delta_score": -0.5
+  }
+]
+</example>
+
+<task>
+# Actual assignment for which to write list_error_rubric  
+{instruction}
+
+## (Optional) Additional useful information about the assignment
+{useful_info_to_eval_instruction}
+</task>
+
+
+Now, based on this assignment, create a comprehensive, easy-to-apply rubric using the format described. Ensure that your rubric covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `evaluate_llm(json_output)` function.
+<|im_end|>

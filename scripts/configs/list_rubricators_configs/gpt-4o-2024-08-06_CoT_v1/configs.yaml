@@ -1,0 +1,44 @@
+gpt-4o-2024-08-06_CoT_v1:
+  prompt_template: "gpt-4o-2024-08-06_CoT_v1/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "gpt-4o-2024-08-06"
+    max_tokens: 8192
+    temperature: 0.0
+    tool_choice:
+      type: function
+      function:
+        name: "evaluate_llm"
+    tools:
+      - type: function
+        function:
+          name: "evaluate_llm"
+          description: "Create a comprehensive list-view rubric with deductive scoring for evaluating LLM outputs on a given assignment."
+          strict: true
+          parameters:
+            type: "object"
+            properties:
+              list_error_rubric:
+                type: "array"
+                description: "A list of 5-50 dictionaries, each corresponding to an element in the checklist / list-view rubric with deductive scoring."
+                items:
+                  type: "object"
+                  description: "A single element in the list-view rubric."
+                  properties:
+                    error_name:
+                      type: "string"
+                      description: "Concise name of the potential error."
+                    description:
+                      type: "string"
+                      description: "Comprehensive description of the mistake or omission, including correct information, how to identify the error, and examples if applicable."
+                    delta_score:
+                      type: "number"
+                      description: "Negative number between -0.1 and -5 representing the point deduction."
+                  additionalProperties: false
+                  required: ["error_name", "description", "delta_score"]
+            additionalProperties: false
+            required: ["list_error_rubric"]
+  batch_size: 1
+  fn_completion_parser: json_parser
+  completion_parser_kwargs:
+    annotation_key: list_error_rubric

@@ -1,0 +1,64 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in creating comprehensive, easy-to-apply analytic rubrics for evaluating LLM outputs. Your rubrics will be used by non-expert evaluators, including crowdworkers or other LLMs, who may not have domain-specific knowledge.
+<|im_end|>
+<|im_start|>user
+<instructions>
+We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to create a detailed, user-friendly analytic rubric for evaluating LLM outputs on a given assignment. This rubric will be used by non-expert evaluators (such as crowdworkers) or other LLMs to assess the quality of responses from powerful language models.
+
+Key points about the rubric:
+1. Be comprehensive and objective: Cover all aspects of a good response.
+2. Be specific to the assignment: Reference concrete elements expected in a correct answer.
+3. Design for non-experts: Make it easily applicable by evaluators without domain-specific knowledge.
+4. Include clear performance levels: Provide distinct categories for each criterion (e.g., Excellent, Good, Fair, Poor).
+
+When creating the rubric, adhere to these best practices:
+- Focus on specific, easily identifiable elements of a good response.
+- Provide clear, detailed descriptions of expected performance at each level.
+- Use unambiguous language for consistent application by non-experts.
+- Cover potential mistakes/properties of a wide range of potential responses.
+- Reference specific facts, dates, concepts, or methodologies the LLM should include, providing context if necessary.
+- Include guidance on how to identify the quality of each criterion in the LLM's output.
+- Provide examples of responses that would fall into each performance level.
+- Clearly indicate when a specific element is the only correct answer or when it's an example of a possible correct answer.
+</instructions>
+
+<formatting>
+# Output Format
+Based on the provided assignment, brainstormed rubric and optionally additional useful information about the assignment, generate a JSON output containing the following:
+- rubric (list[dict]): A list of dictionaries, each corresponding to a criterion in the rubric. Each dictionary should have the following keys:
+  - criterion (str): The name of the criterion.
+  - weight (int): The weight of the criterion in the total score, expressed as an integer between 0-100.
+  - performance_to_description (dict[str, str]): A mapping between the performance level ("excellent", "good", "fair", "poor") and a detailed description of what the LLM needs to do to achieve that rating for that criterion. Descriptions must be comprehensive, clear, and refer to specific parts of the ideal response for the criterion. They should be written in a way that non-expert evaluators can easily understand and apply to the LLM's response.
+</formatting>
+
+<example>
+Example rubric element:
+{
+  "criterion": "Historical Accuracy",
+  "weight": 30,
+  "performance_to_description": {
+    "excellent": "The response correctly states that the American Civil War occurred from 1861 to 1865. It mentions Abraham Lincoln as the President of the United States during this period. The main causes of the war (slavery, states' rights, economic differences) are accurately described with specific examples for each. The Emancipation Proclamation of 1863 is mentioned, its significance explained, and its impact on the war effort discussed. Key battles such as Gettysburg (1863) and Antietam (1862) are referenced with their dates and strategic importance. The surrender at Appomattox Court House on April 9, 1865, is mentioned as the end of the war, including the names of the commanding generals (Grant and Lee). The consequences of the war, including the abolition of slavery, the Reconstruction era, and the passage of the 13th, 14th, and 15th Amendments, are discussed in detail.",
+    "good": "The response includes most of the key information about the American Civil War, but may be missing 1-2 important elements or have minor inaccuracies in dates or details. For example, it might correctly discuss the causes and major battles but omit the details of the Emancipation Proclamation or the specific Constitutional amendments that followed the war.",
+    "fair": "The response can only be considered 'fair' if it covers at least three of the following elements with reasonable accuracy: 1) The correct time frame of the war (1861-1865), 2) At least two main causes of the war, 3) Mention of Abraham Lincoln as President, 4) Reference to at least one major battle, and 5) A basic understanding of the war's outcome (Union victory and abolition of slavery). The response may have several inaccuracies or lack depth in its explanations.",
+    "poor": "The response is considered 'poor' if it fails to meet the criteria for 'fair'. This means it contains significant historical inaccuracies (such as incorrect war dates off by more than 5 years), omits most key information about the American Civil War (mentioning fewer than three of the elements required for a 'fair' rating), or demonstrates a fundamental misunderstanding of the event (e.g., confusing it with another war or misidentifying the main participants)."
+  }
+}
+</example>
+
+<task>
+# Actual assignment for which to generate rubrics
+{instruction}
+</task>
+
+<information>
+# Additional information about the assignment
+## Brainstormed Rubric
+{brainstormed_rubric}
+
+## Useful information to evaluate the prompt's responses (optional)
+{useful_info_to_eval_instruction}
+</information>
+
+
+Now, based on this assignment and brainstormed rubric, create a comprehensive, easy-to-apply analytic rubric using the format described. Ensure that your rubric covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, call the `evaluate_llm(json_output)` function to evaluate the LLM's responses.
+<|im_end|>
