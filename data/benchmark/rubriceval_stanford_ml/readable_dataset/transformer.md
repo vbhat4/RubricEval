@@ -141,42 +141,42 @@ Feedforward blocks require $2*4*LD^2$ parameters which is the bottleneck (2 laye
     "criterion": "Following Assignment Instructions",
     "weight": 10.0,
     "performance_to_description": {
-      "excellent": "The response clearly selects one of the provided options: 'input embeddings, the positional embeddings, all the multi-head attention blocks, all the normalization layers, all the feedforward blocks, the final linear layer'. It directly answers both parts of the question: 'where do most of the parameters come from in MyT?' and 'How many parameters does that part have?' The response considers all provided information, such as the absence of bias in linear layers, RMSNorm for normalization layers, and the model dimensionality of d=1756.",
-      "good": "The response selects one of the provided options and answers both parts of the question, but may miss minor details from the provided information, such as the absence of bias in linear layers or RMSNorm for normalization layers.",
-      "fair": "The response selects one of the provided options but only partially answers the question, missing significant details or failing to consider some of the provided information.",
-      "poor": "The response fails to select one of the provided options or does not answer the question about where most of the parameters come from and how many parameters that part has."
+      "excellent": "The response clearly identifies the source of most parameters in MyT as one of the provided options: 'input embeddings, the positional embeddings, all the multi-head attention blocks, all the normalization layers, all the feedforward blocks, the final linear layer'. It answers both 'where do most of the parameters come from in MyT?' and 'how many parameters does that part have?' The response considers all provided information, such as no bias in linear layers, RMSNorm for normalization layers, and the model dimensionality of d=1756.",
+      "good": "The response identifies the correct source of most parameters but has a minor omission or error, such as not fully considering all provided information like the lack of bias in linear layers or RMSNorm for normalization layers.",
+      "fair": "The response partially identifies the source of most parameters but misses some key details or has multiple minor errors, such as not addressing the model dimensionality or the specific architecture details.",
+      "poor": "The response fails to identify the correct source of most parameters or has major omissions, such as not addressing the question of where most parameters come from or how many parameters that part has."
     }
   },
   {
     "criterion": "Understanding of Transformer Architecture",
     "weight": 65.0,
     "performance_to_description": {
-      "excellent": "The response correctly identifies the feedforward blocks as the component with the most parameters and states that they require $2*4*LD^2$ parameters, which is the bottleneck. It focuses on self-attention and feedforward blocks, noting that all other layers have negligible parameters. If mentioned, the number of parameters for each layer is correct: feedforward blocks ($2*4*L*D^2$), self-attention ($4*L*D^2$), input embeddings and final linear layer ($V*D$), positional embeddings ($C*D$), normalization layers ($L*D$).",
-      "good": "The response identifies the feedforward blocks as having the most parameters and provides a correct explanation, but may not detail the parameter count for each layer or may have minor inaccuracies in the explanation.",
-      "fair": "The response identifies the feedforward blocks but provides an incomplete or partially incorrect explanation of why they have the most parameters, or it incorrectly describes the parameter distribution among layers.",
-      "poor": "The response fails to identify the feedforward blocks as having the most parameters or provides a fundamentally incorrect explanation of the parameter distribution."
+      "excellent": "The response correctly identifies the feedforward blocks as the component with the most parameters, stating that they require 2*4*LD^2 parameters, which is the bottleneck. It focuses on self-attention and feedforward blocks, noting that all other layers have negligible parameters. It provides correct parameter counts for each layer: feedforward blocks (2*4*L*D^2), self-attention (4*L*D^2), input embeddings and final linear layer (V*D), positional embeddings (C*D), normalization layers (L*D).",
+      "good": "The response correctly identifies the feedforward blocks as having the most parameters but makes a minor error in the parameter count for one of the layers or doesn't fully explain why other layers have negligible parameters.",
+      "fair": "The response identifies the feedforward blocks but has moderate errors in understanding the architecture, such as incorrect parameter counts for multiple layers or not clearly explaining the significance of the feedforward blocks.",
+      "poor": "The response fails to correctly identify the feedforward blocks as the primary source of parameters or has major misunderstandings about the transformer architecture, such as incorrect parameter counts for most layers."
     }
   },
   {
     "criterion": "Mathematical Capabilities",
     "weight": 10.0,
     "performance_to_description": {
-      "excellent": "All calculations are performed correctly, including the total number of parameters for the feedforward blocks: $2*4*1756^2*57=1406092416$.",
-      "good": "Most calculations are correct, but there may be minor arithmetic errors that do not significantly affect the overall understanding.",
-      "fair": "Some calculations are correct, but there are significant errors that affect the understanding of the parameter distribution.",
-      "poor": "The response contains major calculation errors, leading to incorrect conclusions about the parameter distribution."
+      "excellent": "All calculations are done correctly, including the number of parameters for the feedforward blocks (2*4*1756^2*57=1406092416). The response uses the correct equations and performs accurate arithmetic.",
+      "good": "The calculations are mostly correct, with a minor arithmetic error that does not significantly affect the overall understanding, such as a small mistake in multiplication or addition.",
+      "fair": "The response has a moderate error in calculations, such as using an incorrect formula or making multiple arithmetic mistakes that affect the final parameter count.",
+      "poor": "The response contains major calculation errors, such as completely incorrect formulas or arithmetic that leads to a significantly wrong parameter count."
     }
   },
   {
     "criterion": "Clarity and Formatting",
     "weight": 15.0,
     "performance_to_description": {
-      "excellent": "The explanation of the parameter distribution is clear and easy to follow. The response uses clear and consistent notation, explains the reasoning behind the calculations, and avoids irrelevant details. It clearly explains why the feedforward blocks have the most parameters, making the response easy to understand.",
-      "good": "The explanation is mostly clear, with minor issues in notation or reasoning. The response may include some unnecessary details but remains understandable.",
-      "fair": "The explanation is somewhat unclear, with inconsistent notation or reasoning that makes it difficult to follow. The response may include irrelevant details that detract from understanding.",
-      "poor": "The explanation is unclear, with inconsistent or incorrect notation and reasoning. The response includes irrelevant details and is difficult to understand."
+      "excellent": "The explanation of the parameter distribution is clear, concise, and easy to follow. It uses clear and consistent notation, explains the reasoning behind the calculations, and avoids irrelevant details. The response clearly explains why the feedforward blocks have the most parameters and is easy to understand.",
+      "good": "The explanation is mostly clear and concise, with a minor issue such as slight inconsistencies in notation or including a few unnecessary details.",
+      "fair": "The explanation is somewhat clear but has moderate issues, such as including several irrelevant details or presenting information in a confusing order.",
+      "poor": "The explanation is unclear, verbose, or difficult to follow, with major issues such as disorganized information or inappropriate language that makes it hard to understand the key concepts."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+nan

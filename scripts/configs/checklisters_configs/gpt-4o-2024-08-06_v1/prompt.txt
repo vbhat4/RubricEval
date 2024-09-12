@@ -120,5 +120,5 @@ Considering only matrix multiplications in your code, approximately how much slo
 {useful_info_to_eval_instruction}
 </task>
 
-Now, based on this assignment, create a comprehensive, easy-to-apply checklist using the format described. Ensure that your checklist covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `make_evaluation_report(json_output)` function.
+Now, based on this assignment, create a comprehensive, easy-to-apply checklist using the format described. Ensure that your checklist covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `make_evaluation_report(json_output)` function. Remember that the evaluation will be done by non-expert so the checklist should contain as much detail as possible about the ideal response and be concrete about the type of errors.
 <|im_end|>

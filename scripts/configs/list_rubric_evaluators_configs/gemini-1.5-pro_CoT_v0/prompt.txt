@@ -1,5 +1,8 @@
+<instructions>
 We are conducting a holistic evaluation of powerful large language models (LLMs). Your task is to evaluate the LLM's output based on a given assignment and a corresponding list-view rubric with deductive scoring. This rubric is designed to assess the quality of responses from powerful language models by subtracting points for errors or omissions. Your task is to score the LLM's output by selecting only the applicable errors/omissions from the rubric and provide concise but complete justification for the deductions made. 
+</instructions>
 
+<formatting>
 # Output Format
 Based on the provided "Assignment", "List-view Rubric with Deductive Scoring", "Strong Response" (if available), and "LLM Output to Evaluate", generate a JSON output containing the following:
 - explanation (str): A concise explanation of the LLM's performance, referencing specific parts of the LLM's output and the rubric description. This should mention all the error_name entries from the rubric that should be deducted, as well as any additional errors or outstanding performances not covered by the rubric if applicable.
@@ -15,20 +18,27 @@ Based on the provided "Assignment", "List-view Rubric with Deductive Scoring", "
   - delta_score (float): The score to be applied. Must be non-zero. Negative for deductions, positive for exceptional performances that warrant additional points. In the vast majority of cases, the score should be the same as the delta_score in the rubric.
 
 Important: Only include errors or exceptional performances that actually apply to the output. The delta_score should never be 0. If an error from the rubric does not apply, do not include it in the list_error_rubric_grading.
+</formatting>
 
 The final score will be calculated as: 10 + sum of all applied delta_score
 
+<assignment>
 # Assignment
 {instruction}
+</assignment>
 
+<information>
 # Useful Instruction-Specific Information for Evaluation
 ## List-view Rubric with Deductive Scoring
 {list_error_rubric}
 
 ## Strong Response (optional)
-{strong_response}
+{solution}
+</information>
 
+<llm_output_to_evaluate>
 # LLM Output to Evaluate
 {output}
+</llm_output_to_evaluate>
 
 Now, based on this assignment, list-view rubric, and LLM output, create a comprehensive evaluation using the format described. Be thorough in your assessment, considering both the predefined rubric items and any additional observations that may be relevant. Ensure your explanation is detailed and your scoring is fair and justified. Remember to only include errors that actually apply to the output, with non-zero delta_scores. Once complete, pass your JSON output to the `make_evaluation_report(json_output)` function.

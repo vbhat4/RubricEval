@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Optional, Sequence
 
 import fire
+import helpers
+import numpy as np
 import pandas as pd
 from alpaca_eval import utils as ae_utils
 from alpaca_eval.annotators import base
@@ -234,52 +236,22 @@ def rubriceval_sampled(max_instances: Optional[int] = None, **kwargs):
     brainstorm_and_generate_rubrics(input_path=instructions_path, output_path=rubric_path, max_instances=max_instances)
 
 
-def _convert_dict_to_markdown(d: dict):
-    md = ""
-    for k, v in d.items():
-        if isinstance(v, (list, tuple, dict)):
-            v = json.dumps(v, indent=2)
-        md += f"# <{k}>:\n{v}\n"
-    return md
-
-
-def _convert_md_to_dict(md: str):
-    d = {}
-    pattern = r"# <(.*?)>:\n"
-    matches = list(re.finditer(pattern, md))
-    for i, match in enumerate(matches):
-        key = match.group(1)
-        start = match.end()
-        end = matches[i + 1].start() if i < len(matches) - 1 else len(md)
-        value = md[start:end].rstrip("\n")
-        value = ae_utils.convert_str_to_sequence(value)
-        d[key] = value
-    return d
-
-
-def _load_readable_stanford_ml_dataset(path: Path):
-    dataset = []
-    for f_path in path.glob("*.md"):
-        with open(f_path, "r") as f:
-            expert_txt = f.read()
-            expert_dict = _convert_md_to_dict(expert_txt)
-            expert_dict["short_name"] = f_path.stem
-            dataset.append(expert_dict)
-    df = pd.DataFrame(dataset)
-    for c in df.columns:
-        if "_time_sec" in c:
-            df[c] = df[c].replace("", None).astype(float)
-    return df
-
-
-def rubriceval_stanford_ml(is_expert_annotated: bool = True, **kwargs):
+def rubriceval_stanford_ml(is_all_expert_annotated: bool = False, **kwargs):
     stanford_ml_path = re_helpers.MAIN_DIR / "data/benchmark/rubriceval_stanford_ml"
     expert_path = stanford_ml_path / "readable_dataset_expert"
     readable_dataset_path = stanford_ml_path / "readable_dataset"
     readable_dataset_path.mkdir(parents=True, exist_ok=True)
     benchmark_path = stanford_ml_path / "benchmark.json"
-    df = _load_readable_stanford_ml_dataset(expert_path)
+    df = helpers.load_readable_stanford_ml_dataset(expert_path)
     df["useful_info_to_eval_instruction"] = "### Good solution to the assignment:\n" + df["expert_solution"]
+
+    if is_all_expert_annotated:
+        expert_cols = [c for c in df.columns if c.startswith("expert_")]
+        for c in expert_cols:
+            assert df[c].notna().all(), f"All expert annotations are not available for {c}"
+        df.to_json(benchmark_path, orient="records", indent=2)
+        logging.info(f"Saved benchmark to {benchmark_path}")
+        return
 
     annotators = []
     ann_kwargs = dict(other_output_keys_to_keep=[], **kwargs)
@@ -309,6 +281,15 @@ def rubriceval_stanford_ml(is_expert_annotated: bool = True, **kwargs):
         mask_is_expert = df["expert_brainstormed_rubric_time_sec"].notna()
         df.loc[mask_is_expert, "brainstormed_rubric"] = df.loc[mask_is_expert, "expert_brainstormed_rubric"]
 
+    df["useful_info_to_eval_instruction"] = (
+        "### Good solution to the assignment:\n"
+        + df["expert_solution"]
+        + "\n\n### Expert written checklist to consider:\n"
+        + df["expert_checklist"].apply(lambda x: json.dumps(x, indent=2))
+        + "\n\n### Expert written list of errors:\n"
+        + df["expert_list_error_rubric"].apply(lambda x: json.dumps(x, indent=2))
+    )
+
     # add columns from auto generated rubrics
     rubricator = Rubricator(**ann_kwargs)
     df = rubricator.make_df_rubrics(
@@ -317,18 +298,24 @@ def rubriceval_stanford_ml(is_expert_annotated: bool = True, **kwargs):
     annotators.append(rubricator)
 
     for ann in annotators:
-        df[f"expert_{ann.annotation_key}"] = df[ann.annotation_key]
+        expert_col = f"expert_{ann.annotation_key}"
+        df[expert_col] = df[ann.annotation_key]
         time_col = f"expert_{ann.annotation_key}_time_sec"
         if time_col in df.columns:
-            df[time_col].fillna("", inplace=True)
+            mask_is_expert = df[expert_col].notna()
+            # replace the LLM generated columns with the expert ones
+            df.loc[mask_is_expert, ann.annotation_key] = df.loc[mask_is_expert, expert_col]
+            df.loc[~mask_is_expert, time_col] = np.nan
         else:
-            df[time_col] = ""
+            df[time_col] = np.nan
         df.drop(columns=[ann.annotator_column, ann.annotation_key], inplace=True)
 
     df.drop(columns=["useful_info_to_eval_instruction"], inplace=True)
 
     for i, row in df.iterrows():
-        readable_dataset = _convert_dict_to_markdown({k: v for k, v in row.to_dict().items() if k != "short_name"})
+        readable_dataset = helpers.convert_dict_to_markdown(
+            {k: v for k, v in row.to_dict().items() if k != "short_name"}
+        )
         # save to markdown file
         with open(readable_dataset_path / f"{row['short_name']}.md", "w") as file:
             file.write(readable_dataset)

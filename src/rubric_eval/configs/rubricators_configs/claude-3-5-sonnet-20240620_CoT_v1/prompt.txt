@@ -25,7 +25,7 @@ When creating the rubric, adhere to these best practices:
 <formatting>
 # Output Format
 Based on the provided assignment, brainstormed rubric and optionally additional useful information about the assignment, generate a JSON output containing the following:
-- rubric (list[dict]): A list of dictionaries, each corresponding to a criterion in the rubric. Each dictionary should have the following keys:
+- rubric (list[dict]): A list of dictionaries, each corresponding to a criterion in the rubric. The criteria should be exactly the same as in the expert brainstormed rubric. Each dictionary should have the following keys:
   - criterion (str): The name of the criterion.
   - weight (int): The weight of the criterion in the total score, expressed as an integer between 0-100.
   - performance_to_description (dict[str, str]): A mapping between the performance level ("excellent", "good", "fair", "poor") and a detailed description of what the LLM needs to do to achieve that rating for that criterion. Descriptions must be comprehensive, clear, and refer to specific parts of the ideal response for the criterion. They should be written in a way that non-expert evaluators can easily understand and apply to the LLM's response. "excellent" should give as much information about the ideal response as possible, and others should give as much information about the mistakes compared to "excellent" as possible including mentioning how easy it would be to fix them. Here are all the keys:

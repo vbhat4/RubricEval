@@ -302,7 +302,7 @@ Complexity: only linear layer has matrix multiplications so we should only consi
   },
   {
     "criterion": "Implementation of the forward pass",
-    "weight": 25.0,
+    "weight": 20.0,
     "checklist": [
       "Is the forward pass for linear layer correctly implemented as X @ W + b? (Moderate importance)",
       "Is the forward pass for ScaledReLU correctly implemented as X * 2 if X > 1 else 0? For example it can be computed as `X * scaled_mask` where `scaled_mask=(X > 1) * 2` or it can be computed as `np.where(X > 1, X * 2, 0)` (Moderate importance)",
@@ -314,7 +314,7 @@ Complexity: only linear layer has matrix multiplications so we should only consi
   },
   {
     "criterion": "Implementation of the backward pass and gradient calculation",
-    "weight": 25.0,
+    "weight": 35.0,
     "checklist": [
       "Is the backward pass for linear layer correctly implemented (loss_nabla_X = loss_nabla_O @ self.W.T, loss_nabla_W = self.X.T @ loss_nabla_O, loss_nabla_b = loss_nabla_O.sum(axis=0))? (Moderate importance)",
       "Is the backward pass for ScaledReLU correctly implemented (loss_nabla_X = loss_nabla_O * self.scaled_mask)? (Moderate importance)",
@@ -329,7 +329,7 @@ Complexity: only linear layer has matrix multiplications so we should only consi
   },
   {
     "criterion": "Overall code quality",
-    "weight": 15.0,
+    "weight": 10.0,
     "checklist": [
       "Is the code fully functional? (High importance)",
       "Does the code follow good coding practices? (Low importance)",
@@ -377,61 +377,61 @@ Complexity: only linear layer has matrix multiplications so we should only consi
     "weight": 10.0,
     "performance_to_description": {
       "excellent": "The code implements all required functions and classes: Linear, ScaledReLU, Sigmoid, and get_grad_log_loss. It uses activation checkpointing, Kaiming initialization for weights, and zero initialization for biases. The FLOPs calculation considers only matrix multiplications, and the final answer is an integer. The code is fully functional and follows all instructions in the prompt.",
-      "good": "The code implements most of the required functions and classes, with minor omissions or errors. It attempts to use activation checkpointing and Kaiming initialization, but may have minor issues. The FLOPs calculation is mostly correct, but may include minor errors. The code is mostly functional and follows most instructions.",
-      "fair": "The code implements some of the required functions and classes, but with significant omissions or errors. It may attempt activation checkpointing or Kaiming initialization, but with major issues. The FLOPs calculation is attempted but contains significant errors. The code is partially functional and follows some instructions.",
-      "poor": "The code fails to implement most of the required functions and classes. It does not attempt activation checkpointing or Kaiming initialization. The FLOPs calculation is incorrect or missing. The code is non-functional and does not follow instructions."
+      "good": "The code implements most of the required functions and classes, with 1 minor omission. For example, it might have forgotten to zero initialize the bias or it returned a decimal number ratio of training to inference instead of an integer. Errors for this criterion are not about implementation but about missing details in the instructions. Minor omissions are those that would lead to very similar solutions and would have trivial fixes.",
+      "fair": "The code implements some of the required functions and classes, but has one moderate omission or two minor ones. For example, it didn't attempt Kaiming initialization (moderate omission) or implemented ReLU instead of ScaledReLU (moderate omission). Multiple small omissions may include not initializing the bias (minor omission) and considering non-matrix multiplications in FLOP calculation (minor omission). Moderate omissions are those that would lead to different solutions and would require some thinking to fix.",
+      "poor": "The code has a major omission or multiple moderate ones. For example, it didn't implement activation checkpointing at all (major omission), the code uses pseudocode (major omission), or one of the required functions or classes is missing (major omission). Major omissions are those that would lead to significantly different solutions and that would require significant thinking to fix."
     }
   },
   {
     "criterion": "Implementation of the Forward Pass",
-    "weight": 25.0,
+    "weight": 20.0,
     "performance_to_description": {
-      "excellent": "The forward pass for each layer is correctly implemented: Linear as X @ W + b, ScaledReLU as X * 2 if X > 1 else 0, and Sigmoid as 1 / (1 + np.exp(-X)). Activation checkpointing is correctly used, and weights are initialized using Kaiming initialization. Biases are initialized to zero.",
-      "good": "The forward pass is mostly correct, with minor errors in one or two layers. Activation checkpointing is attempted but may have minor issues. Weights are mostly correctly initialized, but there may be minor errors in bias initialization.",
-      "fair": "The forward pass is partially correct, with significant errors in multiple layers. Activation checkpointing is attempted but with major issues. Weights and biases are not correctly initialized.",
-      "poor": "The forward pass is incorrect for most layers. Activation checkpointing is not attempted. Weights and biases are not initialized correctly."
+      "excellent": "The forward pass for each layer is correctly implemented: Linear as `X @ W + b`, ScaledReLU as `X * 2 if X > 1 else 0`, and Sigmoid as `1 / (1 + np.exp(-X))`. Activation checkpointing is correctly used in the forward pass: Linear saves self.X, ScaledReLU saves the mask, and Sigmoid saves the output self.O. Biases are initialized to zero using `np.zeros(h)` and weights are initialized using Kaiming initialization `np.random.randn(input_dim, output_dim) * np.sqrt(2. / input_dim)`.",
+      "good": "The forward pass is mostly correct, with 1 minor error. For example, the mask is not saved in ScaledReLU (activation checkpointing). Minor errors are those that would nearly not affect the final code and solution (e.g., activation checkpointing for ScaledReLU) or use `np.sqrt(1. / input_dim)` instead of `np.sqrt(2. / input_dim)` in Kaiming initialization.",
+      "fair": "The forward pass is partially correct, with one moderate error or two minor ones. For example, scaled ReLU doesn't do what it's supposed to (moderate error), or Kaiming initialization is completely wrong (moderate error), or the sigmoid forgot to take the negative sign in the exponent (moderate error), or using shape mistakes e.g. `W@X + b` instead of `X @ W + b` in the linear layer. Moderate errors are either those that could give different final answers (e.g., forgetting to initialize the weight, or forgetting the sign in the exponent) but can be easily fixed, or those that would fail loudly and are close to being correct e.g., a shape mistake.",
+      "poor": "The forward pass contains multiple moderate errors or a major one. Major errors are those that would require significant thinking to fix, e.g., `O = 1 / (1 + np.exp(-X))` is not implemented or is completely wrong."
     }
   },
   {
     "criterion": "Implementation of the Backward Pass and Gradient Calculation",
-    "weight": 25.0,
+    "weight": 35.0,
     "performance_to_description": {
-      "excellent": "The backward pass for each layer is correctly implemented: Linear layer gradients are calculated correctly, ScaledReLU and Sigmoid backward passes are correct, and get_grad_log_loss is implemented accurately. SGD is correctly applied, and activation checkpointing is used in the backward pass.",
-      "good": "The backward pass is mostly correct, with minor errors in one or two layers. Gradient calculations are mostly accurate, and SGD is applied with minor issues. Activation checkpointing is attempted but may have minor errors.",
-      "fair": "The backward pass is partially correct, with significant errors in multiple layers. Gradient calculations are attempted but contain major errors. SGD is applied incorrectly, and activation checkpointing is not used correctly.",
-      "poor": "The backward pass is incorrect for most layers. Gradient calculations are missing or incorrect. SGD is not applied, and activation checkpointing is not used."
+      "excellent": "The backward pass for each layer is correctly implemented: Linear layer gradients are calculated correctly using the chain rule (e.g., of correct implementation `dL_dW = self.X.T @ dL_dY`, `dL_db = dL_dY.sum(axis=0)`, `dL_dX = dL_dY @ W.T` where `self.X` is checkpointed/stored in the forward pass), ScaledReLU backward pass correctly applies the double gradient only where the input was greater than 1 (e.g., `dL_dX = dL_dY * self.scaled_mask` where `self.scaled_mask = (X > 1) * 2` is checkpointed/stored in forward pass), and Sigmoid backward pass correctly applies the derivative of the sigmoid function (e.g., `dL_dX = dL_dY * self.O * (1 - self.O)` where `self.O=1 / (1 + np.exp(-self.X))` is checkpointed/stored in forward pass). The get_grad_log_loss function accurately computes the gradient of the log loss with respect to the weights (e.g., `1/len(Y) * (Y_hat - Y) / ((Y_hat * (1 - Y_hat)) + eps)` including the normalization by batch size). Stochastic Gradient Descent (SGD) is correctly applied by updating the weights using the computed gradients and a learning rate (e.g., `self.W -= lr * dL_dW` and `self.b -= lr * dL_db`). Activation checkpointing is used in the backward pass to save intermediate activations and those are reused in the backward pass.",
+      "good": "The backward pass is mostly correct, with minor errors in one backward pass. For example, one of the intermediate activations is not reused in the backward pass, or `get_grad_log_loss` forgot to normalize by the batch size. Minor errors are those that would nearly not affect the final code / solution and are easy to fix, or those that would fail loudly and thus be easy to spot (e.g., matrix multiplication wouldn't run due to shape mismatch).",
+      "fair": "The backward pass has one moderate error or two minor ones. Moderate errors are those that could give very different final answers (e.g., the sign of the update in SGD is wrong, or the chain rule is not applied correctly `dL_dX = self.O * (1 - self.O)`) but are easy to fix (the solution is close to correct), or errors that would fail loudly and thus be easy to spot (e.g., matrix multiplication wouldn't run due to shape mismatch).",
+      "poor": "The backward pass contains multiple moderate errors or a major one. Major errors are those that would require significant thinking to fix, e.g., `loss_nabla_X = loss_nabla_O @ self.W.T` is not implemented or is completely wrong."
     }
   },
   {
     "criterion": "Overall Code Quality",
-    "weight": 15.0,
+    "weight": 10.0,
     "performance_to_description": {
-      "excellent": "The code is fully functional, follows good coding practices, is simple and easy to understand, and uses efficient, vectorized operations. It handles edge cases, includes necessary comments, and follows Python style and formatting. The code is numerically stable.",
-      "good": "The code is mostly functional, follows most coding practices, is relatively easy to understand, and uses some vectorized operations. It handles some edge cases, includes some comments, and mostly follows Python style. The code is mostly stable.",
-      "fair": "The code is partially functional, follows some coding practices, is somewhat difficult to understand, and uses few vectorized operations. It handles few edge cases, includes few comments, and partially follows Python style. The code has stability issues.",
-      "poor": "The code is non-functional, does not follow coding practices, is difficult to understand, and does not use vectorized operations. It does not handle edge cases, lacks comments, and does not follow Python style. The code is unstable."
+      "excellent": "The code is fully functional, efficient, and follows best practices in Python programming. It uses vectorized operations instead of loops, handles potential numerical instabilities (e.g., using epsilon in get_grad_log_loss), and uses clear, descriptive variable names. The code is simple, concise, and easy to understand, with no unnecessary or irrelevant details. For example, it adds useful/concise documentation when needed and arguments to functions when needed.",
+      "good": "The code is functional and mostly follows best practices, with one minor issue. For example, it may forget the epsilon in get_grad_log_loss, use unnecessarily many lines of code, or doesn't type the arguments to functions. The code is generally easy to understand but may have a few unnecessary details. Minor issues are those that would most often not affect the final outcome of the code and are easy to fix.",
+      "fair": "The code is mostly functional but has two minor issues or one moderate one. For instance, it might use loops instead of vectorization somewhere (moderate issue), or have unclear variable names throughout (minor issue) as well as lacking docstrings (minor issue). The code may be somewhat difficult to understand or contain several unnecessary details. Moderate issues are those that would significantly impact the final outcome of the code but are not wrong (e.g., slow due to a for loop), or those that significantly impact the code quality but are easy to fix.",
+      "poor": "The code contains multiple moderate errors or a major one. Major errors are those that would require significant refactoring to fix and significantly impact the code quality."
     }
   },
   {
     "criterion": "Computational Complexity Analysis",
     "weight": 20.0,
     "performance_to_description": {
-      "excellent": "The analysis correctly considers only the linear layer for matrix multiplications, calculates FLOPs accurately for both forward and backward passes, and correctly determines the training to inference FLOPs ratio. The explanation is clear and concise.",
-      "good": "The analysis is mostly correct, with minor errors in FLOPs calculation or ratio determination. The explanation is mostly clear, with minor issues.",
-      "fair": "The analysis is partially correct, with significant errors in FLOPs calculation or ratio determination. The explanation is somewhat unclear.",
-      "poor": "The analysis is incorrect, with major errors in FLOPs calculation or ratio determination. The explanation is unclear or missing."
+      "excellent": "The analysis correctly considers only the linear layer for matrix multiplications. It accurately calculates the FLOPs for forward pass as 2nio, backward pass as 4nio (2nio for gradients w.r.t. activations and 2nio for gradients w.r.t. weights), and total training as 6nio (forward + backward). It correctly determines the ratio of training to inference FLOPs as 3 (6nio / 2nio), and notes that this ratio is independent of n for large n (or equivalent to only considering matrix multiplications). The explanation is clear, concise, and shows a deep understanding of the computational complexity involved, including the reasoning behind the 2nio approximation for matrix multiplication (no dot products, each for vectors of shape i, and dot product of two vectors of dimensionality d is approx 2d).",
+      "good": "The analysis is mostly correct, with one minor issue. For example, it may have the correct equations but have some computation error (minor issue), or may not recognize that the ratio is independent of n for large n (or rather large n is equivalent to only considering matrix multiplications) (minor issue). Minor issues are such that the overall reasoning is sound and a simple proofreading would help find the error.",
+      "fair": "The analysis contains a moderate error. For instance, a common moderate error is to consider training to only perform the backward pass (rather than forward + backward) which would lead to conclude that the ratio is $4nio/2nio=2$ rather than $3$. Another common moderate error would be to consider the forward pass as $nio$ rather than $2nio$ (common and easy to fix error). Another common error may be to only consider the gradients w.r.t. activations in the backward pass (rather than both activations and weights) which would be a 2nio rather than 4nio. Moderate errors uncover a lack of understanding of at least one thing but are easy to fix.",
+      "poor": "The analysis contains multiple moderate errors or a major one. Major errors are those that require significant thinking to fix. For example, the answer gets the number of FLOPS in the backward pass completely wrong."
     }
   },
   {
     "criterion": "Clarity and Conciseness of Explanation",
     "weight": 5.0,
     "performance_to_description": {
-      "excellent": "The explanation of the FLOPs calculation is clear, concise, and easy to follow. It avoids irrelevant details and clearly explains key concepts and calculations.",
-      "good": "The explanation is mostly clear and concise, with minor issues. It mostly avoids irrelevant details and explains key concepts.",
-      "fair": "The explanation is somewhat unclear or verbose, with significant issues. It includes some irrelevant details and does not clearly explain key concepts.",
-      "poor": "The explanation is unclear, verbose, or missing. It includes irrelevant details and does not explain key concepts."
+      "excellent": "The explanation is clear, concise, and easy to follow. It avoids irrelevant or unnecessary details, focuses on the key concepts and calculations, and presents information in a logical order. The language used is precise and appropriate for the technical nature of the topic.",
+      "good": "The explanation is mostly clear and concise, with a minor issue. A minor issue may be that it includes a few unnecessary details or has slight inconsistencies in the logical flow, but overall it's easy to follow and focuses on the key points.",
+      "fair": "The explanation is somewhat clear but has one moderate issue or two minor ones. For example, it might include several irrelevant details, skip over some important points, or present information in a confusing order. The language might be imprecise or inconsistent in places. Moderate issues are those that would still make the answer understandable but significantly impact the clarity and quality of the explanation. These should be relatively easy to fix.",
+      "poor": "The explanation contains major issues that make it unclear, verbose, or difficult to follow. It might include many irrelevant details, miss crucial points, or present information in a disorganized manner. The language used might be inappropriate or consistently imprecise, making it hard to understand the key concepts and calculations. Major issues are those that would require significant thinking to fix and significantly impact the clarity and quality of the explanation."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+3600.0

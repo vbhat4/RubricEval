@@ -171,44 +171,44 @@ Taking $\lambda_{1} = 0$, we have $||w^*_l ||_2^2 \geq ||w^*_r ||_2^2$ as desire
 [
   {
     "criterion": "Mathematical Rigor",
-    "weight": 20.0,
+    "weight": 10.0,
     "performance_to_description": {
-      "excellent": "The response clearly states and justifies all properties or assumptions used in the derivation, such as assumptions about the data or properties of matrices. All mathematical steps are logically sound and correctly applied, including the use of algebra, calculus, and linear algebra. The use of mathematical theorems or properties, such as SVD or eigendecomposition, is accurate and appropriate.",
-      "good": "The response states most properties or assumptions used in the derivation, with minor omissions or lack of justification. Most mathematical steps are logically sound and correctly applied, with minor errors. The use of mathematical theorems or properties is mostly accurate, with minor inaccuracies.",
-      "fair": "The response states some properties or assumptions used in the derivation, but lacks clarity or justification. Some mathematical steps are logically sound, but there are noticeable errors or omissions. The use of mathematical theorems or properties is partially accurate, with several inaccuracies.",
-      "poor": "The response fails to state or justify properties or assumptions used in the derivation. Mathematical steps are largely incorrect or illogical. The use of mathematical theorems or properties is inaccurate or inappropriate."
+      "excellent": "The response clearly states and justifies any properties or assumptions used in the derivation, such as assumptions about the data or properties of matrices. All mathematical steps are logically sound and correctly applied, including the use of algebra, calculus, and linear algebra. The use of mathematical theorems or properties, such as SVD or eigendecomposition, is accurate and appropriate, with correct application to the problem at hand.",
+      "good": "The response mostly states and justifies properties or assumptions, with one minor omission. For example, it might not clearly justify an assumption about the data but still applies mathematical steps correctly. The use of theorems or properties is mostly accurate, with minor errors that do not significantly affect the overall logic.",
+      "fair": "The response has a few minor omissions or one moderate mistake in stating or justifying properties or assumptions. For example, it might incorrectly apply a mathematical theorem or property, such as misapplying SVD or eigendecomposition, but the overall logic is still somewhat intact.",
+      "poor": "The response has multiple moderate mistakes or a major one in stating or justifying properties or assumptions. For example, it might fail to apply basic algebra or calculus correctly, or completely misapply a mathematical theorem or property, leading to a flawed derivation."
     }
   },
   {
     "criterion": "Correctness of Proof",
-    "weight": 50.0,
+    "weight": 70.0,
     "performance_to_description": {
-      "excellent": "The response correctly states the least squares and ridge regression objectives. The derivation of the ridge regression solution is accurate, and the response correctly concludes that the ridge regression norm is less than or equal to the least squares norm. The high-level approach to the proof is correct, using methods such as closed-form solutions or Lagrangian multipliers appropriately.",
-      "good": "The response correctly states the least squares and ridge regression objectives, with minor errors. The derivation of the ridge regression solution is mostly accurate, with minor errors. The conclusion about the norms is mostly correct, with minor inaccuracies. The high-level approach to the proof is mostly correct, with minor errors in the methods used.",
-      "fair": "The response states the least squares and ridge regression objectives, but with noticeable errors. The derivation of the ridge regression solution has significant errors. The conclusion about the norms is partially correct, with several inaccuracies. The high-level approach to the proof is partially correct, with significant errors in the methods used.",
-      "poor": "The response fails to correctly state the least squares and ridge regression objectives. The derivation of the ridge regression solution is largely incorrect. The conclusion about the norms is incorrect. The high-level approach to the proof is incorrect, with inappropriate methods used."
+      "excellent": "The response correctly states the least squares and ridge regression objectives, derives the ridge regression solution accurately, and concludes that the ridge regression norm is less than or equal to the least squares norm. The high-level approach to the proof is correct, using methods such as computing norms directly or using Lagrangian multipliers. If used, the closed-form solutions for least squares and ridge regression are stated correctly, as well as the SVD and eigendecomposition of matrices. The proof by contradiction, if used, is applied correctly.",
+      "good": "The response is mostly correct, with one minor error in stating objectives or deriving solutions. For example, it might slightly misstate the ridge regression objective but still derive the solution accurately. The conclusion about the norms is mostly correct, with minor logical errors that do not significantly affect the overall proof.",
+      "fair": "The response has a few minor errors or one moderate mistake in stating objectives or deriving solutions. For example, it might incorrectly derive the ridge regression solution or misstate the closed-form solution for least squares, but the overall proof is still somewhat intact.",
+      "poor": "The response has multiple moderate mistakes or a major one in stating objectives or deriving solutions. For example, it might completely misstate the least squares or ridge regression objectives, leading to a flawed proof."
     }
   },
   {
     "criterion": "Clarity and Conciseness of Explanation",
-    "weight": 15.0,
+    "weight": 10.0,
     "performance_to_description": {
-      "excellent": "The response is well-organized and easy to follow, with a clear structure and logical flow of ideas. Explanations are concise and to the point, with key concepts and calculations clearly explained. The explanation of mathematical steps is clear and easy to follow, with technical terms and symbols adequately defined for a non-expert audience.",
-      "good": "The response is mostly well-organized, with minor issues in structure or flow. Explanations are mostly concise, with minor unnecessary elaboration. Key concepts and calculations are mostly clear, with minor issues. The explanation of mathematical steps is mostly clear, with minor issues in defining technical terms and symbols.",
-      "fair": "The response has noticeable issues in organization or flow, making it somewhat difficult to follow. Explanations are somewhat concise, but with noticeable unnecessary elaboration. Key concepts and calculations are somewhat clear, but with noticeable issues. The explanation of mathematical steps is somewhat clear, but with noticeable issues in defining technical terms and symbols.",
-      "poor": "The response is poorly organized and difficult to follow. Explanations are not concise, with significant unnecessary elaboration. Key concepts and calculations are unclear. The explanation of mathematical steps is unclear, with significant issues in defining technical terms and symbols."
+      "excellent": "The response is well-organized and easy to follow, with a clear structure and logical flow of ideas. It is concise and to the point, providing succinct explanations without unnecessary elaboration. Key concepts and calculations are clearly explained, with some intuition provided for why the inequality holds. Technical terms and symbols are adequately defined for a non-expert audience.",
+      "good": "The response is mostly clear and concise, with a minor issue in organization or explanation. For example, it might include a few unnecessary details or have slight inconsistencies in logical flow, but overall it is easy to follow and focuses on key points.",
+      "fair": "The response is somewhat clear but has one moderate issue or two minor ones in organization or explanation. For example, it might include several irrelevant details or present information in a confusing order, but the overall explanation is still somewhat understandable.",
+      "poor": "The response is unclear or difficult to follow, with major issues in organization or explanation. It might include many irrelevant details or present information in a disorganized manner, making it hard to understand the key concepts and calculations."
     }
   },
   {
     "criterion": "Intuitive Explanation",
-    "weight": 15.0,
+    "weight": 10.0,
     "performance_to_description": {
-      "excellent": "The response provides a clear and intuitive explanation for why the ridge regression solution results in smaller weights, using analogies or examples to help explain the concepts. The intuitive explanation is clear and easy to understand, avoiding technical jargon and using simple language.",
-      "good": "The response provides a mostly clear intuitive explanation, with minor issues in clarity or use of analogies. The explanation is mostly easy to understand, with minor use of technical jargon.",
-      "fair": "The response provides a somewhat clear intuitive explanation, but with noticeable issues in clarity or use of analogies. The explanation is somewhat easy to understand, but with noticeable use of technical jargon.",
-      "poor": "The response fails to provide a clear intuitive explanation. The explanation is difficult to understand, with significant use of technical jargon and lack of analogies or examples."
+      "excellent": "The response provides an intuitive explanation for why the ridge regression solution results in smaller weights, using analogies or examples to help explain the concepts. The explanation is clear and easy to understand, avoiding technical jargon and using simple language.",
+      "good": "The response provides a mostly clear intuitive explanation, with a minor issue. For example, it might use slightly technical language but still convey the main idea effectively.",
+      "fair": "The response provides a somewhat clear intuitive explanation, with one moderate issue or two minor ones. For example, it might lack analogies or examples, making the explanation less relatable.",
+      "poor": "The response lacks a clear intuitive explanation, with major issues in conveying the main idea. It might use technical jargon or fail to provide relatable examples, making it difficult to understand the concept."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+nan

@@ -20,7 +20,7 @@ class Evaluator(base.BaseAnnotatorJSON):
         "Auto evaluator of the output using the rubric.",
     )
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
-    DEFAULT_ANNOTATION_TYPE = "object"  # use object to have dict output
+    DEFAULT_ANNOTATION_TYPE = object  # use object to have dict output
     DEFAULT_BASE_DIR = CONFIGS_DIR / "evaluators_configs"
     annotator_column = "evaluator"
 
@@ -32,7 +32,7 @@ class Evaluator(base.BaseAnnotatorJSON):
             "criteria",
             "rubric",
             "output",
-            "excellent_response",
+            "solution",
         ),
         annotators_config="gpt-4o-2024-08-06_CoT_v0",
         **kwargs,

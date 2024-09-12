@@ -112,9 +112,7 @@ def brainstorm_rubrics_from_df(
     )
     if is_rm_prev_columns:
         raw_completion_cols = [c for c in df_brainstormed.columns if c.endswith("raw_completion")]
-        df_brainstormed = df_brainstormed.drop(
-            columns=["learning_objectives", "useful_info_to_eval_instruction"] + raw_completion_cols, errors="ignore"
-        )
+        df_brainstormed = df_brainstormed.drop(columns=["learning_objectives"] + raw_completion_cols, errors="ignore")
     return df_brainstormed
 
 

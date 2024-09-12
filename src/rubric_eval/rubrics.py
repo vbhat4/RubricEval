@@ -40,7 +40,7 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         rubric_columns: Optional[Sequence[str]] = None,
         is_renormalize_weight: bool = True,
         is_extract_criteria_col: bool = True,
-        is_expand_json_column: bool = True,
+        is_expand_json_column: bool = False,
     ) -> pd.DataFrame:
         """Processes the annotated examples into a DataFrame containing a rubric of (dict of dict) column."""
         df_rubrics = ae_utils.convert_to_dataframe(annotated)

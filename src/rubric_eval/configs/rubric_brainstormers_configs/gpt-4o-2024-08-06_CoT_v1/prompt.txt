@@ -180,5 +180,5 @@ Here's a possible brainstormed rubric for this assignment:
 {useful_info_to_eval_instruction}
 </task>
 
-Now, based on this assignment, create a comprehensive, easy-to-apply analytic rubric using the format described. Ensure that your rubric covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `generate_detailed_analytic_rubric(json_output)` function.
+Now, based on this assignment, create a comprehensive, easy-to-apply analytic rubric using the format described. Ensure that your rubric covers all aspects of the assignment, provides clear guidance for non-expert evaluators, and offers a fair and thorough evaluation framework. Once complete, pass your JSON output to the `generate_detailed_analytic_rubric(json_output)` function. Remember that the evaluation will be done by non-expert so the brainstormed rubric should contain as much detail as possible about the ideal response and be concrete about the type of errors.
 <|im_end|>

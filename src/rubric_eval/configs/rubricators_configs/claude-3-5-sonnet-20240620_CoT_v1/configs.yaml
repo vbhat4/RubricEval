@@ -1,0 +1,55 @@
+claude-3-5-sonnet-20240620_CoT_v1:
+  prompt_template: "claude-3-5-sonnet-20240620_CoT_v1/prompt.txt"
+  fn_completions: "anthropic_completions"
+  completions_kwargs:
+    model_name: "claude-3-5-sonnet-20240620"
+    max_tokens: 8192
+    temperature: 0.0
+    tool_choice:
+      type: tool
+      name: "evaluate_llm"
+    tools:
+      - name: "evaluate_llm"
+        description: "Evaluate the LLM's output on the current assignment given an analytic rubric."
+        input_schema:
+          type: "object"
+          properties:
+            rubric:
+              type: "array"
+              description: "The detailed analytic rubric, represented as a list of dictionaries. Each dictionary corresponds to a criterion in the rubric, mapping performance levels to descriptions. The criteria should be exactly the same as in the expert brainstormed rubric."
+              items:
+                type: "object"
+                description: "A single criterion in the rubric."
+                properties:
+                  criterion:
+                    type: "string"
+                    description: "The descriptive name of the criterion."
+                  weight:
+                    type: "number"
+                    description: "The weight of the criterion in the final score, as an integer between 0-100. The weights will be normalized to sum to 100%."
+                  performance_to_description:
+                    type: "object"
+                    description: "A mapping between the performance level ('excellent', 'good', 'fair', 'poor') and a detailed description of what the LLM needs to do to achieve that rating for that criterion. Descriptions must be comprehensive, clear, and refer to specific parts of the ideal response for the criterion. They should be written in a way that non-expert evaluators can easily understand and apply to the LLM's response."
+                    properties:
+                      excellent:
+                        type: "string"
+                        description: "A detailed description of what the LLM needs to do to achieve 'excellent' performance for the criterion. This should discuss as much as possible what an ideal response should look like for that criterion. The information and examples should be very concrete to ensure that non-experts can apply it easily. Give as much concrete information about the ideal response as possible."
+                      good:
+                        type: "string"
+                        description: "A detailed description of what the LLM needs to do to achieve 'good' performance for the criterion. This should discuss what mistakes compared to 'excellent' performance would lead to 'good' performance. Typically this means having a minor mistake. If so it should describe what is a minor mistake for that criterion, and gives a concrete example of what that looks like."
+                      fair:
+                        type: "string"
+                        description: "A detailed description of what the LLM needs to do to achieve 'fair' performance for the criterion. This should discuss what mistakes compared to 'excellent' performance would lead to 'fair' performance. Typically this means having a few minor mistakes, or having a moderate mistake. If so it should describe what is a moderate mistake for that criterion, and give a concrete example of what that looks like."
+                      poor:
+                        type: "string"
+                        description: "A detailed description of what the LLM needs to do to achieve 'poor' performance for the criterion. This should discuss what mistakes compared to 'excellent' performance would lead to 'poor' performance. Typically this means having a few moderate mistakes, or a major one. If so it should describe what is a major mistake for that criterion, and give a concrete example of what that looks like."
+                    additionalProperties: false
+                    required: [ "excellent", "good", "fair", "poor" ]
+                additionalProperties: false
+                required: [ "criterion", "weight", "performance_to_description" ]
+          additionalProperties: false
+          required: [ "rubric"]
+  batch_size: 1
+  fn_completion_parser: "indexing_parser"
+  completion_parser_kwargs:
+    index: "rubric"

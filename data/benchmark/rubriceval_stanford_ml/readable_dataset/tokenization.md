@@ -3,7 +3,7 @@ Stats & ML
 # <instruction>:
 Before passing text through a transformer, the text is often processed into tokens corresponding to common subwords. What is one clear/unarguable benefit of tokenizing subwords compared to tokenizing each character (or byte) separately?
 # <expert_solution>:
-Subword tokenization results in shorter sequences, so faster training/inference, especially given the O(n^2) cost of transformers. Using tokens may also improve data efficiency, but that's not an arguable benefit.
+Subword tokenization results in shorter sequences, so faster training/inference, especially given the O(n^2) cost of transformers. Using tokens may also improve data efficiency, but that's an arguable benefit.
 # <expert_checklist>:
 [
   "Does the response clearly identify that subword tokenization results in shorter sequences compared to character-level tokenization? (High importance)",
@@ -101,32 +101,32 @@ Subword tokenization results in shorter sequences, so faster training/inference,
     "criterion": "Understanding of Tokenization and Transformers",
     "weight": 65.0,
     "performance_to_description": {
-      "excellent": "The response clearly identifies the main benefit of subword tokenization as leading to shorter sequences, which results in faster training and inference times due to the O(n^2) complexity of transformers. The benefit is presented as clear and unarguable, avoiding mention of arguable benefits like data efficiency or incorrect benefits like expressiveness. The explanation is technically accurate and free from errors regarding tokenization methods.",
-      "good": "The response identifies the main benefit of subword tokenization as leading to shorter sequences and faster processing times, but may lack depth in explaining the O(n^2) complexity of transformers. It avoids major inaccuracies and does not mention incorrect benefits, but might briefly touch on arguable benefits like data efficiency without focusing on them.",
-      "fair": "The response mentions shorter sequences as a benefit of subword tokenization but lacks clarity or depth in explaining why this is beneficial, such as the impact on processing times. It may contain minor inaccuracies or mention arguable benefits without clearly stating the unarguable benefit.",
-      "poor": "The response fails to identify shorter sequences as a benefit of subword tokenization or contains significant inaccuracies about tokenization methods. It may focus on incorrect or arguable benefits, demonstrating a lack of understanding of the topic."
+      "excellent": "The response clearly identifies the main benefit of subword tokenization as resulting in shorter sequences compared to character or byte tokenization. It explains that shorter sequences lead to faster training and inference times, especially given the O(n^2) complexity of transformers. The stated benefit is clear and unarguable, focusing on computational efficiency rather than arguable benefits like data efficiency or expressiveness. The response avoids technical inaccuracies in the description of tokenization methods.",
+      "good": "The response mostly identifies the main benefit of subword tokenization, with a minor mistake. For example, it might mention shorter sequences but not clearly link them to faster training and inference times. The response may include a minor technical inaccuracy or slightly mention arguable benefits like data efficiency without focusing on them.",
+      "fair": "The response partially identifies the benefit of subword tokenization, with a moderate mistake. For example, it might mention shorter sequences but fail to explain their impact on computational efficiency, or it might incorrectly describe the tokenization process. The response may also focus on arguable benefits like data efficiency, which are not the main focus of the assignment.",
+      "poor": "The response fails to identify the main benefit of subword tokenization, with major mistakes. It might not mention shorter sequences at all or provide incorrect explanations of computational efficiency. The response may focus on completely irrelevant or incorrect benefits, such as expressiveness, or contain significant technical inaccuracies."
     }
   },
   {
     "criterion": "Following Assignment Instructions",
     "weight": 10.0,
     "performance_to_description": {
-      "excellent": "The response directly addresses the comparison between subword and character/byte tokenization, focusing on providing an unarguable benefit of subword tokenization. It avoids discussing benefits that are not clear or unarguable, such as data efficiency or generalizability.",
-      "good": "The response addresses the comparison between subword and character/byte tokenization and provides a benefit of subword tokenization, but may briefly mention arguable benefits without focusing on them.",
-      "fair": "The response attempts to address the comparison but lacks focus on providing an unarguable benefit of subword tokenization. It may include irrelevant details or arguable benefits.",
-      "poor": "The response does not address the comparison between subword and character/byte tokenization or fails to provide an unarguable benefit of subword tokenization, focusing instead on irrelevant or incorrect information."
+      "excellent": "The response directly addresses the comparison between subword and character/byte tokenization, focusing on providing an unarguable benefit of subword tokenization. It avoids mentioning benefits that are arguable or incorrect, such as data efficiency or generalizability.",
+      "good": "The response mostly follows the assignment instructions, with a minor mistake. For example, it might briefly mention an arguable benefit like data efficiency but still focus on the unarguable benefit of shorter sequences.",
+      "fair": "The response partially follows the assignment instructions, with a moderate mistake. It might focus equally on arguable benefits and the unarguable benefit of shorter sequences, or it might not clearly compare subword and character/byte tokenization.",
+      "poor": "The response does not follow the assignment instructions, with major mistakes. It might focus entirely on arguable or incorrect benefits, such as data efficiency or generalizability, without addressing the main comparison between subword and character/byte tokenization."
     }
   },
   {
     "criterion": "Clarity and Conciseness",
     "weight": 25.0,
     "performance_to_description": {
-      "excellent": "The explanation of subword tokenization's benefits is clear, easy to follow, and concise. The response provides reasoning for the stated benefit and avoids irrelevant or unnecessary details, staying focused on the question.",
-      "good": "The explanation is mostly clear and concise, providing reasoning for the stated benefit. It may include minor irrelevant details but remains generally focused on the question.",
-      "fair": "The explanation lacks clarity or conciseness, with some difficulty in following the reasoning. It may include several irrelevant details or lack focus on the main question.",
-      "poor": "The explanation is unclear, difficult to follow, and lacks conciseness. It includes many irrelevant details and fails to provide a coherent reasoning for the stated benefit."
+      "excellent": "The explanation of subword tokenization's benefits is clear and easy to follow. The response provides reasoning for the stated benefit, avoids irrelevant or unnecessary details, and is concise and to the point.",
+      "good": "The explanation is mostly clear and concise, with a minor issue. For example, it might include a few unnecessary details or have slight inconsistencies in the logical flow, but overall it's easy to follow and focuses on the key points.",
+      "fair": "The explanation is somewhat clear but has one moderate issue or two minor ones. For example, it might include several irrelevant details, skip over some important points, or present information in a confusing order. The language might be imprecise or inconsistent in places.",
+      "poor": "The explanation contains major issues that make it unclear, verbose, or difficult to follow. It might include many irrelevant details, miss crucial points, or present information in a disorganized manner. The language used might be inappropriate or consistently imprecise, making it hard to understand the key concepts and calculations."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+nan

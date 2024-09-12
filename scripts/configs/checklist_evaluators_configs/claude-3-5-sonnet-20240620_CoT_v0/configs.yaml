@@ -24,4 +24,3 @@ claude-3-5-sonnet-20240620_CoT_v0:
           required: [ "explanation", "final_score" ]
   batch_size: 1
   fn_completion_parser: null
-  

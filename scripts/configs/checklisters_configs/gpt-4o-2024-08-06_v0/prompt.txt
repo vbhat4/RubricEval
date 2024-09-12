@@ -12,5 +12,5 @@ Ensure that the checklist is comprehensive, interpretable, and easy to verify. T
 # Assignment
 {instruction}
 
-Now generate the final evaluation using `make_evaluation_report(json_output)``.
+Now generate the final evaluation using `make_evaluation_report(json_output)`.
 <|im_end|>

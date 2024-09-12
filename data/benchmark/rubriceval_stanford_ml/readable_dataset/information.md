@@ -63,7 +63,7 @@ For each of the following statements, prove whether they are true or false. The 
 5. Utilitarian information between two random variables $X$ and $Y$ that are independent is always zero.
 6. Utilitarian information is always invariant to bijections, i.e., $\operatorname{I}_{\ell,\mathcal{V}}(X; Y) = \operatorname{I}_{\ell,\mathcal{V}}(b_X(X); Y)$ for any bijection $b_X$.
 
-For each of those questions also provide an explanation / illustration of why that makes sense for machine learning. 
+For each of those questions also provide an explanation / illustration of why that makes sense for machine learning.
 # <expert_solution>:
 ## Symmetry
 
@@ -338,42 +338,42 @@ Consider the previous example where a function \(h\) was a bijection that improv
     "criterion": "Correctness of Statements",
     "weight": 30.0,
     "performance_to_description": {
-      "excellent": "The response correctly identifies the truth value of all six statements regarding utilitarian information theory. Each statement is addressed with a clear and accurate determination of whether it is true or false, based on the definitions and properties of utilitarian information theory.",
-      "good": "The response correctly identifies the truth value of at least five out of the six statements. Minor errors or omissions may be present, but the overall understanding of utilitarian information theory is demonstrated.",
-      "fair": "The response correctly identifies the truth value of at least three out of the six statements. There may be significant errors or misunderstandings in the remaining statements.",
-      "poor": "The response fails to correctly identify the truth value of more than three statements, indicating a fundamental misunderstanding of utilitarian information theory."
+      "excellent": "The response correctly states the truth value of each statement: 1) Utilitarian information is not always symmetric (false), 2) Utilitarian information is always non-negative (true), 3) Utilitarian information can recover Shannon's information theory (true), 4) Utilitarian information does not always satisfy the Data Processing Inequality (false), 5) Utilitarian information between independent variables is always zero (true), 6) Utilitarian information is not always invariant to bijections (false). Each statement is addressed accurately and comprehensively.",
+      "good": "The response correctly states the truth value of most statements, with one minor mistake. For example, it might incorrectly state that utilitarian information is symmetric but correctly address the other statements. Minor mistakes are those that do not significantly alter the understanding of utilitarian information theory.",
+      "fair": "The response correctly states the truth value of some statements, but has a moderate mistake or two minor ones. For example, it might incorrectly state that utilitarian information is symmetric and invariant to bijections. Moderate mistakes are those that show a misunderstanding of key concepts in utilitarian information theory.",
+      "poor": "The response has major mistakes in stating the truth value of the statements, such as incorrectly addressing multiple statements or failing to provide any correct answers. Major mistakes indicate a fundamental misunderstanding of utilitarian information theory."
     }
   },
   {
     "criterion": "Accuracy of Proofs and Counterexamples",
     "weight": 40.0,
     "performance_to_description": {
-      "excellent": "The response provides accurate and detailed proofs or counterexamples for each statement. Each proof or counterexample is mathematically sound, comprehensive, and includes all necessary assumptions and properties. Numerical examples are provided where applicable.",
-      "good": "The response provides mostly accurate proofs or counterexamples for at least five statements. Some minor errors or omissions may be present, but the overall logic is sound. Numerical examples may be lacking in some cases.",
-      "fair": "The response provides accurate proofs or counterexamples for at least three statements. There may be significant errors or omissions in the logic or assumptions of the remaining proofs.",
-      "poor": "The response fails to provide accurate proofs or counterexamples for more than three statements, indicating a lack of understanding of the mathematical principles involved."
+      "excellent": "The response provides correct proofs or counterexamples for each statement: 1) A valid counterexample for non-symmetry, 2) A proof using Optional Ignorance for non-negativity, 3) A proof showing recovery of Shannon's theory with log-loss and an unrestricted predictive family, 4) A counterexample for the Data Processing Inequality, 5) A proof using independence and Optional Ignorance for zero information, 6) A counterexample for non-invariance to bijections. All proofs are comprehensive, detailed, and include numerical examples where applicable.",
+      "good": "The response provides mostly correct proofs or counterexamples, with one minor error. For example, it might have a small mistake in the proof for non-negativity but correctly address the other statements. Minor errors are those that do not significantly affect the validity of the proofs.",
+      "fair": "The response provides some correct proofs or counterexamples, but has a moderate error or two minor ones. For example, it might incorrectly prove the Data Processing Inequality or fail to provide a numerical example where needed. Moderate errors indicate a lack of understanding of some aspects of utilitarian information theory.",
+      "poor": "The response has major errors in the proofs or counterexamples, such as failing to provide valid arguments for multiple statements or lacking any detailed reasoning. Major errors indicate a fundamental misunderstanding of the concepts involved."
     }
   },
   {
     "criterion": "Relevance to Machine Learning",
     "weight": 20.0,
     "performance_to_description": {
-      "excellent": "The response provides insightful and relevant connections between utilitarian information theory and practical machine learning scenarios for each statement. Concrete examples or applications in machine learning are included to illustrate the theoretical concepts.",
-      "good": "The response provides relevant connections between utilitarian information theory and machine learning for at least five statements. Some examples or applications may be less detailed or insightful.",
-      "fair": "The response provides relevant connections for at least three statements. The connections may be superficial or lack concrete examples.",
-      "poor": "The response fails to provide relevant connections between utilitarian information theory and machine learning for more than three statements."
+      "excellent": "The response provides clear and insightful connections between utilitarian information theory and machine learning for each statement: 1) Explains non-symmetry with practical ML scenarios, 2) Relates non-negativity to feature addition, 3) Connects recovery of Shannon's theory to unconstrained predictive scenarios, 4) Discusses DPI violation with feature preprocessing, 5) Relates zero information to independent features, 6) Explains non-invariance to bijections with feature transformations. Each explanation is relevant and enhances understanding of utilitarian information theory in ML contexts.",
+      "good": "The response provides mostly relevant connections to machine learning, with one minor issue. For example, it might not fully explain the relevance of non-symmetry but addresses the other statements well. Minor issues are those that do not significantly detract from the overall understanding.",
+      "fair": "The response provides some relevant connections to machine learning, but has a moderate issue or two minor ones. For example, it might fail to relate DPI violation to ML or provide unclear explanations for some statements. Moderate issues indicate a lack of clarity in connecting theory to practice.",
+      "poor": "The response lacks relevant connections to machine learning, with major issues such as failing to relate multiple statements to ML or providing irrelevant explanations. Major issues indicate a lack of understanding of the practical implications of utilitarian information theory."
     }
   },
   {
     "criterion": "Clarity and Conciseness of Explanation",
     "weight": 10.0,
     "performance_to_description": {
-      "excellent": "The response is well-organized, easy to follow, and concise. Key concepts and calculations are clearly explained, and the response avoids irrelevant details. Intuition behind each statement is provided.",
-      "good": "The response is mostly well-organized and clear, with minor issues in flow or conciseness. Most key concepts are explained, but some explanations may lack depth or clarity.",
-      "fair": "The response is somewhat organized but may be difficult to follow in places. Key concepts may be poorly explained or missing, and the response may include irrelevant details.",
-      "poor": "The response is poorly organized and difficult to follow. Key concepts are not clearly explained, and the response includes many irrelevant details."
+      "excellent": "The response is well-organized, concise, and easy to follow. It avoids irrelevant details, focuses on key concepts, and presents information logically. Key terms and calculations are clearly explained, and the response provides intuition behind each statement's truth value.",
+      "good": "The response is mostly clear and concise, with a minor issue. For example, it might include a few unnecessary details but is generally easy to follow and focuses on key points. Minor issues do not significantly affect the clarity of the explanation.",
+      "fair": "The response is somewhat clear but has a moderate issue or two minor ones. For example, it might include irrelevant details or present information in a confusing order. Moderate issues indicate a need for better organization and clarity.",
+      "poor": "The response is unclear, verbose, or difficult to follow, with major issues such as disorganized information or missing key explanations. Major issues significantly impact the clarity and quality of the explanation."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+1200.0

@@ -35,7 +35,7 @@ Ensure your evaluation is thorough, fair, and closely aligned with the provided 
 {criteria}
 
 ## Strong Response (optional)
-{excellent_response}
+{solution}
 </information>
 
 <llm_output_to_evaluate>

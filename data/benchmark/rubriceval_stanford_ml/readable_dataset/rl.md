@@ -63,7 +63,7 @@ The optimal action \( a^*(s_5) \) is "down" or "right" with the value of 0.8.
   "Are all required components of the assignment addressed, including the determination of the optimal action and expected reward? (High importance)"
 ]
 # <expert_checklist_time_sec>:
-
+580.0
 # <expert_list_error_rubric>:
 [
   {
@@ -113,95 +113,130 @@ The optimal action \( a^*(s_5) \) is "down" or "right" with the value of 0.8.
   }
 ]
 # <expert_list_error_rubric_time_sec>:
-
+945.0
 # <expert_brainstormed_rubric>:
 [
   {
-    "criterion": "Correct application of value iteration update rule",
-    "weight": 30.0,
+    "criterion": "Knowledge of value iteration",
+    "weight": 20.0,
     "checklist": [
-      "Is the value iteration update rule correctly applied to each state? (High importance)",
-      "Are the calculations for V'(s_2), V'(s_4), V'(s_6), and V'(s_8) correct? (High importance)",
-      "Does the response correctly identify that the environment is deterministic? (Moderate importance)",
-      "Is the discount factor \u03b3 = 0.9 correctly used in calculations? (High importance)",
-      "Are the initial values V(s_i) = 0 correctly considered in the update step? (Moderate importance)"
+      "Does the output correctly identify that the environment is deterministic, and thus the value iteration update rule is $V'(s) = \\max_a  R(s, a) + \\gamma V(s')$? (High importance)",
+      "Does the output correctly recognize that one step of value iteration means updating the value function for all states once before selecting the optimal action? A common mistake is to only compute the optimal action with the original value function. That's probably the case if the expected reward is not 0.8 for all optimal actions. (Moderate importance)",
+      "Does the output only consider the value iteration for the states that are reachable from the desired state $s_5$? Namely s_2, s_4, s_6, and s_8. (Low importance)",
+      "This criterion is not about the computation but rather the knowledge and equations. If the only mistake is due to incorrect computation, then apply the deduction for 'Mathematical computation' rather than this criterion."
+    ]
+  },
+  {
+    "criterion": "Mathematical computation",
+    "weight": 10.0,
+    "checklist": [
+      "Are the mathematical computations free from errors, such as incorrect results after multiplication or addition? For example, V'(s_2)=V'(s_4)=-0.1, V'(s_6)=V'(s_8)=1 after one step of value iteration. And the expected value for 'down' from $s_5$ is calculated as $R(s_5, \text{down}) + \\gamma V'(s_8) = -0.1 + 0.9 \\cdot 1=0.8$. (Highest importance)",
+      "This criterion is about the mathematical computation. If the only mistake is due to the equations used (rather than the computation), then apply the deduction for 'Knowledge of value iteration' rather than this criterion."
     ]
   },
   {
     "criterion": "Identification of optimal action",
     "weight": 30.0,
     "checklist": [
-      "Is the optimal action a^*(s_5) correctly identified as 'down' or 'right'? (High importance)",
-      "Are the possible actions from s_5 correctly evaluated? (High importance)",
-      "Does the response correctly calculate the expected reward for each possible action from s_5? (High importance)",
-      "Is the reasoning for choosing the optimal action clear and logical? (Moderate importance)"
+      "Does the response correctly identify the optimal action a^*(s_5) as 'down' and 'right' after one step of value iteration? If only one of them is identified or some additional actions are identified, the answer should be penalized (High importance)",
+      "Does the response correctly apply the value iteration update rule to each state? For example, V'(s_2)=V'(s_4)=\\max(-0.1 + 0.9 \\cdot 0, -0.1 + 0.9 \\cdot 0, -0.1 + 0.9 \\cdot 0), V'(s_6)=V'(s_8)=0.9=\\max(-0.1 + 0.9 \\cdot 0, -0.1 + 0.9 \\cdot 0, 1 + 0.9 \\cdot 0) should be calculated accurately. (Moderate importance)"
     ]
   },
   {
-    "criterion": "Calculation of expected reward",
-    "weight": 20.0,
+    "criterion": "Expected reward",
+    "weight": 30.0,
     "checklist": [
-      "Is the expected reward for the optimal action correctly calculated as 0.8? (High importance)",
-      "Are the calculations for the expected rewards of non-optimal actions correct? (Moderate importance)",
-      "Does the response correctly apply the reward function R(s, a) in calculations? (High importance)",
-      "Is the impact of the discount factor on the expected reward clearly explained? (Moderate importance)"
+      "Does the response correctly calculate the expected reward for the optimal actions (both down and right) as 0.8? (High importance)",
+      "Is the equation for the expected reward correctly applied? For example, the expected reward for action 'down' from $s_5$ is calculated as $R(s_5, \text{down}) + \\gamma V'(s_8) = -0.1 + 0.9 \\cdot 1$. (High importance)",
+      "Are calculations for non-optimal actions also correct? up and left actions should be -0.19 (Moderate importance)"
     ]
   },
   {
-    "criterion": "Clarity and conciseness of explanation",
-    "weight": 20.0,
+    "criterion": "Clarity and formatting",
+    "weight": 5.0,
     "checklist": [
-      "Is the explanation of the value iteration process clear and easy to follow? (Moderate importance)",
-      "Does the response avoid irrelevant or unnecessary details? (Low importance)",
-      "Is the response concise and to the point? (Low importance)",
-      "Are the key concepts and calculations clearly explained? (Moderate importance)"
+      "Is the explanation of the value iteration process clear and easy to follow?",
+      "Are key concepts and calculations clearly explained?",
+      "Is the output clear and well formatted?"
+    ]
+  },
+  {
+    "criterion": "Follows the assignment instructions",
+    "weight": 5.0,
+    "checklist": [
+      "Does the response follow the assignment instructions?",
+      "Does the response avoid discussing irrelevant or unnecessary details?",
+      "Is the response consistent with the assignment requirements?",
+      "Does the response identify the environment as deterministic and use the discount factor \u03b3 = 0.9 correctly in all calculations?",
+      "Does the output correctly use the initial value function V(s_i) = 0 for all states in its calculations?",
+      "Is the discount factor \u03b3 = 0.9 correctly applied in the value iteration process? For example, in calculating V'(s_6) = -0.1 + 0.9 * 1 = 0.8."
     ]
   }
 ]
 # <expert_brainstormed_rubric_time_sec>:
-
+1378.0
 # <expert_rubric>:
 [
   {
-    "criterion": "Correct Application of Value Iteration Update Rule",
-    "weight": 30.0,
+    "criterion": "Knowledge of Value Iteration",
+    "weight": 20.0,
     "performance_to_description": {
-      "excellent": "The response correctly applies the value iteration update rule to each state, clearly showing calculations for V'(s_2), V'(s_4), V'(s_6), and V'(s_8). It accurately identifies the environment as deterministic and uses the discount factor \u03b3 = 0.9 correctly in all calculations. Initial values V(s_i) = 0 are correctly considered in the update step.",
-      "good": "The response applies the value iteration update rule correctly to most states, with minor errors in calculations for V'(s_2), V'(s_4), V'(s_6), or V'(s_8). It identifies the environment as deterministic and uses the discount factor \u03b3 = 0.9 correctly, but may have minor inaccuracies in initial value considerations.",
-      "fair": "The response shows a basic understanding of the value iteration update rule but contains several errors in calculations for V'(s_2), V'(s_4), V'(s_6), or V'(s_8). It may incorrectly apply the discount factor or fail to consider initial values properly.",
-      "poor": "The response fails to correctly apply the value iteration update rule, with significant errors in calculations for V'(s_2), V'(s_4), V'(s_6), or V'(s_8). It may misunderstand the deterministic nature of the environment or incorrectly use the discount factor."
+      "excellent": "The response correctly identifies that the environment is deterministic, and thus the value iteration update rule is $V'(s) = \\max_a  R(s, a) + \\gamma V(s')$. It recognizes that one step of value iteration means updating the value function for all states once before selecting the optimal action. The response only considers the value iteration for the states that are reachable from the desired state $s_5$, namely $s_2$, $s_4$, $s_6$, and $s_8$.",
+      "good": "The response mostly identifies the correct value iteration update rule and process, but makes a minor mistake, such as not clearly stating that the environment is deterministic or slightly misapplying the update rule. It may also slightly misinterpret the states to consider for value iteration.",
+      "fair": "The response shows partial understanding of the value iteration process, with moderate mistakes such as not updating the value function for all states before selecting the optimal action, or incorrectly identifying the states to consider for value iteration.",
+      "poor": "The response demonstrates a major misunderstanding of the value iteration process, such as not recognizing the deterministic nature of the environment or failing to apply the value iteration update rule correctly."
+    }
+  },
+  {
+    "criterion": "Mathematical Computation",
+    "weight": 10.0,
+    "performance_to_description": {
+      "excellent": "The mathematical computations are free from errors. For example, $V'(s_2)=V'(s_4)=-0.1$, $V'(s_6)=V'(s_8)=1$ after one step of value iteration. The expected value for 'down' from $s_5$ is calculated as $R(s_5, \\text{down}) + \\gamma V'(s_8) = -0.1 + 0.9 \\cdot 1=0.8$.",
+      "good": "The computations are mostly correct, with one minor error, such as a small arithmetic mistake that does not significantly affect the overall result.",
+      "fair": "The computations contain a moderate error, such as incorrect multiplication or addition that affects the result, but the overall approach is still somewhat correct.",
+      "poor": "The computations contain major errors, such as completely incorrect results after multiplication or addition, indicating a lack of understanding of the mathematical process."
     }
   },
   {
     "criterion": "Identification of Optimal Action",
     "weight": 30.0,
     "performance_to_description": {
-      "excellent": "The response correctly identifies the optimal action a^*(s_5) as 'down' or 'right', evaluating all possible actions from s_5 accurately. The expected reward for each action is calculated correctly, and the reasoning for choosing the optimal action is clear and logical.",
-      "good": "The response identifies the optimal action a^*(s_5) as 'down' or 'right', but may have minor errors in evaluating possible actions or calculating expected rewards. The reasoning for the choice is mostly clear and logical.",
-      "fair": "The response attempts to identify the optimal action a^*(s_5) but contains errors in evaluating possible actions or calculating expected rewards. The reasoning for the choice is unclear or partially incorrect.",
-      "poor": "The response fails to identify the optimal action a^*(s_5) correctly, with significant errors in evaluating possible actions or calculating expected rewards. The reasoning for the choice is missing or fundamentally flawed."
+      "excellent": "The response correctly identifies the optimal action $a^*(s_5)$ as 'down' and 'right' after one step of value iteration. It applies the value iteration update rule to each state accurately, such as $V'(s_2)=V'(s_4)=\\max(-0.1 + 0.9 \\cdot 0, -0.1 + 0.9 \\cdot 0, -0.1 + 0.9 \\cdot 0)$, $V'(s_6)=V'(s_8)=0.9=\\max(-0.1 + 0.9 \\cdot 0, -0.1 + 0.9 \\cdot 0, 1 + 0.9 \\cdot 0)$.",
+      "good": "The response identifies the optimal action mostly correctly, but with a minor mistake, such as missing one of the optimal actions or slightly misapplying the update rule to one state.",
+      "fair": "The response shows partial identification of the optimal action, with moderate mistakes such as identifying only one optimal action or misapplying the update rule to multiple states.",
+      "poor": "The response fails to identify the optimal action, with major mistakes such as not applying the update rule correctly or identifying incorrect actions as optimal."
     }
   },
   {
-    "criterion": "Calculation of Expected Reward",
-    "weight": 20.0,
+    "criterion": "Expected Reward",
+    "weight": 30.0,
     "performance_to_description": {
-      "excellent": "The response correctly calculates the expected reward for the optimal action as 0.8, applying the reward function R(s, a) accurately. Calculations for non-optimal actions are also correct, and the impact of the discount factor on the expected reward is clearly explained.",
-      "good": "The response calculates the expected reward for the optimal action as 0.8, with minor errors in applying the reward function or explaining the impact of the discount factor. Calculations for non-optimal actions are mostly correct.",
-      "fair": "The response attempts to calculate the expected reward for the optimal action but contains errors in applying the reward function or explaining the impact of the discount factor. Calculations for non-optimal actions may also be incorrect.",
-      "poor": "The response fails to calculate the expected reward for the optimal action correctly, with significant errors in applying the reward function or explaining the impact of the discount factor. Calculations for non-optimal actions are also incorrect."
+      "excellent": "The response correctly calculates the expected reward for the optimal actions (both down and right) as 0.8. The equation for the expected reward is correctly applied, such as $R(s_5, \\text{down}) + \\gamma V'(s_8) = -0.1 + 0.9 \\cdot 1$. Calculations for non-optimal actions are also correct, with up and left actions calculated as -0.19.",
+      "good": "The expected reward is mostly calculated correctly, with a minor mistake, such as a small arithmetic error in one of the calculations.",
+      "fair": "The expected reward calculation contains a moderate error, such as incorrect application of the reward equation, but the overall approach is still somewhat correct.",
+      "poor": "The expected reward calculation contains major errors, such as completely incorrect results, indicating a lack of understanding of the reward calculation process."
     }
   },
   {
-    "criterion": "Clarity and Conciseness of Explanation",
-    "weight": 20.0,
+    "criterion": "Clarity and Formatting",
+    "weight": 5.0,
     "performance_to_description": {
-      "excellent": "The explanation of the value iteration process is clear and easy to follow, avoiding irrelevant details. The response is concise and to the point, with key concepts and calculations clearly explained.",
-      "good": "The explanation of the value iteration process is mostly clear, with minor irrelevant details. The response is generally concise, with most key concepts and calculations explained.",
-      "fair": "The explanation of the value iteration process is unclear or difficult to follow, with some irrelevant details. The response lacks conciseness, and key concepts or calculations are not well explained.",
-      "poor": "The explanation of the value iteration process is confusing or incomplete, with many irrelevant details. The response is not concise, and key concepts or calculations are poorly explained or missing."
+      "excellent": "The explanation of the value iteration process is clear and easy to follow. Key concepts and calculations are clearly explained, and the output is well formatted.",
+      "good": "The explanation is mostly clear, with a minor issue such as slightly unclear formatting or a small inconsistency in the explanation.",
+      "fair": "The explanation is somewhat clear, with moderate issues such as unclear formatting or missing explanations for some key concepts.",
+      "poor": "The explanation is unclear, with major issues such as disorganized formatting or missing explanations for key concepts."
+    }
+  },
+  {
+    "criterion": "Follows the Assignment Instructions",
+    "weight": 5.0,
+    "performance_to_description": {
+      "excellent": "The response follows the assignment instructions completely, avoiding irrelevant details and consistently using the discount factor $\\gamma = 0.9$ in all calculations. The initial value function $V(s_i) = 0$ is correctly used in calculations.",
+      "good": "The response mostly follows the instructions, with a minor mistake such as including a small irrelevant detail or slightly misapplying the discount factor in one calculation.",
+      "fair": "The response partially follows the instructions, with moderate mistakes such as including several irrelevant details or inconsistently applying the discount factor.",
+      "poor": "The response does not follow the instructions, with major mistakes such as discussing irrelevant details or failing to use the discount factor correctly."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+nan

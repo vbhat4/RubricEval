@@ -11,7 +11,7 @@ We also provide a potential gold solution for the assignment. This should be use
 </instructions>
 
 <formatting>
-Generate a JSON output containing:
+Based on the provided "assignment", "gold_solution", and "output", generate a JSON output containing:
 - explanation (str): Brief justification for the chosen performance level.
 - final_score (int): Likert scale score between 1 and 10 that quantifies the overall quality of the LLM's output.
 
@@ -19,16 +19,19 @@ Ensure your evaluation is thorough and fair. The JSON output will be used by mak
 </formatting>
 
 <assignment>
+# Assignment
 {instruction}
 </assignment>
 
 <gold_solution>
+# Gold Solution
 {solution}
 </gold_solution>
 
 <output_to_evaluate>
+# LLM Output to Evaluate
 {output}
 </output_to_evaluate>
 
-Now generate the final evaluation using `make_evaluation_report(json_output)``.
+Now generate the final evaluation using `make_evaluation_report(json_output)`.
 <|im_end|>

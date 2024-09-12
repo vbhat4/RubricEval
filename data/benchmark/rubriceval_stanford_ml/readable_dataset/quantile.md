@@ -1,7 +1,7 @@
 # <category>:
 Stats & ML
 # <instruction>:
-Predict with $\hat{Y}$ the value of a random variable, $Y$, which is \textbf{continuous} valued so as to minimize the expected loss over the distribution of $Y$, i.e. $\mathbb{E}_{Y}[L(\hat{Y}, Y)]$. You know the entire probability density function of $Y$, i.e. $p(Y)$ is fully known to you. You can also assume that $Y$ has a Lebesgue density.  
+Predict with $\hat{Y}$ the value of a random variable, $Y$, which is \textbf{continuous} valued so as to minimize the expected loss over the distribution of $Y$, i.e. $\mathbb{E}_{Y}[L(\hat{Y}, Y)]$. You know the entire probability density function of $Y$, i.e. $p(Y)$ is fully known to you and assumed to be well defined.
 
 Assume you are using the following loss function as your objective:
 ```latex
@@ -20,7 +20,7 @@ To solve for the minimum of the loss function
 \]
 ```
 
-we need to determine the optimal estimator \(\hat{Y}\) that minimizes the expected loss.
+we need to determine the optimal estimator $\hat{Y}$ that minimizes the expected loss.
 
 After a bit of simplification, we can rewrite the task as:
 
@@ -46,186 +46,186 @@ To find the optimal $\hat{Y}$, take the derivative with respect to $\hat{Y}$ and
 where $F(\hat{Y}) = P(Y \leq \hat{Y})$ is the cumulative distribution function (CDF) of $Y$ so $F^{-1}(0.84)$ is the 84th percentile of the distribution of $Y$.
 # <expert_checklist>:
 [
-  "Is the problem of minimizing the expected loss over the distribution of Y clearly understood and articulated? (High importance)",
-  "Is the given loss function correctly interpreted and used in the solution? (High importance)",
-  "Is the simplification of the expected loss function correctly performed, leading to the integral form? (Moderate importance)",
-  "Is the derivative of the expected loss with respect to \\(\\hat{Y}\\) correctly calculated using Leibniz's rule? (High importance)",
-  "Is the condition for optimality (setting the derivative to zero) correctly applied to find \\(\\hat{Y}\\)? (High importance)",
-  "Is the cumulative distribution function (CDF) \\(F(\\hat{Y})\\) correctly used in the derivation? (Moderate importance)",
-  "Is the final solution \\(\\hat{Y} = F^{-1}(0.84)\\) correctly derived and explained? (High importance)",
-  "Is the concept of the 84th percentile of the distribution of Y clearly explained and connected to the solution? (Moderate importance)",
-  "Are all mathematical steps clearly justified and logically connected? (Moderate importance)",
-  "Is the solution free from mathematical errors and inaccuracies? (High importance)",
-  "Is the explanation of the solution clear and understandable for non-experts? (Moderate importance)",
-  "Does the solution include a discussion on the implications of the result, such as why the 84th percentile is optimal? (Low importance)",
+  "Is the expected loss function correctly set up as an integral over the probability density function of Y? (High importance)",
+  "Is the loss function correctly simplified to two integrals, one for Y less than \\( \\hat{Y} \\) and one for Y greater than \\( \\hat{Y} \\)? (High importance)",
+  "Is the derivative of the expected loss with respect to \\( \\hat{Y} \\) correctly calculated using Leibniz's rule? (High importance)",
+  "Is the condition for optimality correctly derived by setting the derivative of the expected loss to zero? (High importance)",
+  "Is the cumulative distribution function (CDF) \\( F(\\hat{Y}) \\) correctly used to express the probabilities \\( P(Y \\leq \\hat{Y}) \\) and \\( P(Y > \\hat{Y}) \\)? (Moderate importance)",
+  "Is the final expression for \\( \\hat{Y} \\) correctly identified as the 84th percentile of the distribution of Y, i.e., \\( F^{-1}(0.84) \\)? (High importance)",
+  "Is the concept of the percentile (84th percentile) clearly explained in the context of the problem? (Moderate importance)",
+  "Does the solution correctly interpret the indicator function \\( \\mathbf{1}\\{ Y > \\hat{Y} \\} \\) in the context of the loss function? (Moderate importance)",
+  "Is the mathematical notation used in the solution clear and consistent throughout? (Low importance)",
+  "Does the solution provide a clear and logical explanation of each step in the derivation process? (High importance)",
   "Are any assumptions made in the solution clearly stated and justified? (Moderate importance)",
-  "Is the solution concise and free from unnecessary complexity? (Low importance)",
-  "Does the solution demonstrate a good understanding of probability theory and calculus? (Moderate importance)"
+  "Is the solution free from algebraic or arithmetic errors? (High importance)",
+  "Does the solution demonstrate a clear understanding of the relationship between the probability density function, cumulative distribution function, and percentiles? (High importance)",
+  "Is the solution concise and focused on the key steps necessary to derive the optimal \\( \\hat{Y} \\)? (Moderate importance)",
+  "Are unnecessary or irrelevant details avoided in the explanation? (Low importance)"
 ]
 # <expert_checklist_time_sec>:
-
+739.0
 # <expert_list_error_rubric>:
 [
   {
     "error_name": "Incorrect identification of optimal prediction",
-    "description": "The optimal prediction \\(\\hat{Y}\\) should be identified as the 84th percentile of the distribution of \\(Y\\), i.e., \\(F^{-1}(0.84)\\). Check if the response correctly identifies this percentile as the optimal prediction.",
+    "description": "The optimal prediction \\( \\hat{Y} \\) should be identified as the 84th percentile of the distribution of \\( Y \\), i.e., \\( F^{-1}(0.84) \\). Check if the response correctly identifies this as the solution. Incorrect responses might suggest other percentiles or statistical measures.",
     "delta_score": -1.0
   },
   {
-    "error_name": "Incorrect simplification of the expected loss function",
-    "description": "The expected loss function should be simplified to \\(\\int_{-\\infty}^{\\hat{Y}} 0.16 (\\hat{Y} - Y) p(Y) \\, dY + \\int_{\\hat{Y}}^{\\infty} 0.84 (Y - \\hat{Y}) p(Y) \\, dY\\). Verify if the response correctly simplifies the expected loss function to this form.",
+    "error_name": "Incorrect simplification of the loss function",
+    "description": "The loss function should be simplified to \\( \\int_{-\\infty}^{\\hat{Y}} 0.16 (\\hat{Y} - Y) p(Y) \\, dY + \\int_{\\hat{Y}}^{\\infty} 0.84 (Y - \\hat{Y}) p(Y) \\, dY \\). Verify if the response correctly simplifies the given loss function. Errors might include incorrect integration limits or coefficients.",
     "delta_score": -0.75
   },
   {
-    "error_name": "Incorrect application of Leibniz's rule",
-    "description": "The derivative of the expected loss function with respect to \\(\\hat{Y}\\) should be calculated using Leibniz's rule, resulting in \\(0.16 \\int_{-\\infty}^{\\hat{Y}} p(Y) \\, dY - 0.84 \\int_{\\hat{Y}}^{\\infty} p(Y) \\, dY\\). Check if the response correctly applies Leibniz's rule.",
+    "error_name": "Incorrect derivative calculation",
+    "description": "The derivative of the expected loss with respect to \\( \\hat{Y} \\) should be calculated as \\( 0.16 P(Y \\leq \\hat{Y}) - 0.84 P(Y > \\hat{Y}) \\). Check if the response correctly computes this derivative. Mistakes might involve incorrect application of Leibniz's rule or incorrect differentiation.",
     "delta_score": -0.75
   },
   {
-    "error_name": "Incorrect calculation of cumulative distribution function (CDF)",
-    "description": "The response should correctly express the CDF as \\(F(\\hat{Y}) = P(Y \\leq \\hat{Y})\\) and use it to find \\(\\hat{Y}\\). Verify if the response correctly calculates and uses the CDF.",
+    "error_name": "Incorrect application of cumulative distribution function",
+    "description": "The solution should correctly use the cumulative distribution function \\( F(\\hat{Y}) \\) to find \\( \\hat{Y} = F^{-1}(0.84) \\). Verify if the response correctly applies the CDF and its inverse. Errors might include incorrect interpretation of the CDF or its inverse.",
+    "delta_score": -0.75
+  },
+  {
+    "error_name": "Lack of proof or justification",
+    "description": "The response should include a clear proof or justification for why \\( \\hat{Y} = F^{-1}(0.84) \\) is the optimal prediction. This involves showing the steps of simplification, differentiation, and solving for \\( \\hat{Y} \\). Check if the response provides a logical and complete proof. Missing or incomplete proofs should be penalized.",
+    "delta_score": -1.0
+  },
+  {
+    "error_name": "Mathematical notation errors",
+    "description": "The response should use correct mathematical notation throughout. Check for errors such as incorrect symbols, missing integral signs, or incorrect use of brackets. These errors can make the solution difficult to understand.",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect derivation of the optimal prediction formula",
-    "description": "The derivation should lead to \\(0.84 = 0.16 F(\\hat{Y}) + 0.84 F(\\hat{Y})\\) and solve for \\(\\hat{Y} = F^{-1}(0.84)\\). Check if the response correctly derives this formula.",
-    "delta_score": -1.0
-  },
-  {
-    "error_name": "Failure to prove the optimal prediction",
-    "description": "The response should include a clear proof that \\(\\hat{Y} = F^{-1}(0.84)\\) minimizes the expected loss. Verify if the response provides a logical and complete proof.",
-    "delta_score": -1.0
-  },
-  {
-    "error_name": "Unclear or incomplete explanation",
-    "description": "The explanation should be clear and complete, covering all necessary steps and reasoning. Check if the response lacks clarity or omits important details.",
+    "error_name": "Unclear explanation or reasoning",
+    "description": "The explanation should be clear and understandable, even for non-experts. Check if the response provides a coherent explanation of each step. Unclear or confusing explanations should be penalized.",
     "delta_score": -0.5
   },
   {
     "error_name": "Irrelevant or unnecessary details",
-    "description": "The response should be concise and focused on the task. Check if the response includes irrelevant or unnecessary details that do not contribute to solving the problem.",
+    "description": "The response should focus on relevant details necessary to solve the problem. Check if the response includes irrelevant information that does not contribute to solving the problem. Excessive irrelevant details should be penalized.",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect use of mathematical notation",
-    "description": "The response should use correct mathematical notation throughout. Check if there are any errors in the notation used in the response.",
+    "error_name": "Incorrect or missing integration limits",
+    "description": "The integration limits should be correctly identified as \\(-\\infty\\) to \\(\\hat{Y}\\) and \\(\\hat{Y}\\) to \\(\\infty\\). Check if the response correctly identifies these limits. Incorrect or missing limits should be penalized.",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect interpretation of the loss function",
-    "description": "The loss function should be interpreted as \\(L(\\hat{Y}, Y) = \\left| \\left( Y - \\hat{Y} \\right) \\left(0.16- \\mathbf{1}\\{ Y > \\hat{Y} \\} \\right)\\right|\\). Verify if the response correctly interprets the loss function.",
+    "error_name": "Incorrect handling of indicator function",
+    "description": "The indicator function \\( \\mathbf{1}\\{ Y > \\hat{Y} \\} \\) should be correctly handled in the simplification of the loss function. Check if the response correctly interprets and simplifies this part of the function. Errors might include incorrect handling of the indicator function.",
     "delta_score": -0.5
   }
 ]
 # <expert_list_error_rubric_time_sec>:
-
+720.0
 # <expert_brainstormed_rubric>:
 [
   {
-    "criterion": "Understanding of the loss function",
-    "weight": 20.0,
-    "checklist": [
-      "Does the response correctly interpret the given loss function L(\\hat{Y}, Y)? (High importance)",
-      "Is the role of the indicator function \\mathbf{1}\\{ Y > \\hat{Y} \\} correctly explained? (Moderate importance)",
-      "Does the response identify the impact of the 0.16 factor in the loss function? (Moderate importance)",
-      "Is there a clear explanation of how the loss function changes based on the relationship between Y and \\hat{Y}? (High importance)"
-    ]
-  },
-  {
-    "criterion": "Mathematical derivation of the optimal \\hat{Y}",
+    "criterion": "Correctness of the solution",
     "weight": 30.0,
     "checklist": [
-      "Is the expected loss correctly set up as an integral over the probability density function? (High importance)",
-      "Does the response correctly apply Leibniz's rule to differentiate the expected loss? (High importance)",
-      "Is the derivation of the optimal \\hat{Y} through setting the derivative to zero correctly performed? (High importance)",
-      "Does the response correctly solve for \\hat{Y} as the 84th percentile of the distribution? (High importance)"
+      "Is the final solution correct? Specifically, does it state that the best possible prediction is the 84th percentile of the distribution of $Y$, i.e., $(\\hat{Y} = F^{-1}(0.84))$? (High importance)",
+      "Does the response correctly interpret the solution $(F^{-1}(0.84))$ as the 84th percentile? (Low importance)",
+      "Does the response avoid common misconceptions, such as confusing the 84th percentile with the 16th percentile? (Medium importance)"
     ]
   },
   {
-    "criterion": "Application of probability concepts",
-    "weight": 20.0,
+    "criterion": "Derivation of the optimal solution",
+    "weight": 50.0,
     "checklist": [
-      "Is the cumulative distribution function (CDF) correctly used to express probabilities? (Moderate importance)",
-      "Does the response correctly interpret F(\\hat{Y}) as the CDF of Y? (Moderate importance)",
-      "Is the inverse CDF (percentile function) correctly used to find \\hat{Y}? (Moderate importance)",
-      "Does the response correctly identify \\hat{Y} = F^{-1}(0.84) as the solution? (High importance)"
+      "Does the high-level proof strategy make sense? The most direct and standard proof would be: (i) writing the desired minimization for the loss function; (ii) taking the derivative of the loss function with respect to \\( \\hat{Y} \\) and setting it to zero; (iii) simplifying to show that the optimal prediction is the 0.84-quantile. There may be other ways of proving this, but this is the most direct and standard, so be skeptical about other proofs (they may still be right). (Highest importance)",
+      "Is the proof complete, showing all necessary steps to demonstrate that the optimal prediction is the 0.84-quantile of the distribution of \\( Y \\)? (Medium importance)",
+      "Are all the steps in the derivation correct? (Medium importance)",
+      "Does the proof state what we are trying to optimize? Namely, that we want to minimize the expected loss, i.e., $\u0007rg\\min_{\\hat{Y}} E_{p(Y)}[L(\\hat{Y}, Y)]$. (Low importance)",
+      "Is the derivative of the loss function with respect to $\\hat{Y}$ correctly computed? It should be: $\frac{d}{d\\hat{Y}} E_{p(Y)}[L(\\hat{Y}, Y)] = 0.16 P(Y \\leq \\hat{Y}) - 0.84 P(Y > \\hat{Y})$. (Medium importance)"
     ]
   },
   {
-    "criterion": "Clarity and logical flow of explanation",
-    "weight": 15.0,
+    "criterion": "Intuitive explanation of the result",
+    "weight": 5.0,
     "checklist": [
-      "Is the explanation of each step in the derivation clear and logically structured? (Moderate importance)",
-      "Does the response avoid unnecessary complexity and focus on the key steps? (Low importance)",
-      "Are mathematical notations and terms used correctly and consistently? (Moderate importance)",
-      "Is the final conclusion clearly stated and justified? (High importance)"
+      "Does the response include an explanation as to why it makes sense that the 0.84-quantile is the optimal prediction? This explanation should mention that the loss function reweights errors for underestimation by 0.84 and errors for overestimation by 0.16, leading to the 0.84-quantile being optimal. (Medium importance)"
     ]
   },
   {
-    "criterion": "Correctness and completeness of the solution",
-    "weight": 15.0,
+    "criterion": "Follows the assignment instructions",
+    "weight": 5.0,
     "checklist": [
-      "Is the solution mathematically correct and free of errors? (High importance)",
-      "Does the response address all parts of the assignment prompt? (Moderate importance)",
-      "Is the solution complete, providing both the derivation and the final answer? (High importance)",
-      "Are any assumptions or simplifications clearly stated and justified? (Moderate importance)"
+      "Does the response follow the assignment instructions, focusing on the given loss function and the quantile calculation? (Moderate importance)",
+      "Does the response avoid discussing unimportant or irrelevant details? (Low importance)",
+      "Is the response consistent with the assignment requirements? (Low importance)",
+      "Does the answer address all parts of the question without omitting any crucial elements? (Low importance)"
+    ]
+  },
+  {
+    "criterion": "Clarity and Proof Writing Skills",
+    "weight": 10.0,
+    "checklist": [
+      "Are mathematical notations and symbols used consistently and correctly? (Low importance)",
+      "Are complex concepts broken down into understandable parts? (Low importance)",
+      "Are all mathematical steps clearly justified and logically connected? (Low importance)",
+      "Is the explanation clear and logically structured, following standard mathematical conventions and notations? (Low importance)",
+      "Are all the properties and assumptions used in the proof correctly described/referenced? (Low importance)",
+      "Is the proof written in a way that demonstrates understanding rather than mere recitation of steps? (Low importance)",
+      "Are key equations and results highlighted or emphasized appropriately? (Low importance)"
     ]
   }
 ]
 # <expert_brainstormed_rubric_time_sec>:
-
+698.0
 # <expert_rubric>:
 [
   {
-    "criterion": "Understanding of the Loss Function",
-    "weight": 20.0,
-    "performance_to_description": {
-      "excellent": "The response correctly interprets the given loss function L(\\hat{Y}, Y), clearly explaining the role of the indicator function \\mathbf{1}\\{ Y > \\hat{Y} \\} and the impact of the 0.16 factor. It provides a clear explanation of how the loss function changes based on the relationship between Y and \\hat{Y}, demonstrating a deep understanding of the function's components and their interactions.",
-      "good": "The response accurately interprets the loss function and explains the role of the indicator function and the 0.16 factor, but may lack depth in explaining how the loss function changes with Y and \\hat{Y}. The explanation is mostly clear but might miss some nuances.",
-      "fair": "The response shows a basic understanding of the loss function, identifying the indicator function and the 0.16 factor, but the explanation of their roles and the overall function is superficial or partially incorrect. The response may miss how the loss function changes with Y and \\hat{Y).",
-      "poor": "The response fails to correctly interpret the loss function, misunderstanding the role of the indicator function or the 0.16 factor. It lacks a coherent explanation of how the loss function changes with Y and \\hat{Y), showing a fundamental misunderstanding."
-    }
-  },
-  {
-    "criterion": "Mathematical Derivation of the Optimal \\hat{Y}",
+    "criterion": "Correctness of the Solution",
     "weight": 30.0,
     "performance_to_description": {
-      "excellent": "The response correctly sets up the expected loss as an integral over the probability density function, applies Leibniz's rule to differentiate the expected loss, and derives the optimal \\hat{Y} by setting the derivative to zero. It accurately solves for \\hat{Y} as the 84th percentile of the distribution, demonstrating a thorough understanding of the mathematical process.",
-      "good": "The response correctly sets up the expected loss and applies differentiation, but may have minor errors or omissions in the derivation process. It correctly identifies \\hat{Y} as the 84th percentile but lacks some detail in the explanation.",
-      "fair": "The response attempts to set up the expected loss and differentiate it, but contains significant errors or omissions. It may incorrectly solve for \\hat{Y} or fail to clearly identify it as the 84th percentile.",
-      "poor": "The response fails to correctly set up or differentiate the expected loss, showing a lack of understanding of the mathematical process. It does not correctly solve for \\hat{Y} or identify it as the 84th percentile."
+      "excellent": "The solution correctly identifies the optimal prediction \\( \\hat{Y} \\) as the 84th percentile of the distribution of \\( Y \\), i.e., \\( F^{-1}(0.84) \\). The response clearly interprets this as the 84th percentile and avoids common misconceptions, such as confusing it with the 16th percentile. The solution is free from algebraic or arithmetic errors and demonstrates a clear understanding of the relationship between the probability density function, cumulative distribution function, and percentiles.",
+      "good": "The solution correctly identifies the optimal prediction as the 84th percentile but may have a minor error in interpretation or explanation, such as a slight misstatement about the percentile. The response is mostly correct but may include a small oversight that does not significantly affect the overall correctness.",
+      "fair": "The solution identifies the optimal prediction but has a moderate error, such as confusing the 84th percentile with another percentile or statistical measure. The response may include some correct elements but lacks clarity or contains a few errors that affect the overall correctness.",
+      "poor": "The solution fails to correctly identify the optimal prediction as the 84th percentile. It may suggest an incorrect percentile or statistical measure, or it may contain multiple errors that significantly affect the correctness of the solution."
     }
   },
   {
-    "criterion": "Application of Probability Concepts",
-    "weight": 20.0,
+    "criterion": "Derivation of the Optimal Solution",
+    "weight": 50.0,
     "performance_to_description": {
-      "excellent": "The response correctly uses the cumulative distribution function (CDF) to express probabilities, interprets F(\\hat{Y}) as the CDF of Y, and uses the inverse CDF to find \\hat{Y}. It accurately identifies \\hat{Y} = F^{-1}(0.84) as the solution, demonstrating a strong grasp of probability concepts.",
-      "good": "The response uses the CDF and inverse CDF correctly but may have minor inaccuracies or lack depth in explanation. It identifies \\hat{Y} = F^{-1}(0.84) but might not fully explain the reasoning.",
-      "fair": "The response shows a basic understanding of the CDF and inverse CDF but contains errors or lacks clarity in their application. It may incorrectly identify \\hat{Y} or fail to clearly explain the solution.",
-      "poor": "The response fails to correctly use the CDF or inverse CDF, showing a fundamental misunderstanding of probability concepts. It does not correctly identify \\hat{Y} or explain the solution."
+      "excellent": "The derivation is complete and correct, showing all necessary steps to demonstrate that the optimal prediction is the 0.84-quantile of the distribution of \\( Y \\). The proof strategy is clear and logical, starting with the minimization of the expected loss, taking the derivative of the loss function with respect to \\( \\hat{Y} \\), and setting it to zero. The derivative is correctly computed as \\( 0.16 P(Y \\leq \\hat{Y}) - 0.84 P(Y > \\hat{Y}) \\), and the solution clearly states the optimization goal of minimizing the expected loss.",
+      "good": "The derivation is mostly correct, with one minor error or omission. For example, the response may slightly misstate a step in the proof or omit a minor detail that does not significantly affect the overall derivation. The proof is generally logical and complete but may have a small oversight.",
+      "fair": "The derivation contains a moderate error, such as an incorrect computation of the derivative or a missing step in the proof. The response may include some correct elements but lacks clarity or contains errors that affect the overall derivation.",
+      "poor": "The derivation is incomplete or incorrect, with multiple errors or a major omission. The response may fail to demonstrate the necessary steps to show that the optimal prediction is the 0.84-quantile, or it may contain significant errors that affect the overall derivation."
     }
   },
   {
-    "criterion": "Clarity and Logical Flow of Explanation",
-    "weight": 15.0,
+    "criterion": "Intuitive Explanation of the Result",
+    "weight": 5.0,
     "performance_to_description": {
-      "excellent": "The explanation of each step in the derivation is clear and logically structured, avoiding unnecessary complexity and focusing on key steps. Mathematical notations and terms are used correctly and consistently, and the final conclusion is clearly stated and justified.",
-      "good": "The explanation is mostly clear and logical, with minor issues in structure or complexity. Mathematical notations are generally correct, and the conclusion is stated but may lack full justification.",
-      "fair": "The explanation lacks clarity or logical flow, with significant issues in structure or complexity. Mathematical notations may be inconsistent, and the conclusion is unclear or poorly justified.",
-      "poor": "The explanation is unclear and lacks logical flow, with major issues in structure and complexity. Mathematical notations are incorrect, and the conclusion is missing or unjustified."
+      "excellent": "The response includes a clear and intuitive explanation of why the 0.84-quantile is the optimal prediction. It explains that the loss function reweights errors for underestimation by 0.84 and errors for overestimation by 0.16, leading to the 0.84-quantile being optimal. The explanation is concise and easy to understand, even for non-experts.",
+      "good": "The response includes an explanation of why the 0.84-quantile is optimal, but it may be slightly unclear or lack detail. The explanation is generally correct but may include a minor oversight or be less intuitive.",
+      "fair": "The response includes an explanation, but it is somewhat unclear or contains a moderate error. The explanation may lack clarity or fail to fully convey why the 0.84-quantile is optimal.",
+      "poor": "The response lacks a clear explanation of why the 0.84-quantile is optimal, or it contains significant errors that make the explanation difficult to understand."
     }
   },
   {
-    "criterion": "Correctness and Completeness of the Solution",
-    "weight": 15.0,
+    "criterion": "Follows the Assignment Instructions",
+    "weight": 5.0,
     "performance_to_description": {
-      "excellent": "The solution is mathematically correct and free of errors, addressing all parts of the assignment prompt. It is complete, providing both the derivation and the final answer, with any assumptions or simplifications clearly stated and justified.",
-      "good": "The solution is mostly correct with minor errors, addressing most parts of the prompt. It is generally complete but may lack some detail or justification for assumptions.",
-      "fair": "The solution contains significant errors or omissions, addressing only some parts of the prompt. It may be incomplete or lack clear justification for assumptions.",
-      "poor": "The solution is incorrect or incomplete, failing to address key parts of the prompt. It lacks justification for assumptions and contains major errors."
+      "excellent": "The response follows all assignment instructions, focusing on the given loss function and the quantile calculation. It avoids discussing irrelevant details and addresses all parts of the question without omitting any crucial elements. The response is consistent with the assignment requirements.",
+      "good": "The response mostly follows the assignment instructions, with one minor deviation. It may include a small irrelevant detail or slightly deviate from the focus on the loss function and quantile calculation, but it generally addresses the question.",
+      "fair": "The response partially follows the assignment instructions, with a moderate deviation. It may include some irrelevant details or fail to fully address all parts of the question.",
+      "poor": "The response does not follow the assignment instructions, with multiple deviations or omissions. It may focus on irrelevant details or fail to address the key elements of the question."
+    }
+  },
+  {
+    "criterion": "Clarity and Proof Writing Skills",
+    "weight": 10.0,
+    "performance_to_description": {
+      "excellent": "The response uses mathematical notations and symbols consistently and correctly. Complex concepts are broken down into understandable parts, and all mathematical steps are clearly justified and logically connected. The explanation is clear and logically structured, following standard mathematical conventions and notations. Key equations and results are highlighted or emphasized appropriately.",
+      "good": "The response is mostly clear and well-structured, with one minor issue. It may include a slight inconsistency in notation or a minor oversight in the explanation, but it is generally easy to follow and understand.",
+      "fair": "The response is somewhat clear but contains a moderate issue, such as inconsistent notation or a lack of logical structure. The explanation may be difficult to follow or contain errors that affect clarity.",
+      "poor": "The response lacks clarity and logical structure, with multiple issues in notation or explanation. It may be difficult to follow or understand, with significant errors that affect the overall quality of the proof."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+nan

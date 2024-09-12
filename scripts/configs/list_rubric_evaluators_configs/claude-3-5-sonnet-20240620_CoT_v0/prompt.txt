@@ -37,7 +37,7 @@ The final score will be calculated as: 10 + sum of all applied delta_score
 {list_error_rubric}
 
 ## Strong Response (optional)
-{strong_response}
+{solution}
 </information>
 
 <llm_output_to_evaluate>

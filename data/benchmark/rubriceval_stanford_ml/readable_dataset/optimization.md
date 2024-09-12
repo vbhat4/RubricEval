@@ -120,7 +120,7 @@ Putting back \cref{eq:oco_ineq} into \cref{eq:oco_upper} we get
 \mathrm{Reg}_T &= \sup_{\{f_1, \dots, f_T\}} [\sum_t^T f_t(x_t) - f_t(x^*) ] \\
 &\leq \sup_{\{f_1, \dots, f_T\}} [\sum_t^T (\frac{1}{2\eta} (\| x_t -x^* \|^2 - \| x_{t+1} - x^* \|^2 ) + \frac{\eta}{2} \| \nabla_t \|^2) ] \\
 &\leq \sup_{\{f_1, \dots, f_T\}} [ \frac{1}{2\eta} (\| x_1 -x^* \|^2 - \| x_{T+1} - x^* \|^2) + \frac{\eta}{2} \| \nabla_t \|^2T ] \label{eq:telescope}\\
-&\leq \sup_{\{f_1, \dots, f_T\}} [ \frac{1}{2\eta} D + \frac{\eta}{2} \| \nabla_t \|^2T ] \label{eq:use_bound_D} & \text{\cref{eq:bound_D}}\\
+&\leq \sup_{\{f_1, \dots, f_T\}} [ \frac{1}{2\eta} D^2 + \frac{\eta}{2} \| \nabla_t \|^2T ] \label{eq:use_bound_D} & \text{\cref{eq:bound_D}}\\
 &\leq \sup_{\{f_1, \dots, f_T\}} [ \frac{1}{2\eta} D^2 + \frac{\eta}{2}  M^2T ] \label{eq:use_bound_M} & \text{\cref{eq:bound_M}}\\
 %
 &=  \frac{M\sqrt{T}}{2D} D^2 + \frac{1}{2} \frac{D}{M}\sqrt{\frac{1}{T}}  M^2T  & \text{\cref{eq:eta}}\\
@@ -132,27 +132,24 @@ Putting back \cref{eq:oco_ineq} into \cref{eq:oco_upper} we get
 as desired where \cref{eq:telescope} uses a telescoping sum.
 # <expert_checklist>:
 [
-  "Does the solution correctly define the online projected subgradient descent algorithm, including the update rule x_{t+1} = \\Pi_{\\mathcal{D}} [x_t - \\eta \\nabla f_t(x_t)]? (High importance)",
-  "Are the assumptions clearly stated, such as \\mathcal{D} being convex, closed, non-empty, and bounded, and f_t being M-Lipschitz? (High importance)",
-  "Is the learning rate \\eta correctly set as \\frac{D}{M}\\sqrt{\\frac{1}{T}}? (High importance)",
-  "Does the solution correctly derive the regret bound \\mathrm{Reg}_T(\\mathcal{A}) \\leq D M \\sqrt{T} = o(T)? (High importance)",
-  "Is the concept of sublinear regret explained, specifically that \\mathrm{Reg}_T(\\mathcal{A}) = o(T)? (Moderate importance)",
-  "Does the solution correctly use the property of projections into convex bodies: \\| \\Pi_D[x'] - x \\|^2 \\leq \\| x' - x \\|^2? (Moderate importance)",
-  "Is the telescoping sum correctly applied in the derivation of the regret bound? (Moderate importance)",
-  "Does the solution correctly identify and use the subgradient \\nabla f_t(x_t) in the update rule? (Moderate importance)",
-  "Is the inequality \\nabla_t \\cdot (x_t - x^*) \\leq \\frac{1}{2\\eta} (\\| x_t -x^* \\|^2 - \\| x_{t+1} - x^* \\|^2 ) + \\frac{\\eta}{2} \\| \\nabla_t \\|^2 correctly derived and used? (Moderate importance)",
-  "Are the bounds \\| x - x' \\| \\leq D and \\| \\nabla f_t(x_t) \\| \\leq M correctly used in the proof? (Moderate importance)",
-  "Is the final regret bound MD\\sqrt{T} correctly calculated and explained? (High importance)",
-  "Does the solution provide a clear explanation of why the regret is sublinear and its implications? (Moderate importance)",
-  "Is the role of the projection operator \\Pi_{\\mathcal{D}} in ensuring x_{t+1} \\in \\mathcal{D} clearly explained? (Moderate importance)",
-  "Are all mathematical notations and symbols used correctly and consistently throughout the solution? (Low importance)",
-  "Is the solution free from unnecessary or irrelevant details that do not contribute to the proof? (Low importance)",
-  "Does the solution follow a logical structure, making it easy to follow the derivation of the regret bound? (Moderate importance)",
-  "Is the solution concise and to the point, avoiding overly complex explanations? (Low importance)",
-  "Does the solution demonstrate a clear understanding of online convex optimization and its challenges? (High importance)"
+  "Are the assumptions clearly stated, including that \\( \\mathcal{D} \\) is convex, closed, non-empty, and bounded, and that \\( f_t \\) is \\( M \\)-Lipschitz? (High importance)",
+  "Is the concept of regret correctly defined and explained, including the formula for \\( \\mathrm{Reg}_T(\\mathcal{A}) \\)? (High importance)",
+  "Is the subgradient \\( \\nabla f_t(x_t) \\) correctly defined and used in the context of convex functions? (Moderate importance)",
+  "Is the projected subgradient descent algorithm correctly described, including the update rule \\( x_{t+1} = \\Pi_{\\mathcal{D}} [x_t - \\eta \\nabla f_t(x_t)] \\)? (High importance)",
+  "Is the projection operation \\( \\Pi_{\\mathcal{D}} \\) correctly explained as projecting onto the feasible set \\( \\mathcal{D} \\)? (Moderate importance)",
+  "Is the learning rate \\( \\eta = \\frac{D}{M}\\sqrt{\\frac{1}{T}} \\) correctly derived and justified? (High importance)",
+  "Is the proof of sublinear regret \\( \\mathrm{Reg}_T(\\mathcal{A}) \\leq D M \\sqrt{T} = o(T) \\) correctly structured and logically sound? (High importance)",
+  "Are the steps leading to the inequality \\( \\nabla_t \\cdot (x_t - x^*) \\leq \\frac{1}{2\\eta} (\\| x_t -x^* \\|^2 - \\| x_{t+1} - x^* \\|^2 ) + \\frac{\\eta}{2} \\| \\nabla_t \\|^2 \\) clearly explained? (Moderate importance)",
+  "Is the use of telescoping sums in the proof correctly applied and explained? (Moderate importance)",
+  "Is the final regret bound \\( MD\\sqrt{T} \\) correctly derived from the assumptions and intermediate steps? (High importance)",
+  "Is the importance of achieving sublinear regret \\( o(T) \\) clearly explained in the context of online learning? (Moderate importance)",
+  "Are all mathematical notations and symbols used consistently and correctly throughout the explanation? (Moderate importance)",
+  "Is the explanation free of unnecessary jargon and accessible to non-experts in convex optimization? (Moderate importance)",
+  "Does the solution address potential edge cases or limitations of the projected subgradient descent method? (Low importance)",
+  "Is the overall structure of the proof logical and easy to follow, with clear transitions between steps? (Moderate importance)"
 ]
 # <expert_checklist_time_sec>:
-
+1198.0
 # <expert_list_error_rubric>:
 [
   {
@@ -161,171 +158,159 @@ as desired where \cref{eq:telescope} uses a telescoping sum.
     "delta_score": -0.5
   },
   {
-    "error_name": "Missing assumption of convexity of \\(\\mathcal{D}\\)",
-    "description": "The solution should state that \\(\\mathcal{D}\\) is convex, closed, non-empty, and bounded. This is crucial for the projection step in the algorithm.",
+    "error_name": "Missing assumption of convex, closed, non-empty, and bounded set \\(\\mathcal{D}\\)",
+    "description": "The solution must state that \\(\\mathcal{D}\\) is convex, closed, non-empty, and bounded, with a constant \\(D\\) such that \\(\\| x - x' \\| \\leq D\\) for all \\(x,x' \\in \\mathcal{D}\\).",
     "delta_score": -0.5
   },
   {
-    "error_name": "Missing Lipschitz assumption for \\(f_t\\)",
-    "description": "The solution should assume that each function \\(f_t\\) is \\(M\\)-Lipschitz, i.e., \\(\\| \\nabla f_t(x_t) \\| \\leq M\\). This is necessary for bounding the regret.",
+    "error_name": "Missing assumption of \\(M\\)-Lipschitz function",
+    "description": "The solution must assume that each function \\(f_t\\) is \\(M\\)-Lipschitz, meaning \\(\\| \\nabla f_t(x_t) \\| \\leq M\\) for all \\(t\\).",
     "delta_score": -0.5
   },
   {
     "error_name": "Incorrect learning rate definition",
-    "description": "The learning rate \\(\\eta\\) should be defined as \\(\\eta = \\frac{D}{M}\\sqrt{\\frac{1}{T}}\\). This is critical for achieving sublinear regret.",
+    "description": "The learning rate \\(\\eta\\) should be defined as \\(\\eta = \\frac{D}{M}\\sqrt{\\frac{1}{T}}\\).",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect projection step",
-    "description": "The projection step should be defined as \\(x_{t+1} = \\Pi_{\\mathcal{D}} [x_t - \\eta \\nabla f_t(x_t)]\\), where \\(\\Pi_{\\mathcal{D}}\\) projects onto the feasible set \\(\\mathcal{D}\\).",
+    "error_name": "Incorrect projection step in subgradient descent",
+    "description": "The projection step should be \\(x_{t+1} = \\Pi_{\\mathcal{D}} [x_t - \\eta \\nabla f_t(x_t)]\\), where \\(\\Pi_{\\mathcal{D}}\\) projects onto the closest point in \\(\\mathcal{D}\\).",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect subgradient definition",
-    "description": "A subgradient \\(\\nabla f_t(x_t)\\) should satisfy \\(f_t(x') - f_t(x_t) \\geq \\nabla f_t(x_t) \\cdot (x' - x_t)\\) for all \\(x' \\in \\mathcal{D}\\).",
+    "error_name": "Incorrect use of subgradient inequality",
+    "description": "The subgradient inequality should be used correctly: \\(f_t(x') - f_t(x_t) \\geq \\nabla f_t(x_t) \\cdot (x' - x_t)\\).",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect regret bound derivation",
-    "description": "The regret bound should be derived as \\(\\mathrm{Reg}_T(\\mathcal{A}) \\leq D M \\sqrt{T}\\). The derivation should include the use of telescoping sums and the properties of projections.",
-    "delta_score": -1
-  },
-  {
-    "error_name": "Missing telescoping sum argument",
-    "description": "The derivation should use a telescoping sum to simplify the expression for regret. This is a key step in the proof.",
+    "error_name": "Incorrect telescoping sum application",
+    "description": "The telescoping sum should be applied correctly to simplify the regret bound: \\(\\sum_t^T (\\| x_t -x^* \\|^2 - \\| x_{t+1} - x^* \\|^2)\\).",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect use of projection property",
-    "description": "The property \\(\\| \\Pi_{\\mathcal{D}}[x'] - x \\|^2 \\leq \\| x' - x \\|^2\\) should be used correctly in the derivation to ensure the regret bound holds.",
+    "error_name": "Incorrect final regret bound",
+    "description": "The final regret bound should be \\(\\mathrm{Reg}_T(\\mathcal{A}) \\leq D M \\sqrt{T}\\), showing sublinear growth.",
     "delta_score": -0.5
   },
   {
-    "error_name": "Incorrect final regret expression",
-    "description": "The final expression for regret should be \\(\\mathrm{Reg}_T(\\mathcal{A}) = MD\\sqrt{T}\\). Any deviation from this indicates a mistake in the derivation.",
+    "error_name": "Missing explanation of sublinear regret",
+    "description": "The solution should explain that sublinear regret means the average per-round regret goes to zero as \\(T\\) increases, i.e., \\(\\mathrm{Reg}_T(\\mathcal{A}) = o(T)\\).",
     "delta_score": -0.5
   },
   {
-    "error_name": "Unclear explanation or formatting",
-    "description": "The explanation should be clear and well-formatted, making it easy for non-experts to follow the logic and steps of the proof.",
+    "error_name": "Unclear or incomplete proof steps",
+    "description": "The proof should clearly show each step leading to the regret bound, including assumptions and inequalities used.",
     "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect or missing projection property",
+    "description": "The projection property \\(\\| \\Pi_{\\mathcal{D}}[x'] - x \\|^2 \\leq \\| x' - x \\|^2\\) should be used correctly in the proof.",
+    "delta_score": -0.5
+  },
+  {
+    "error_name": "Incorrect or missing notation",
+    "description": "The notation should be consistent and correct throughout the solution, e.g., using \\(x_t^{\\mathcal{A}}\\) for the learner's decision.",
+    "delta_score": -0.25
   },
   {
     "error_name": "Irrelevant or unnecessary details",
-    "description": "The solution should avoid including irrelevant or unnecessary details that do not contribute to the understanding of the proof.",
-    "delta_score": -0.5
+    "description": "The solution should avoid including irrelevant or unnecessary details that do not contribute to the proof or understanding of the regret bound.",
+    "delta_score": -0.25
+  },
+  {
+    "error_name": "Unclear answer or formatting",
+    "description": "The answer should be clear and well-formatted, making it easy to follow for non-experts.",
+    "delta_score": -0.25
   }
 ]
 # <expert_list_error_rubric_time_sec>:
-
+1283.0
 # <expert_brainstormed_rubric>:
 [
   {
-    "criterion": "Understanding of Online Convex Optimization",
-    "weight": 20.0,
-    "checklist": [
-      "Does the response correctly define the setting of online convex optimization, including the roles of the learner and nature? (High importance)",
-      "Is the concept of regret clearly explained, including how it is calculated and its significance? (High importance)",
-      "Does the response mention the goal of minimizing cumulative loss compared to the best fixed decision in hindsight? (Moderate importance)",
-      "Is the explanation of sublinear regret and its importance in online learning provided? (Moderate importance)"
-    ]
-  },
-  {
-    "criterion": "Correctness of Assumptions",
-    "weight": 15.0,
-    "checklist": [
-      "Are the assumptions about the convexity, closedness, and boundedness of the set \\(\\mathcal{D}\\) correctly stated? (High importance)",
-      "Is the assumption that \\(f_t\\) is \\(M\\)-Lipschitz correctly stated and explained? (High importance)",
-      "Is the learning rate \\(\\eta\\) correctly defined as \\(\\frac{D}{M}\\sqrt{\\frac{1}{T}}\\)? (Moderate importance)",
-      "Does the response explain why these assumptions are necessary for proving the regret bound? (Moderate importance)"
-    ]
-  },
-  {
     "criterion": "Proof of Sublinear Regret Bound",
-    "weight": 30.0,
+    "weight": 70.0,
     "checklist": [
-      "Is the online projected subgradient descent algorithm correctly described, including the update rule \\(x_{t+1} = \\Pi_{\\mathcal{D}} [x_t - \\eta \\nabla f_t(x_t)]\\)? (High importance)",
-      "Does the proof correctly use the properties of convex functions and subgradients? (High importance)",
-      "Is the telescoping sum technique correctly applied to derive the regret bound? (High importance)",
-      "Does the response correctly conclude that the regret is \\(MD\\sqrt{T}\\) and explain why this is sublinear? (High importance)",
-      "Are all mathematical steps clearly justified and logically connected? (Moderate importance)"
+      "The answer should correctly prove that the regret is sublinear without any mistakes. One possible proof is the following:\n1. Using convexity to upper bound the regret $\\mathrm{Reg}_T(\\mathcal{A}) \\defeq \\sup_{\\{f_1, \\dots, f_T\\}} [\\sum_t^T f_t(x_t) - f_t(x^*) ] \\leq \\sup_{\\{f_1, \\dots, f_T\\}} [\\sum_t^T \nabla_t (x - x^*) ]$\n2. Analyzing the distance between consecutive decisions $\\| x_t -x^* \\|^2 - \\| x_{t+1} - x^* \\|^2$\n3. Using properties of projections into convex bodies (i.e. $\\| \\Pi_D[x'] - x \\|^2 \\leq \\| x' - x \\|^2$ for any $x' \\in \\mathbb{R}^d$ and $x \\in \\mathcal{D}$) to bound $\nabla_t \\cdot (x_t - x^*) \\leq \frac{1}{2\\eta} (\\| x_t -x^* \\|^2 - \\| x_{t+1} - x^* \\|^2 ) + \frac{\\eta}{2} \\| \nabla_t \\|^2$\n4. Telescoping sums to conclude $\\mathrm{Reg}_T \\leq \\leq \\sup_{\\{f_1, \\dots, f_T\\}} [ \frac{1}{2\\eta} (\\| x_1 -x^* \\|^2 - \\| x_{T+1} - x^* \\|^2) + \frac{\\eta}{2} \\| \nabla_t \\|^2T ]$\n5. Applying the bounds on the decision set diameter $D$ (compactness) and subgradients $M$ (boundedness) to show that $\\mathrm{Reg}_T \\leq \\sup_{\\{f_1, \\dots, f_T\\}} [ \frac{1}{2\\eta} D^2 + \frac{\\eta}{2}  M^2T ]$\n6. Plugging in the learning rate $\\eta = \frac{D}{M}\\sqrt{\frac{1}{T}}$ to conclude that $\\mathrm{Reg}_T \\leq MD\\sqrt{T} = o(T)$\nOther proofs may be possible, but they likely require similar steps and should be just as correct/complete. (Highest importance)",
+      "Does the answer correctly state the final bound, it should be something along the lines of $\\mathrm{Reg}_T(\\mathcal{A}) \\leq D M \\sqrt{T} = o(T)$ where D is the diameter of the decision set and M is the bound on the subgradients. (Low importance)",
+      "Does the answer clearly state what should be proven (Low importance).",
+      "The answer fails to state the learning rate used in the proof (Low importance) despite that being useful. It should be something along the lines of $\\eta = \\frac{D}{M}\\sqrt{\\frac{1}{T}}$. (Medium inmportance)"
     ]
   },
   {
-    "criterion": "Clarity and Structure of Explanation",
-    "weight": 15.0,
-    "checklist": [
-      "Is the explanation of the proof clear and logically structured? (Moderate importance)",
-      "Are mathematical notations and symbols used correctly and consistently? (Moderate importance)",
-      "Does the response avoid unnecessary jargon and explain terms that may not be familiar to non-experts? (Moderate importance)",
-      "Are key concepts and steps highlighted to aid understanding? (Moderate importance)"
-    ]
-  },
-  {
-    "criterion": "Mathematical Rigor and Precision",
+    "criterion": "Understanding of Online Convex Optimization and Assumptions",
     "weight": 20.0,
     "checklist": [
-      "Are all mathematical expressions and equations correctly formatted and accurate? (High importance)",
-      "Does the response demonstrate a strong understanding of mathematical concepts involved in the proof? (High importance)",
-      "Is the use of inequalities and bounds in the proof precise and justified? (Moderate importance)",
-      "Are any approximations or assumptions clearly stated and justified? (Moderate importance)"
+      "The proof doesn't state the assumptions on the functions $f_t$ necessary and used for the proof. The exact assumptions depend on the proof but they are typically convexity, and lipschitz continuity or boundedness of the norm of the subgradients. (High importance)",
+      "The proof doesn't state the assumptions on the decision set necessary and used for the proof. The exact assumptions depend on the proof but they typically convexity, closedness and boundedness. (High importance)",
+      "The assumptions are at reasonable rather than at odds with standard results in convex analysis. (Medium importance)",
+      "Does the proof use really unnecessary assumptions? (Medium importance)"
+    ]
+  },
+  {
+    "criterion": "Follows the assignment instructions",
+    "weight": 5.0,
+    "checklist": [
+      "Does the answer correctly focus on projected subgradient descent algorithm? (Moderate importance)",
+      "When needed, does the answer incorporate improtant information from the assignment instructions? (Moderate importance)",
+      "Does the answer avoid dicussing unimportant or irrelevant details? (Low importance)"
+    ]
+  },
+  {
+    "criterion": "Clarity and Proof Writing Skills",
+    "weight": 5.0,
+    "checklist": [
+      "Are mathematical notations and symbols used consistently and correctly? (Low importance)",
+      "Are complex concepts broken down into understandable parts? (Low importance)",
+      "Are all mathematical steps clearly justified and logically connected? (Low importance)",
+      "Are all the steps clear and discuss or reference the properties previously proved results? (Low importance)"
     ]
   }
 ]
 # <expert_brainstormed_rubric_time_sec>:
-
+1480.0
 # <expert_rubric>:
 [
   {
-    "criterion": "Understanding of Online Convex Optimization",
-    "weight": 20.0,
-    "performance_to_description": {
-      "excellent": "The response clearly defines the setting of online convex optimization, accurately describing the roles of the learner and nature. It provides a thorough explanation of regret, including its calculation and significance, and clearly states the goal of minimizing cumulative loss compared to the best fixed decision in hindsight. The concept of sublinear regret is explained in detail, including its importance in online learning.",
-      "good": "The response correctly defines the setting of online convex optimization and explains the concept of regret, but may lack depth in explaining the significance of regret or the goal of minimizing cumulative loss. The explanation of sublinear regret is present but not detailed.",
-      "fair": "The response provides a basic definition of online convex optimization and mentions regret, but lacks clarity or detail in explaining these concepts. The goal of minimizing cumulative loss or the concept of sublinear regret may be mentioned but not well explained.",
-      "poor": "The response fails to accurately define online convex optimization or explain the concept of regret. It does not mention the goal of minimizing cumulative loss or the concept of sublinear regret."
-    }
-  },
-  {
-    "criterion": "Correctness of Assumptions",
-    "weight": 15.0,
-    "performance_to_description": {
-      "excellent": "The response correctly states and explains all necessary assumptions, including the convexity, closedness, and boundedness of the set \\(\\mathcal{D}\\), the \\(M\\)-Lipschitz condition of \\(f_t\\), and the learning rate \\(\\eta = \\frac{D}{M}\\sqrt{\\frac{1}{T}}\\). It clearly explains why these assumptions are necessary for proving the regret bound.",
-      "good": "The response correctly states most of the necessary assumptions and provides some explanation for their necessity. Minor details or explanations may be missing.",
-      "fair": "The response mentions some assumptions but lacks clarity or completeness. It may not fully explain why these assumptions are necessary for the proof.",
-      "poor": "The response fails to correctly state the necessary assumptions or explain their importance in the proof."
-    }
-  },
-  {
     "criterion": "Proof of Sublinear Regret Bound",
-    "weight": 30.0,
+    "weight": 70.0,
     "performance_to_description": {
-      "excellent": "The response provides a complete and accurate description of the online projected subgradient descent algorithm, including the update rule \\(x_{t+1} = \\Pi_{\\mathcal{D}} [x_t - \\eta \\nabla f_t(x_t)]\\). The proof correctly uses properties of convex functions and subgradients, applies the telescoping sum technique, and concludes with the correct regret bound \\(MD\\sqrt{T}\\), explaining why this is sublinear. All mathematical steps are clearly justified and logically connected.",
-      "good": "The response describes the online projected subgradient descent algorithm and provides a mostly correct proof of the sublinear regret bound. Some minor errors or omissions in the mathematical steps or justifications may be present.",
-      "fair": "The response attempts to describe the algorithm and prove the regret bound but contains significant errors or omissions. The logical flow of the proof may be unclear or incomplete.",
-      "poor": "The response fails to correctly describe the algorithm or prove the sublinear regret bound. It contains major errors or lacks a coherent proof structure."
+      "excellent": "The proof correctly demonstrates that the regret is sublinear without any mistakes. It includes the following steps: 1) Using convexity to upper bound the regret as \\(\\mathrm{Reg}_T(\\mathcal{A}) \\leq \\sup_{\\{f_1, \\dots, f_T\\}} [\\sum_t^T \\nabla_t (x - x^*) ]\\). 2) Analyzing the distance between consecutive decisions \\(\\| x_t -x^* \\|^2 - \\| x_{t+1} - x^* \\|^2\\). 3) Using properties of projections into convex bodies to bound \\(\\nabla_t \\cdot (x_t - x^*) \\leq \\frac{1}{2\\eta} (\\| x_t -x^* \\|^2 - \\| x_{t+1} - x^* \\|^2 ) + \\frac{\\eta}{2} \\| \\nabla_t \\|^2\\). 4) Telescoping sums to conclude \\(\\mathrm{Reg}_T \\leq \\sup_{\\{f_1, \\dots, f_T\\}} [ \\frac{1}{2\\eta} (\\| x_1 -x^* \\|^2 - \\| x_{T+1} - x^* \\|^2) + \\frac{\\eta}{2} \\| \\nabla_t \\|^2T ]\\). 5) Applying bounds on the decision set diameter \\(D\\) and subgradients \\(M\\) to show \\(\\mathrm{Reg}_T \\leq \\sup_{\\{f_1, \\dots, f_T\\}} [ \\frac{1}{2\\eta} D^2 + \\frac{\\eta}{2}  M^2T ]\\). 6) Plugging in the learning rate \\(\\eta = \\frac{D}{M}\\sqrt{\\frac{1}{T}}\\) to conclude \\(\\mathrm{Reg}_T \\leq MD\\sqrt{T} = o(T)\\).",
+      "good": "The proof is mostly correct but has a minor mistake, such as a small computational error in one of the steps or a slight misstatement of the final bound. For example, the proof might correctly follow the steps but miscalculate a term in the telescoping sum.",
+      "fair": "The proof has a moderate mistake, such as missing one of the key steps or incorrectly applying a property of projections. For example, it might not correctly use the projection property \\(\\| \\Pi_D[x'] - x \\|^2 \\leq \\| x' - x \\|^2\\), leading to an incorrect bound.",
+      "poor": "The proof contains major mistakes or multiple moderate ones, such as failing to demonstrate sublinear regret or incorrectly setting up the problem. For example, it might not use convexity to upper bound the regret or completely miss the telescoping sum step."
     }
   },
   {
-    "criterion": "Clarity and Structure of Explanation",
-    "weight": 15.0,
-    "performance_to_description": {
-      "excellent": "The explanation is clear and logically structured, with correct and consistent use of mathematical notations and symbols. The response avoids unnecessary jargon and explains terms that may not be familiar to non-experts. Key concepts and steps are highlighted to aid understanding.",
-      "good": "The explanation is generally clear and structured, with mostly correct use of mathematical notations. Some jargon may be present, and explanations of terms could be improved.",
-      "fair": "The explanation lacks clarity or logical structure. Mathematical notations may be inconsistent or incorrect, and key concepts are not well highlighted.",
-      "poor": "The explanation is unclear and poorly structured, with incorrect use of mathematical notations and a lack of explanation for key terms and concepts."
-    }
-  },
-  {
-    "criterion": "Mathematical Rigor and Precision",
+    "criterion": "Understanding of Online Convex Optimization and Assumptions",
     "weight": 20.0,
     "performance_to_description": {
-      "excellent": "All mathematical expressions and equations are correctly formatted and accurate. The response demonstrates a strong understanding of the mathematical concepts involved in the proof, with precise and justified use of inequalities and bounds. Any approximations or assumptions are clearly stated and justified.",
-      "good": "Most mathematical expressions are correct, and the response shows a good understanding of the concepts. Some minor errors or lack of precision in the use of inequalities or bounds may be present.",
-      "fair": "The response contains several errors in mathematical expressions or lacks precision in the use of inequalities and bounds. The understanding of mathematical concepts may be incomplete.",
-      "poor": "The response demonstrates a lack of understanding of the mathematical concepts, with numerous errors in expressions and unjustified use of inequalities and bounds."
+      "excellent": "The proof clearly states all necessary assumptions: 1) The functions \\(f_t\\) are convex and \\(M\\)-Lipschitz, meaning \\(\\| \\nabla f_t(x_t) \\| \\leq M\\). 2) The decision set \\(\\mathcal{D}\\) is convex, closed, non-empty, and bounded, with a constant \\(D\\) such that \\(\\| x - x' \\| \\leq D\\) for all \\(x,x' \\in \\mathcal{D}\\). These assumptions are reasonable and align with standard results in convex analysis.",
+      "good": "The proof states most of the necessary assumptions but omits a minor detail, such as not explicitly stating the boundedness of the decision set \\(\\mathcal{D}\\).",
+      "fair": "The proof has a moderate mistake in stating assumptions, such as missing one of the key assumptions like the \\(M\\)-Lipschitz condition for \\(f_t\\).",
+      "poor": "The proof contains major mistakes in stating assumptions, such as failing to mention the convexity of \\(f_t\\) or the decision set \\(\\mathcal{D}\\), or using assumptions that are at odds with standard results."
+    }
+  },
+  {
+    "criterion": "Follows the Assignment Instructions",
+    "weight": 5.0,
+    "performance_to_description": {
+      "excellent": "The answer correctly focuses on the projected subgradient descent algorithm and incorporates all important information from the assignment instructions. It avoids discussing irrelevant details and stays on topic.",
+      "good": "The answer mostly follows the assignment instructions but includes a minor irrelevant detail or slightly deviates from the main focus on projected subgradient descent.",
+      "fair": "The answer somewhat follows the assignment instructions but includes a moderate amount of irrelevant information or fails to focus on the projected subgradient descent algorithm.",
+      "poor": "The answer does not follow the assignment instructions, includes many irrelevant details, or fails to address the projected subgradient descent algorithm."
+    }
+  },
+  {
+    "criterion": "Clarity and Proof Writing Skills",
+    "weight": 5.0,
+    "performance_to_description": {
+      "excellent": "The proof is clear, concise, and easy to follow. Mathematical notations and symbols are used consistently and correctly. Complex concepts are broken down into understandable parts, and all mathematical steps are clearly justified and logically connected.",
+      "good": "The proof is mostly clear and concise, with a minor issue such as a slight inconsistency in notation or a small gap in the logical flow.",
+      "fair": "The proof is somewhat clear but has a moderate issue, such as inconsistent notation or a confusing presentation of steps that makes it difficult to follow.",
+      "poor": "The proof is unclear, verbose, or difficult to follow. It may include many irrelevant details, miss crucial points, or present information in a disorganized manner."
     }
   }
 ]
 # <expert_rubric_time_sec>:
-
+nan

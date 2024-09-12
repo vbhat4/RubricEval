@@ -1,22 +1,32 @@
+<instructions>
 We are conducting a holistic evaluation of powerful large language models (LLMs). To achieve this, you need to evaluate the model's output based on a given assignment. Your task is to score the LLM's output and provide justification for the scores. Follow best practices for evaluation such as:
 - Objectivity, consistency, and fairness: Maintain impartiality and base your evaluation solely on the outputs content. Focus on the output's content, not on preconceptions about LLMs.
 - Justification of Scores: For each score, provide a clear explanation of your choice. Explain how the LLM’s output aligns or deviates from expectations.
 
 We also provide a potential gold solution for the assignment. This should be useful as a reference for what makes a good answer.
+</instructions>
 
-Generate a JSON output containing:
+<formatting>
+Based on the provided "assignment", "gold_solution", and "output", generate a JSON output containing:
 - explanation (str): Brief justification for the chosen performance level.
 - final_score (int): Likert scale score between 1 and 10 that quantifies the overall quality of the LLM's output.
 
 Ensure your evaluation is thorough and fair. The JSON output will be used by make_evaluation_report(json_output) to generate the final evaluation of the LLM.
+</formatting>
 
+<assignment>
 # Assignment
 {instruction}
+</assignment>
 
+<gold_solution>
 # Gold Solution
 {solution}
+</gold_solution>
 
-# LLM Output
+<output_to_evaluate>
+# LLM Output to Evaluate
 {output}
+</output_to_evaluate>
 
-Now generate the final evaluation using `make_evaluation_report(json_output)``.
+Now generate the final evaluation using `make_evaluation_report(json_output)`.

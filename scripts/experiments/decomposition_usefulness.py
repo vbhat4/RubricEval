@@ -40,6 +40,7 @@ from alpaca_eval import utils as ae_utils
 from evaluators import (
     BaseEvaluator,
     ChecklistEvaluator,
+    ChecklistSolutionEvaluator,
     ListRubricEvaluator,
     ListRubricSolutionEvaluator,
     NaiveEvaluator,
@@ -89,26 +90,40 @@ def run_dec_usefulness(
             res_path = f"results/exp_{experiment_name}/data_{dataset}/out_{out_model}/mode_{Evaluator.__name__}_gold_{gold_model}_eval_{eval_model}_eval-seed_{eval_seed}.json"
             if res_path in res_paths:
                 continue
+            logging.info(f"Running experiment to save at {res_path}")
             res_paths.add(res_path)
             df = ae_utils.load_or_convert_to_dataframe(out_path)
             if max_instances:
                 df = df.sample(max_instances, random_state=123)
-            df_processed = Evaluator.preprocess(df, gold_model=gold_model, **preprocessor_kwargs)
+
             evaluator = Evaluator(annotators_config=eval_model, seed=eval_seed, **evaluator_kwargs)
-            eval_results = evaluator(df_processed)
+            if gold_model == "expert":
+                logging.info(f"Skipping preprocessing for {Evaluator.__name__} as using expert.")
+                for c in evaluator.PREPROCESSING_COLUMNS:
+                    df[c] = df[f"expert_{c}"]
+                    assert df[c].notna().all(), f"All expert annotations are not present for {c}"
+                for c in evaluator.PREPROCESSOR_COLUMNS:
+                    df[c] = "expert"
+                preprocessor_kwargs["is_skip_preprocess_if_exists"] = True
+            else:
+                preprocessor_kwargs["is_skip_preprocess_if_exists"] = False
+
+            df = evaluator.preprocess(df, gold_model=gold_model, **preprocessor_kwargs)
+            eval_results = evaluator(df)
             df_eval = ae_utils.convert_to_dataframe(eval_results)
             df_graded = evaluator.postprocess(df_eval)
 
             res_path = Path(res_path)
             res_path.parent.mkdir(parents=True, exist_ok=True)
             df_graded.to_json(res_path, orient="records", indent=2)
+            logging.info(f"Saved results to {res_path}")
 
 
 def exp_decompositions_all(dataset: str = "rubriceval_sampled", **kwargs):
     gold_eval_models = [
-        ("gpt-4o-2024-08-06_CoT_v0", "gpt-4o-2024-08-06_CoT_v0"),
-        ("gpt-4o-mini-2024-07-18_CoT_v0", "gpt-4o-mini-2024-07-18_CoT_v0"),
-        ("gpt-4o-2024-08-06_CoT_v0", "gpt-4o-mini-2024-07-18_CoT_v0"),
+        ("gpt-4o-2024-08-06_CoT_v1", "gpt-4o-2024-08-06_CoT_v0"),
+        ("gpt-4o-mini-2024-07-18_CoT_v1", "gpt-4o-mini-2024-07-18_CoT_v0"),
+        ("gpt-4o-2024-08-06_CoT_v1", "gpt-4o-mini-2024-07-18_CoT_v0"),
         # ("Qwen1.5-7B-Chat", "Qwen1.5-7B-Chat"),
         # ("gpt-4o-2024-08-06_CoT_v0", "Qwen1.5-7B-Chat"),
     ]
@@ -218,6 +233,39 @@ def exp_variance_sampling_v1(dataset: str = "rubriceval_sampled", n_seeds: int =
         )
 
 
+def exp_leaderboard_stanford_ml(dataset: str = "rubriceval_stanford_ml", **kwargs):
+    gold_eval_models = [
+        ("expert", "gpt-4o-2024-08-06_CoT_v0"),
+        # ("expert", "gpt-4o-mini-2024-07-18_CoT_v0"),
+        # ("gpt-4o-2024-08-06_CoT_v1", "gpt-4o-2024-08-06_CoT_v0"),
+        # ("gpt-4o-mini-2024-07-18_CoT_v1", "gpt-4o-mini-2024-07-18_CoT_v0"),
+        # ("gpt-4o-2024-08-06_CoT_v1", "gpt-4o-mini-2024-07-18_CoT_v0"),
+    ]
+    for out_model in [
+        "gpt-4o-2024-08-06",
+        "gpt-4o-mini-2024-07-18",
+        "claude-3-5-sonnet-20240620",
+        "Mixtral-8x7B-Instruct-v0.1",
+    ]:
+        run_dec_usefulness(
+            experiment_name="leaderboard_stanford_ml",
+            dataset=dataset,
+            out_model=out_model,
+            gold_eval_models=gold_eval_models,
+            Evaluators=[
+                ListRubricEvaluator,
+                NaiveEvaluator,
+                ChecklistEvaluator,
+                RubricEvaluator,
+                SolutionEvaluator,
+                RubricSolutionEvaluator,
+                ListRubricSolutionEvaluator,
+                ChecklistSolutionEvaluator,
+            ],
+            **kwargs,
+        )
+
+
 if __name__ == "__main__":
     fire.Fire(
         {
@@ -227,5 +275,6 @@ if __name__ == "__main__":
             "variance_models": exp_variance_models,
             "variance_sampling": exp_variance_sampling,
             "variance_sampling_v1": exp_variance_sampling_v1,
+            "leaderboard_stanford_ml": exp_leaderboard_stanford_ml,
         }
     )

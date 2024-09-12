@@ -4,6 +4,7 @@ File containing the 3 evaluators that are not rubric based:
 - ChecklistEvaluator # conditioning on a checklist of the rubric
 - SolutionEvaluator # conditioning on the gold solution
 """
+import logging
 from pathlib import Path
 from typing import Sequence
 
@@ -14,6 +15,7 @@ from alpaca_eval.annotators import base
 from rubric_eval import helpers, main
 from rubric_eval.evaluations import Evaluator as REEvaluator
 from rubric_eval.outputs import Outputer
+from rubric_eval.rubrics import Rubricator
 
 __all__ = [
     "NaiveEvaluator",
@@ -32,10 +34,12 @@ CONFIGS_DIR = SCRIPTS_DIR / "configs"
 
 class BaseEvaluator(base.BaseAnnotatorJSON):
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
-    DEFAULT_ANNOTATION_TYPE = "str"  # use object to have dict output
+    DEFAULT_ANNOTATION_TYPE = object  # use object to have dict output
     annotator_column = "evaluator"
     DEFAULT_BASE_DIR = ...
     PRIMARY_KEYS = ...
+    PREPROCESSING_COLUMNS = ...
+    PREPROCESSOR_COLUMNS = ...
 
     def __init__(
         self,
@@ -63,8 +67,15 @@ class BaseEvaluator(base.BaseAnnotatorJSON):
         return df
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False) -> pd.DataFrame:
         raise NotImplementedError
+
+    @classmethod
+    def _is_skip_preprocess(cls, df: pd.DataFrame, annotation_key: str, is_skip_preprocess_if_exists: bool) -> bool:
+        is_skip = annotation_key in df.columns and df[annotation_key].notna().all() and is_skip_preprocess_if_exists
+        if is_skip:
+            logging.info(f"Skipping preprocess for {cls.__name__} because {annotation_key} is already present")
+        return is_skip
 
 
 class NaiveEvaluator(BaseEvaluator):
@@ -77,9 +88,11 @@ class NaiveEvaluator(BaseEvaluator):
         "instruction",
         "output",
     )
+    PREPROCESSING_COLUMNS = []
+    PREPROCESSOR_COLUMNS = []
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False) -> pd.DataFrame:
         # there's nothing to add for the naive evaluator
         return df
 
@@ -115,25 +128,36 @@ class Checklister(base.BaseAnnotatorJSON):
         return dict(available_fields_to_format=self.available_fields_to_format, is_log_first_prompt=True)
 
 
-class ChecklistEvaluator(BaseEvaluator):
+class ChecklistSolutionEvaluator(BaseEvaluator):
     __doc__ = base.BaseAnnotatorJSON.__doc__.replace(
         "Base class for a pool of annotators.",
         "Auto evaluator of the output using a gold checklist.",
     )
     DEFAULT_BASE_DIR = CONFIGS_DIR / "checklist_evaluators_configs"
-    PRIMARY_KEYS = (
-        "instruction",
-        "output",
-        "checklist",
-    )
+    PRIMARY_KEYS = ("instruction", "output", "checklist", "solution")
+    PREPROCESSING_COLUMNS = ["checklist", "solution"]
+    PREPROCESSOR_COLUMNS = ["checklister", "solutioner"]
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
-        df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
+    def preprocess(
+        cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False, **kwargs
+    ) -> pd.DataFrame:
+        if not cls._is_skip_preprocess(df, "solution", is_skip_preprocess_if_exists):
+            df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
+        if cls._is_skip_preprocess(df, "checklist", is_skip_preprocess_if_exists):
+            return df
         df["useful_info_to_eval_instruction"] = "### Good solution to the assignment:\n" + df["solution"]
         checklister = Checklister(annotators_config=gold_model.replace("_CoT", ""), **kwargs)
         checklists = checklister(df)
         df = ae_utils.convert_to_dataframe(checklists)
+        return df
+
+
+class ChecklistEvaluator(ChecklistSolutionEvaluator):
+    @classmethod
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False) -> pd.DataFrame:
+        df = super().preprocess(df, gold_model, is_skip_preprocess_if_exists)
+        df["solution"] = ""
         return df
 
 
@@ -148,24 +172,36 @@ class SolutionEvaluator(BaseEvaluator):
         "output",
         "solution",
     )
+    PREPROCESSING_COLUMNS = ["solution"]
+    PREPROCESSOR_COLUMNS = ["solutioner"]
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
+    def preprocess(
+        cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False, **kwargs
+    ) -> pd.DataFrame:
+        if cls._is_skip_preprocess(df, "solution", is_skip_preprocess_if_exists):
+            return df
         df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
         return df
 
 
 class RubricSolutionEvaluator(REEvaluator):
-    EXCELLENT_OUT_COL = "excellent_response"
+    PREPROCESSING_COLUMNS = ["solution", "rubric"]
+    PREPROCESSOR_COLUMNS = ["solutioner", "rubricator"]
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
-        df = df.drop(columns=["rubric", cls.EXCELLENT_OUT_COL])
+    def preprocess(
+        cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False, **kwargs
+    ) -> pd.DataFrame:
+        if not cls._is_skip_preprocess(df, "solution", is_skip_preprocess_if_exists):
+            df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
+        if cls._is_skip_preprocess(df, "rubric", is_skip_preprocess_if_exists):
+            df = Rubricator().make_df_rubrics(df, is_extract_criteria_col=True, is_renormalize_weight=True)
+            return df
+        df = df.drop(columns=["rubric"])
+        df["useful_info_to_eval_instruction"] = "### Good solution to the assignment:\n" + df["solution"]
         df_with_brainstorm = main.brainstorm_rubrics_from_df(df, gold_model, **kwargs)
         df = main.generate_rubrics_from_df(df_with_brainstorm, gold_model, **kwargs)
-        if cls.EXCELLENT_OUT_COL in df.columns:
-            # some models do not return the excellent response, we fill it with an empty string
-            df[cls.EXCELLENT_OUT_COL] = df[cls.EXCELLENT_OUT_COL].fillna("")
         return df
 
     def postprocess(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -175,13 +211,20 @@ class RubricSolutionEvaluator(REEvaluator):
         df["final_score"] = df["weighted_score"]
         return df
 
+    @classmethod
+    def _is_skip_preprocess(cls, df: pd.DataFrame, annotation_key: str, is_skip_preprocess_if_exists: bool) -> bool:
+        is_skip = annotation_key in df.columns and df[annotation_key].notna().all() and is_skip_preprocess_if_exists
+        if is_skip:
+            logging.info(f"Skipping preprocess for {cls.__name__} because {annotation_key} is already present")
+        return is_skip
+
 
 class RubricEvaluator(RubricSolutionEvaluator):
     @classmethod
     def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
         df = super().preprocess(df, gold_model, **kwargs)
         # remove the response
-        df[cls.EXCELLENT_OUT_COL] = ""
+        df["solution"] = ""
         return df
 
 
@@ -223,26 +266,29 @@ class ListRubricSolutionEvaluator(BaseEvaluator):
     )
     DEFAULT_BASE_DIR = CONFIGS_DIR / "list_rubric_evaluators_configs"
     DEFAULT_ANNOTATION_TYPE = object
-    EXCELLENT_OUT_COL = "strong_response"
     PRIMARY_KEYS = (
         "instruction",
         "output",
         "list_error_rubric",
-        EXCELLENT_OUT_COL,
+        "solution",
     )
+    PREPROCESSING_COLUMNS = ["list_error_rubric", "solution"]
+    PREPROCESSOR_COLUMNS = ["list_rubricator", "solutioner"]
 
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str, **kwargs) -> pd.DataFrame:
-        df = df.drop(columns=["list_error_rubric", cls.EXCELLENT_OUT_COL], errors="ignore")
-        df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
+    def preprocess(
+        cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False, **kwargs
+    ) -> pd.DataFrame:
+        if not cls._is_skip_preprocess(df, "solution", is_skip_preprocess_if_exists):
+            df = add_solution_to_df(df, gold_model.split("_")[0], **kwargs)
+        if cls._is_skip_preprocess(df, "list_error_rubric", is_skip_preprocess_if_exists):
+            return df
+        df = df.drop(columns=["list_error_rubric"], errors="ignore")
         df["useful_info_to_eval_instruction"] = "### Good solution to the assignment:\n" + df["solution"]
         list_rubricator = ListRubricator(annotators_config=gold_model, **kwargs)
         list_rubrics = list_rubricator(df)
         df = ae_utils.convert_to_dataframe(list_rubrics)
-        df = helpers.expand_json_column(df, list_rubricator.annotation_key)
-        if cls.EXCELLENT_OUT_COL in df.columns:
-            # some models do not return the excellent response, we fill it with an empty string
-            df[cls.EXCELLENT_OUT_COL] = df[cls.EXCELLENT_OUT_COL].fillna("")
+        # df = helpers.expand_json_column(df, list_rubricator.annotation_key)
         return df
 
     def postprocess(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -251,20 +297,17 @@ class ListRubricSolutionEvaluator(BaseEvaluator):
         # now sum up the "deductive_score" for each key
         lower_bound = 1
         upper_bound = 10
-        try:
-            df["final_score"] = upper_bound + df["evaluation"].apply(lambda d: sum([v["delta_score"] for v in d]))
-        except Exception as e:
-            breakpoint()
+        df["final_score"] = upper_bound + df["evaluation"].apply(lambda d: sum([v["delta_score"] for v in d]))
         df["final_score"] = df["final_score"].apply(lambda x: max(lower_bound, min(upper_bound, x)))
         return df
 
 
 class ListRubricEvaluator(ListRubricSolutionEvaluator):
     @classmethod
-    def preprocess(cls, df: pd.DataFrame, gold_model: str) -> pd.DataFrame:
-        df = super().preprocess(df, gold_model)
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False) -> pd.DataFrame:
+        df = super().preprocess(df, gold_model, is_skip_preprocess_if_exists)
         # remove the response
-        df[cls.EXCELLENT_OUT_COL] = ""
+        df["solution"] = ""
         return df
 
 
@@ -272,6 +315,7 @@ class ListRubricEvaluator(ListRubricSolutionEvaluator):
 
 
 def add_solution_to_df(df: pd.DataFrame, annotators_config: str, **ann_kwargs) -> pd.DataFrame:
+    df = df.drop(columns=["solution"], errors="ignore")
     df = df.rename(columns={c: c.replace("output", "tokeep") for c in df.columns if c.startswith("output")})
     df["modelkeep"] = df["model"]
     # dirty trick to get the model name
