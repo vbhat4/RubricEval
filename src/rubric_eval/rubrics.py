@@ -61,6 +61,14 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         if rubric_columns is None:
             rubric_columns = [self.annotation_key]
 
+        # TODO: remove hard coding
+        if self.annotation_key == "brainstormed_rubric":
+            df_rubrics["learning_objectives"] = df_rubrics["brainstormed_rubric"].apply(lambda x: x["learning_objectives"])
+            df_rubrics["brainstormed_response"] = df_rubrics["brainstormed_rubric"].apply(lambda x: x["brainstormed_response"])
+            df_rubrics["brainstormed_rubric"] = df_rubrics["brainstormed_rubric"].apply(lambda x: x["brainstormed_rubric"])
+        elif self.annotation_key == "rubric":
+            df_rubrics["rubric"] = df_rubrics["rubric"].apply(lambda x: x["rubric"])
+
         for col in rubric_columns:
             # remove potential duplicate criteria in the rubric (happens with bad models)
             df_rubrics[col] = df_rubrics[col].apply(
@@ -119,7 +127,7 @@ class Rubricator(BaseRubricator):
     def __init__(
         self,
         *args,
-        primary_keys: Sequence[str] = ("instruction", "brainstormed_rubric", "useful_info_to_eval_instruction"),
+        primary_keys: Sequence[str] = ("instruction", "brainstormed_rubric", "brainstormed_response"),
         annotators_config="gpt-4o-2024-08-06_CoT_v1",
         **kwargs,
     ):
