@@ -32,7 +32,7 @@ class Evaluator(base.BaseAnnotatorJSON):
             "criteria",
             "rubric",
             "output",
-            "solution",
+            "excellent_response",
         ),
         annotators_config="gpt-4o-2024-08-06_CoT_v0",
         **kwargs,
@@ -254,7 +254,7 @@ def format_evaluation_report_md(report_dict: dict[str, Any]) -> str:
 
 **Evaluator**: {rd["evaluator"]}
 
-**Summarizer**: {rd["summarizer"]}
+**Summarizer**: {rd["summarizer"] if "summarizer" in rd else "None"}
 
 **Report Date**: {rd["report_date"]}
 

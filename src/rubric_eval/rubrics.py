@@ -67,6 +67,7 @@ class BaseRubricator(base.BaseAnnotatorJSON):
             df_rubrics["brainstormed_response"] = df_rubrics["brainstormed_rubric"].apply(lambda x: x["brainstormed_response"])
             df_rubrics["brainstormed_rubric"] = df_rubrics["brainstormed_rubric"].apply(lambda x: x["brainstormed_rubric"])
         elif self.annotation_key == "rubric":
+            df_rubrics["excellent_response"] = df_rubrics["rubric"].apply(lambda x: x["excellent_response"])
             df_rubrics["rubric"] = df_rubrics["rubric"].apply(lambda x: x["rubric"])
 
         for col in rubric_columns:

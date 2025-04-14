@@ -1,0 +1,32 @@
+# Evaluation report for model="gpt-4o-mini-2024-07-18" on dataset="rubriceval_general/rubrics.json"
+
+## Overview
+**Score**: 8.05 ± 0.10
+
+## Details
+**Model**: gpt-4o-mini-2024-07-18
+
+**Dataset**: rubriceval_general/rubrics.json
+
+**N Instructions**: 392
+
+**Evaluator**: gpt-4o-2024-08-06_CoT_v-1
+
+**Summarizer**: None
+
+**Report Date**: 2025-04-14
+
+**Version**: rubric_eval==0.1.0
+
+**Report Cost**: $47.95
+
+**Report Time**: 12.89 minutes
+
+## Analysis of outputs
+**Avg. length of output**: 4188 characters
+
+**Avg. list presence**: 78.3 %
+
+**Avg. number of list items**: 16.4 list items
+
+

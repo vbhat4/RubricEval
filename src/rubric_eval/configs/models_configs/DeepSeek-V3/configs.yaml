@@ -1,0 +1,11 @@
+DeepSeek-V3:
+  prompt_template: "DeepSeek-V3/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "deepseek-ai/DeepSeek-V3"
+    max_tokens: 4096
+    requires_chatml: True
+    client_kwargs:
+      base_url: 'https://api.together.xyz'
+  batch_size: 1
+  fn_completion_parser: null

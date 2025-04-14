@@ -33,7 +33,7 @@ def get_output_path(
     is_rm_double_underscore: bool = True,
     extension: str = ".json",
 ) -> Path:
-    """Get the output path by potentially using th einput path with the new suffix."""
+    """Get the output path by potentially using the input path with the new suffix."""
     input_path = Path(input_path)
     if output_path is None:
         output_stem = input_path.stem
