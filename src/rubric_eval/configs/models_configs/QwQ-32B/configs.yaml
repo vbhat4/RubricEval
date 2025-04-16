@@ -1,0 +1,11 @@
+QwQ-32B:
+  prompt_template: "QwQ-32B/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "Qwen/QwQ-32B"
+    max_tokens: 8192
+    requires_chatml: True
+    client_kwargs:
+      base_url: 'https://api.together.xyz'
+  batch_size: 1
+  fn_completion_parser: null

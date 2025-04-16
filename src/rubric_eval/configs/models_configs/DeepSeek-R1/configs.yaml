@@ -1,0 +1,11 @@
+DeepSeek-R1:
+  prompt_template: "DeepSeek-R1/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "deepseek-ai/DeepSeek-R1"
+    max_tokens: 8192
+    requires_chatml: True
+    client_kwargs:
+      base_url: 'https://api.together.xyz'
+  batch_size: 1
+  fn_completion_parser: null

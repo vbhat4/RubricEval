@@ -1,0 +1,8 @@
+gemini-2.0-flash:
+  prompt_template: "gemini-2.0-flash/prompt.txt"
+  fn_completions: "google_completions"
+  completions_kwargs:
+    model_name: "gemini-2.0-flash"
+    max_output_tokens: 4096
+  batch_size: 1
+  fn_completion_parser: null

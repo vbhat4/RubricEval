@@ -13,6 +13,7 @@ How to run:
 import json
 import logging
 import sys
+import re
 from pathlib import Path
 from typing import Any, Optional, Union
 
@@ -298,6 +299,10 @@ def generate_outputs_from_df(
         )
     if dataset_name:
         df_outputs["dataset_name"] = dataset_name
+    # TODO: remove hard coding
+    model = df_outputs["model"].iloc[0]
+    if model == "DeepSeek-R1":
+        df_outputs["output"] = df_outputs["output"].apply(lambda x: re.sub(r"^<think>.*?</think>\s*", "", x, flags = re.DOTALL))
     return df_outputs
 
 

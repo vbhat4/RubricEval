@@ -1,0 +1,8 @@
+o1-mini-2024-09-12:
+  prompt_template: "o1-mini-2024-09-12/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "o1-mini-2024-09-12"
+    max_completion_tokens: 8192
+  batch_size: 1
+  fn_completion_parser: null

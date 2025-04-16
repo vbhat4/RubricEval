@@ -1,0 +1,11 @@
+gemma-2-27b-it:
+  prompt_template: "gemma-2-27b-it/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "google/gemma-2-27b-it"
+    max_tokens: 512
+    requires_chatml: True
+    client_kwargs:
+      base_url: 'https://api.together.xyz'
+  batch_size: 1
+  fn_completion_parser: null
