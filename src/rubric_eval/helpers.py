@@ -14,6 +14,8 @@ MAIN_DIR = Path(__file__).parents[2]
 
 
 def mean(x):
+    if len(x) == 0:
+        return None
     return sum(x) / len(x)
 
 

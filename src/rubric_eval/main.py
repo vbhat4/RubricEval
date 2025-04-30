@@ -301,7 +301,7 @@ def generate_outputs_from_df(
         df_outputs["dataset_name"] = dataset_name
     # TODO: remove hard coding
     model = df_outputs["model"].iloc[0]
-    if model == "DeepSeek-R1":
+    if model == "DeepSeek-R1" or model == "QwQ-32B":
         df_outputs["output"] = df_outputs["output"].apply(lambda x: re.sub(r"^<think>.*?</think>\s*", "", x, flags = re.DOTALL))
     return df_outputs
 

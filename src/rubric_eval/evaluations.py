@@ -97,6 +97,11 @@ class Evaluator(base.BaseAnnotatorJSON):
             logging.warning(
                 f"{n_scores_missing} examples have missing scores. Probably because the criteria don't have the same names."
             )
+
+        # new
+        df_eval["unweighted_score"] = np.where(df_eval["output"] == "", np.nan, df_eval["unweighted_score"])
+        df_eval["weighted_score"] = np.where(df_eval["output"] == "", np.nan, df_eval["weighted_score"])
+
         return df_eval
 
 
@@ -280,7 +285,10 @@ def format_evaluation_report_md(report_dict: dict[str, Any]) -> str:
 
 def _compute_score_from_rubric_and_grading(x: dict) -> float:
     """Compute the score from the rubric and grading."""
-    df_grading = pd.DataFrame(x["evaluation"]).set_index("criterion")
+    df_grading = pd.DataFrame(x["evaluation"])
+    if "criterion" not in df_grading.columns:
+        return np.nan
+    df_grading = df_grading.set_index("criterion")
     df_rubric = pd.DataFrame(x["rubric"]).set_index("criterion")
     necessary_indices = df_rubric.query("weight > 0").index
     if not (set(necessary_indices).issubset(set(df_grading.index))):

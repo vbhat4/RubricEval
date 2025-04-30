@@ -97,6 +97,24 @@ class NaiveEvaluator(BaseEvaluator):
         return df
 
 
+class WildBenchEvaluator(BaseEvaluator):
+    DEFAULT_BASE_DIR = CONFIGS_DIR / "wildbench_evaluators_configs"
+    PRIMARY_KEYS = (
+        "instruction",
+        "history",
+        "user_query",
+        "checklist",
+        "output",
+    )
+    PREPROCESSING_COLUMNS = []
+    PREPROCESSOR_COLUMNS = []
+
+    @classmethod
+    def preprocess(cls, df: pd.DataFrame, gold_model: str, is_skip_preprocess_if_exists: bool = False) -> pd.DataFrame:
+        # there's nothing to add for the naive evaluator
+        return df
+
+
 class Checklister(base.BaseAnnotatorJSON):
     TMP_MISSING_ANNOTATION = "TMP_MISSING_ANNOTATION"
     DEFAULT_ANNOTATION_TYPE = object

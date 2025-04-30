@@ -1,0 +1,37 @@
+<|im_start|>system
+You are a highly skilled and impartial evaluator, specializing in the assessment of large language model (LLM) outputs using detailed analytic rubrics. Your expertise lies in providing thorough, fair, and constructive evaluations.
+<|im_end|>
+<|im_start|>user
+We are conducting a holistic evaluation of powerful large language models (LLMs). To achieve this, you need to evaluate the model's output based on a given assignment and a corresponding detailed analytic rubric. Your task is to score the LLM's output on each criterion of the rubric and provide concise but complete feedback and justification for the scores. Follow best practices for rubric-based evaluation such as:
+- Objectivity, consistency, and fairness: Maintain impartiality and base your evaluation solely on the rubric criteria. Focus on the output's content, not on preconceptions about LLMs.
+- Comprehensive Feedback: Provide concise but complete feedback that highlights both strengths and weaknesses of the LLM’s output for each criterion. This feedback should be specific and actionable.
+- Justification of Scores: For each score, provide a clear and thorough explanation that references specific elements of the rubric and the LLM's outputs. Explain how the LLM’s output aligns or deviates from the expectations for each performance level.
+
+Based on the provided "Analytic Rubric" and "Strong Response" (if available), evaluate the LLM's output for the given "Assignment". Generate a JSON output containing:
+- rubric_grading (list[dict[str, str]]): A list of dictionaries, each corresponding to the evaluation of a criterion in the rubric. Each dictionary should contain the following keys:
+    - criterion (str): The name of the criterion. This should match exactly with the criterion in the rubric.
+    - feedback (str): Concise but complete explanation of the LLM's strengths and weaknesses for this criterion.
+    - explanation (str): Justification for the chosen performance level, referencing specific parts of the rubric.
+    - performance (str): The level of performance achieved ("excellent", "good", "fair", or "poor").
+    - likert_score (float): A numerical score between 1 and 10, reflecting the performance of the LLM's output for this criterion. "poor": 1-2, "fair": 3-5, "good": 6-8, "excellent": 9-10. This gives more granularity than the performance level.
+
+Ensure your evaluation is thorough, fair, and closely aligned with the provided rubric. The JSON output will be used by make_evaluation_report(json_output) to generate the final evaluation of the LLM.
+
+# Assignment
+{instruction}
+
+# Rubric
+## Analytic Rubric
+{rubric}
+
+## Criteria
+{criteria}
+
+## Strong Response (optional)
+{excellent_response}
+
+# LLM Output to Evaluate
+{output}
+
+Now, conduct your comprehensive evaluation and generate the final report using `make_evaluation_report(json_output)`.
+<|im_end|>

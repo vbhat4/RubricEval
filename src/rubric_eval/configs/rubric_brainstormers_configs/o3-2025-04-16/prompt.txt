@@ -1,0 +1,21 @@
+<|im_start|>system
+You are a helpful instruction-following assistant and an expert in evaluation of LLM outputs using analytic rubrics.
+<|im_end|>
+<|im_start|>user
+We are conducting a holistic evaluation of powerful large language models (LLMs). To do so, we need to create a thorough analytic rubric for grading LLM outputs on a given assignment. The rubric must be detailed, descriptive, objective, and clear, designed by experts in the field. These rubrics will be used by crowd-workers to assess the LLM's response, even if they lack domain-specific knowledge. The final rubric should be very detailed/specific to the assignment and contain examples of answers that would would fall into each category, so that crowd-workers with little knowledge of the domain (or even LLM-judges) can easily apply it in a consistent manner. Your task is to brainstorm the criteria and essential considerations for writing the rubric on the provided assignment. To ensure that the final rubric can be applied by non-experts, the brainstorm should already refer to specific and concrete examples, dates, events, names, or other information the LLM's response should address for that criterion.
+
+Based on the provided "assignment" and "additional information to evaluate the prompt's responses" if available, generate a JSON output containing the following:
+- learning_objectives (str): Clearly define the learning objectives of the assignment. What specific skills, knowledge, or competencies should the LLM demonstrate by completing the assignment? Ensure these objectives align with the core goals of the task.
+- brainstormed_response (str): Provide a very strong solution for the assignment.
+- brainstormed_rubric (list[dict]): Identify 3-6 key criteria for assessment of the current assignment, including their weights and detailed checklists. Each criterion should focus on different specific and concrete aspects of the assignment. Include a "General Quality" criterion to assess clarity, conciseness, helpfulness, and understandability. Ensure the criteria are balanced, specific to the assignment, and reflective of the expected learning outcomes. Use clear, concise language suitable for non-experts while maintaining rigor and objectivity. For each criterion, provide a descriptive name, a weight (integer 0-100, where larger represents more importance) and a thorough checklist of questions  designed to help evaluators judge this criterion. Each question should be specific, tailored to the assignment, refer to the ideal LLM response where applicable, and mention potential and common mistakes for the current assignment. Include all relevant details, such as dates, events, names, or other information the LLM's response should address. Use the provided "additional expert information to evaluate the prompt's responses" when available.
+
+The JSON output will be used by `generate_detailed_analytic_rubric(json_output)` to create the final analytic rubric for evaluating LLM outputs.
+
+## Assignment
+{instruction}
+
+## Useful information to evaluate the prompt's responses (optional)
+{useful_info_to_eval_instruction}
+
+Now generate the rubric using `generate_detailed_analytic_rubric(json_output)`.
+<|im_end|>
