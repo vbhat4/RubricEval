@@ -1,11 +1,11 @@
-# <a href="https://huggingface.co/spaces/vbhat4/rubriceval" target="_blank"><img src="https://raw.githubusercontent.com/YannDubs/RubricEval/main/docs/rubriceval_icon.png" width="35"></a> [RubricEval](https://huggingface.co/spaces/vbhat4/rubriceval): Scalable Expert Evaluation of Language Models
+# <a href="https://huggingface.co/spaces/vbhat4/rubriceval" target="_blank"><img src="https://raw.githubusercontent.com/YannDubs/RubricEval/main/docs/rubriceval_icon.png" width="25"></a> [RubricEval](https://huggingface.co/spaces/vbhat4/rubriceval): Scalable Evaluation of Language Models
 
 [![License](https://img.shields.io/badge/Code%20License-Apache_2.0-green.svg)](https://github.com/tatsu-lab/RubricEval/blob/main/LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 
 ---
 
-**RubricEval** scales expert evaluation of LLMs by combining expert-created rubrics with LLM-based auto-evaluation. Experts design detailed, example-specific rubrics (a one-time cost), which LLMs then apply at **scale**. Evaluating based on rubrics offers a more **interpretable** and **trustworthy** evaluation compared to the common practice of simply asking the model if an answer is "good" or "better" than another.
+**RubricEval** scales performant LLM-as-a-judge evaluation by using detailed rubrics. Instruction-specific rubrics are generated once, which LLM judges can then apply at scale. Evaluating based on rubrics offers a more **interpretable** evaluation compared to the common practice of simply asking the model if an answer is "good" or "better" than another, while also **amortizing** the cost of evaluation. With strong rubrics (expert-generated or very strong LLM), weak judges can **match the correlation** to human preferences of strong judges. RubricEval with o3 (high) rubrics and GPT-4.1 nano as judge achieves **96.0% Pearson correlation** on the Arena-Hard dataset for **<$1**.
 
 [add figure or video here]
 
@@ -22,10 +22,6 @@
 3. [Use-cases](#use-cases)
     - [Evaluating a model](#evaluating-a-model)
     - [Applying RubricEval on your instructions](#applying-rubriceval-on-your-instructions)
-4. [Contributing](#contributing)
-    - [Contributing a model](#contributing-a-model)
-    - [Contributing an eval set](#contributing-an-eval-set)
-    - [Contributing an evaluator](#contributing-an-evaluator)
 5. [Limitations](#limitations)
 7. [Citation](#citation)
 8. [Additional information](#additional-information)
@@ -55,7 +51,7 @@ pip install git+https://github.com/tatsu-lab/rubric_eval
 
 </details>
 
-To evaluate model outputs on the RubricEval benchmark, run the following two steps:
+To evaluate model outputs using RubricEval, run the following commands:
 
 1. **Generate model outputs on the RubricEval instructions**: create a file `outputs.json` that is a [JSON file of the RubricEval evaluation set](...) with an additional `outputs` column containing the model outputs to evaluate. You can use you favorite generation pipeline, or our pipeline based on [AlpacaEval](): 
 
@@ -69,8 +65,8 @@ rubric_eval generate_outputs \
 
 
 ```bash
-export OPENAI_API_KEY=<your_api_key> # for more complex configs, e.g. using Azure or switching clients see https://github.com/tatsu-lab/alpaca_eval/tree/main/client_configs/README.md 
-rubric_eval --input_path=outputs.json 
+export OPENAI_API_KEY=<your_api_key>
+rubric_eval evaluate --input_path=outputs.json 
 ```
 
 This will print the leaderboard in the terminal and generate an `evaluation_report.md` file at [...].
