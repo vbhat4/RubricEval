@@ -7,8 +7,8 @@ import traceback
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASET = "wildbench_hard"
-EVALUATOR = "gpt-4.1-2025-04-14"
-MAX_WORKERS = 5
+EVALUATOR = "Mistral-7B-Instruct-v0.3"
+MAX_WORKERS = 10
 INSTRUCTIONS_PATH = f"{BASE}/data/benchmark/rubriceval_general/wildbench_base.json"
 MODEL_CONFIGS_BASE_PATH = f"{BASE}/src/rubric_eval/configs/models_configs"
 EVALUATOR_CONFIGS_PATH = f"{BASE}/scripts/configs/wildbench_evaluators_configs/{EVALUATOR}"

@@ -6,22 +6,27 @@ import traceback
 
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATASET = "wildbench_hard"
-EVALUATOR = "gpt-4.1-2025-04-14"
+DATASET = "arena_hard"
+EVALUATOR = "gpt-4.1-mini-2025-04-14"
 MAX_WORKERS = 5
-INSTRUCTIONS_PATH = f"{BASE}/data/benchmark/rubriceval_general/instructions.json"
+INSTRUCTIONS_PATH = f"{BASE}/data/{DATASET}/instructions/instructions.json"
 MODEL_CONFIGS_BASE_PATH = f"{BASE}/src/rubric_eval/configs/models_configs"
 EVALUATOR_CONFIGS_PATH = f"{BASE}/scripts/configs/naive_evaluators_configs/{EVALUATOR}"
-COMPLETIONS_BASE_PATH = f"{BASE}/data/{DATASET}/results/baseline/annotated_completions"
-EVALUATIONS_BASE_PATH = f"{BASE}/data/{DATASET}/results/baseline/{EVALUATOR}_as_evaluator"
+DATASET_COMPLETIONS_PATH = f"{BASE}/data/{DATASET}/completions"
+BASELINE_BASE_PATH = f"{BASE}/data/{DATASET}/results/baseline"
+COMPLETIONS_BASE_PATH = f"{BASELINE_BASE_PATH}/annotated_completions"
+EVALUATIONS_BASE_PATH = f"{BASELINE_BASE_PATH}/{EVALUATOR}_as_evaluator"
 
 
 def setup():
     models = []
 
-    for filename in os.listdir(MODEL_CONFIGS_BASE_PATH):
-        if os.path.isdir(MODEL_CONFIGS_BASE_PATH + "/" + filename):
+    for filename in os.listdir(DATASET_COMPLETIONS_PATH):
+        if os.path.isdir(DATASET_COMPLETIONS_PATH + "/" + filename):
             models.append(filename)
+
+    if not os.path.exists(BASELINE_BASE_PATH):
+        os.mkdir(BASELINE_BASE_PATH)
 
     if not os.path.exists(COMPLETIONS_BASE_PATH):
         os.mkdir(COMPLETIONS_BASE_PATH)

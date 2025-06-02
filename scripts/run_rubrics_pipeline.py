@@ -9,23 +9,28 @@ import traceback
 
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATASET = "wildbench_hard"
-RUBRICATOR = "o3-2025-04-16"
+DATASET = "arena_hard"
+RUBRICATOR = "gpt-4.1-nano-2025-04-14"
 EVALUATOR = "gpt-4.1-2025-04-14"
 MAX_WORKERS = 5
 RUBRICS_BASE_PATH = f"{BASE}/data/{DATASET}/rubrics"
 MODEL_CONFIGS_BASE_PATH = f"{BASE}/src/rubric_eval/configs/models_configs"
-EVALUATOR_CONFIGS_PATH = f"{BASE}/src/rubric_eval/configs/evaluators_configs/{EVALUATOR}"
-COMPLETIONS_BASE_PATH = f"{BASE}/data/{DATASET}/results/{RUBRICATOR}_as_rubricator/annotated_completions"
-EVALUATIONS_BASE_PATH = f"{BASE}/data/{DATASET}/results/{RUBRICATOR}_as_rubricator/{EVALUATOR}_as_evaluator"
+EVALUATOR_CONFIGS_PATH = f"{BASE}/src/rubric_eval/configs/evaluators_configs/{DATASET}/{EVALUATOR}"
+DATASET_COMPLETIONS_PATH = f"{BASE}/data/{DATASET}/completions"
+RUBRICATOR_BASE_PATH = f"{BASE}/data/{DATASET}/results/{RUBRICATOR}_as_rubricator"
+COMPLETIONS_BASE_PATH = f"{RUBRICATOR_BASE_PATH}/annotated_completions"
+EVALUATIONS_BASE_PATH = f"{RUBRICATOR_BASE_PATH}/{EVALUATOR}_as_evaluator"
 
 
 def setup():
     models = []
 
-    for filename in os.listdir(MODEL_CONFIGS_BASE_PATH):
-        if os.path.isdir(MODEL_CONFIGS_BASE_PATH + "/" + filename):
+    for filename in os.listdir(DATASET_COMPLETIONS_PATH):
+        if os.path.isdir(DATASET_COMPLETIONS_PATH + "/" + filename):
             models.append(filename)
+
+    if not os.path.exists(RUBRICATOR_BASE_PATH):
+        os.mkdir(RUBRICATOR_BASE_PATH)
 
     if not os.path.exists(COMPLETIONS_BASE_PATH):
         os.mkdir(COMPLETIONS_BASE_PATH)

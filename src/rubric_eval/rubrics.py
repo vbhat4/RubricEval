@@ -61,7 +61,7 @@ class BaseRubricator(base.BaseAnnotatorJSON):
         if rubric_columns is None:
             rubric_columns = [self.annotation_key]
 
-        # TODO: remove hard coding
+        # extract fields from nested structure
         if self.annotation_key == "brainstormed_rubric":
             df_rubrics["learning_objectives"] = df_rubrics["brainstormed_rubric"].apply(lambda x: x["learning_objectives"])
             df_rubrics["brainstormed_response"] = df_rubrics["brainstormed_rubric"].apply(lambda x: x["brainstormed_response"])

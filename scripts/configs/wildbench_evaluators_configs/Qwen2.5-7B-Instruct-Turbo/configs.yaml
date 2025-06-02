@@ -1,0 +1,10 @@
+Qwen2.5-7B-Instruct-Turbo:
+  prompt_template: "Qwen2.5-7B-Instruct-Turbo/prompt.txt"
+  fn_completions: "openai_completions"
+  completions_kwargs:
+    model_name: "Qwen/Qwen2.5-7B-Instruct-Turbo"
+    max_tokens: 8192
+    requires_chatml: True
+    client_kwargs:
+      base_url: 'https://api.together.xyz'
+    temperature: 0

@@ -87,9 +87,16 @@ class Evaluator(base.BaseAnnotatorJSON):
         df_eval[self.annotation_key] = df_eval[self.annotation_key].apply(
             lambda x: [{**d, "score": get_score_for_criterion(d)} for d in x]
         )
+
+        def calc_unweighted_average(x: dict) -> float:
+            try:
+                return mean([d["score"] for d in x])
+            except:
+                return np.nan
+        
         # to get the per example score, you take the score for each criterion in self.annotation_key, you then weight
         # them by the weight in "rubric" and sum them up
-        df_eval["unweighted_score"] = df_eval[self.annotation_key].apply(lambda x: mean([d["score"] for d in x]))
+        df_eval["unweighted_score"] = df_eval[self.annotation_key].apply(calc_unweighted_average)
 
         df_eval["weighted_score"] = df_eval.apply(_compute_score_from_rubric_and_grading, axis=1)
         if df_eval["weighted_score"].isnull().any():
@@ -98,7 +105,7 @@ class Evaluator(base.BaseAnnotatorJSON):
                 f"{n_scores_missing} examples have missing scores. Probably because the criteria don't have the same names."
             )
 
-        # new
+        # exclude empty completions (e.g., due to max token caps)
         df_eval["unweighted_score"] = np.where(df_eval["output"] == "", np.nan, df_eval["unweighted_score"])
         df_eval["weighted_score"] = np.where(df_eval["output"] == "", np.nan, df_eval["weighted_score"])
 
