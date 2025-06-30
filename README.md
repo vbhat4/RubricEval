@@ -5,7 +5,9 @@
 
 ---
 
-**RubricEval** scales performant LLM-as-a-judge evaluation by using detailed rubrics. Instruction-specific rubrics are generated once, which LLM judges can then apply at scale. Evaluating based on rubrics offers a more **interpretable** evaluation compared to the common practice of simply asking the model if an answer is "good" or "better" than another, while also **amortizing** the cost of evaluation. With strong rubrics (expert-generated or very strong LLM), weak judges can **match the correlation** to human preferences of strong judges. RubricEval with o3 (high) rubrics and GPT-4.1 nano as judge achieves **96.0% Pearson correlation** on the Arena-Hard dataset for **<$1**.
+**RubricEval** scales performant LLM-as-a-judge evaluation by using detailed rubrics. Instruction-specific rubrics are generated once, which LLM judges can then apply at scale.
+
+Evaluating based on rubrics offers a more **interpretable** evaluation compared to the common practice of simply asking the model if an answer is "good" or "better" than another, while also **amortizing** the cost of evaluation. With strong rubrics (expert-generated or very strong LLM), weak judges can **match the correlation** to human preferences of strong judges. RubricEval with o3 (high) rubrics and GPT-4.1 nano as judge achieves **96.0% Pearson correlation** on the Arena-Hard dataset for **<$1**.
 
 ---
 
@@ -53,7 +55,24 @@ pip install git+https://github.com/tatsu-lab/rubric_eval
 
 </details>
 
-To evaluate model outputs using RubricEval, run the following commands:
+Before running RubricEval, set your OpenAI API key.
+
+```bash
+export OPENAI_API_KEY=<your_api_key> 
+```
+
+rubric_eval evaluate --input_path=outputs.json
+
+To evaluate model outputs using RubricEval, run the following command:
+
+```bash
+rubric_eval evaluate --input_path=outputs.json
+```
+
+where outputs.json is a copy of a RubricEval with an additional additional `outputs` column containing the model outputs to evaluate. You can use you favorite generation pipeline, or our pipeline based on [AlpacaEval]().
+
+
+2. 
 
 1. **Generate model outputs on the RubricEval instructions**: create a file `outputs.json` that is a [JSON file of the RubricEval evaluation set](...) with an additional `outputs` column containing the model outputs to evaluate. You can use you favorite generation pipeline, or our pipeline based on [AlpacaEval](): 
 
