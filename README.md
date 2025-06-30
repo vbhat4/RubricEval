@@ -7,7 +7,7 @@
 
 **RubricEval** scales performant LLM-as-a-judge evaluation by using detailed rubrics. Instruction-specific rubrics are generated once, which LLM judges can then apply at scale. Evaluating based on rubrics offers a more **interpretable** evaluation compared to the common practice of simply asking the model if an answer is "good" or "better" than another, while also **amortizing** the cost of evaluation. With strong rubrics (expert-generated or very strong LLM), weak judges can **match the correlation** to human preferences of strong judges. RubricEval with o3 (high) rubrics and GPT-4.1 nano as judge achieves **96.0% Pearson correlation** on the Arena-Hard dataset for **<$1**.
 
-[add figure or video here]
+<img src="https://raw.githubusercontent.com/vbhat4/RubricEval/main/figures/overview.jpg">
 
 ---
 
